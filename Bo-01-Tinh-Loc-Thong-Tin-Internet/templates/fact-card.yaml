@@ -1,0 +1,46 @@
+# Fact Card Template
+# Mỗi card là một đơn vị nguyên tử của thông tin
+# Một card chỉ chứa MỘT sự thật. Khi có nhiều sự thật, tách thành nhiều cards.
+
+# Trường BẮT BUỘC
+fact_id: F-YYYY-NNN
+content: "Một câu khẳng định cụ thể, ngắn gọn"
+sources:
+  - source_id_1
+  - source_id_2
+fact_type: numerical-claim
+# Các giá trị fact_type hợp lệ:
+#   numerical-claim, qualitative-claim, event,
+#   statement, definition, relationship
+date_extracted: YYYY-MM-DD
+
+# Trường nên có cho dự án nghiêm túc
+extracted_by: human
+# hoặc agent, nếu được trích tự động bởi AI agent
+domain: tag-domain
+role: evidence-for-thesis-N
+notes: "Ghi chú thêm khi cần"
+
+# Trường được điền sau giai đoạn 6 (Trust Classifier + Enrichment)
+trust_tier: probable
+# Các giá trị hợp lệ: verified, probable, unverified
+
+enrichment:
+  cross_references:
+    - F-YYYY-XXX
+    - F-YYYY-YYY
+  classification:
+    - tag-classification-1
+    - tag-classification-2
+  recency_status: current
+  # Các giá trị hợp lệ: current, historical, outdated
+  importance_rank: high
+  # Các giá trị hợp lệ: high, medium, low
+  gaps_implied:
+    - G-NNN
+
+# Lưu ý voice rules
+# - Không em-dash trong content
+# - Phân biệt fact (X xảy ra) và statement (Y nói X)
+# - Giữ nguyên văn con số và tên riêng
+# - Không paraphrase nguồn gốc

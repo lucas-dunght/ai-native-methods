@@ -1,0 +1,41 @@
+# L2 Derived Fact Template
+# Sự thật dẫn xuất, tính từ L1 bằng công thức
+# KHÔNG lưu giá trị, lưu công thức và inputs
+
+fact_id: L2-domain-key-NNN
+fact_type: L2
+domain: tag-domain
+key: unique-key-for-lookup
+formula:
+  type: sum
+  # Các giá trị hợp lệ: sum, product, ratio, difference, custom
+  inputs:
+    - L1-domain-input-1
+    - L1-domain-input-2
+    - L1-domain-input-3
+  # Khi formula type = custom, thêm trường expression
+  # expression: "input_1 * 0.8 + input_2 * 0.2"
+unit: VND
+date_updated: YYYY-MM-DD
+updated_by: agent
+status: active
+notes: "Mô tả công thức bằng natural language"
+
+# Khi truy vấn L2, hệ thống tính giá trị từ formula và inputs
+# Khi một L1 input thay đổi, L2 tự cập nhật
+
+# Ví dụ
+# fact_id: L2-total-revenue-Q1-2026
+# domain: financial-metrics
+# key: total-revenue-Q1-2026
+# formula:
+#   type: sum
+#   inputs:
+#     - L1-revenue-product-A-Q1-2026
+#     - L1-revenue-product-B-Q1-2026
+#     - L1-revenue-product-C-Q1-2026
+# unit: VND
+# date_updated: 2026-04-15
+# updated_by: agent
+# status: active
+# notes: "Tổng doanh thu Q1 = sum của 3 sản phẩm"
