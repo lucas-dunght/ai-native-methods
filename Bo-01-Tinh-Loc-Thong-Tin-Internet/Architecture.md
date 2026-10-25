@@ -1,253 +1,219 @@
-# Architecture · Kiến trúc kỹ thuật của Bộ 01
+# Architecture · Kiến trúc kỹ thuật của Bộ 01 (v2.0 · 2026.10)
 
 ## Tổng quan
 
-Kiến trúc gồm năm thành phần. Source Collector, Fact Extractor, Conflict Detector, Trust Classifier, Synthesizer. Mỗi thành phần là một module có input và output cố định. Các module nối với nhau theo pipeline tuần tự với checkpoint giữa các module để con người có thể can thiệp.
+Kiến trúc kỹ thuật của Bộ 01 v2.0 gồm sáu module kết nối tuần tự qua các tệp dữ liệu văn bản chuẩn (`CSV`, `YAML`, `Markdown`) và một vùng đệm cô lập ngữ cảnh (`PTC Sandbox`). Các cổng kiểm duyệt của con người (`Human Checkpoints`) được đặt tại những điểm ra quyết định chiến lược thông qua thẻ **Decision Brief `D<N>`**.
 
-Toàn bộ pipeline có thể chạy thủ công với cặp người dùng và AI agent, hoặc tự động một phần với scripts hỗ trợ. Khuyến nghị cho sinh viên là chạy thủ công ở cycle đầu để hiểu logic, sau đó tự động hoá các tác vụ lặp lại.
+Toàn bộ đường ống có thể vận hành linh hoạt ở hai chế độ. Chế độ tương tác bán tự động (dành cho sinh viên và nhà nghiên cứu chạy các chu kỳ đầu) và chế độ điều phối bằng script kết hợp AI Agent (dành cho dự án quy mô lớn cần thu thập hàng trăm nguồn và chuyển giao tự động sang Bộ 02).
 
-## Sơ đồ luồng
-
-```
-Brief nghiên cứu → Source Collector → Source Log + Raw Sources
-                                                  ↓
-                          Fact Extractor ← (đọc raw sources)
-                                                  ↓
-                                          Fact Cards (raw)
-                                                  ↓
-                          Conflict Detector → Conflict Queue
-                                                  ↓
-                                          Fact Cards (deduped)
-                                                  ↓
-                          Trust Classifier → Cards có nhãn tin cậy
-                                                  ↓
-                                          Enrichment Pass
-                                                  ↓
-                          Synthesizer → Báo cáo cuối + Cards xuất
-```
-
-Checkpoint con người giữa các bước. Sau Conflict Detector, người phán xử conflict queue. Sau Trust Classifier, người review nhãn tin cậy. Trước Synthesizer, người review gap checklist.
-
-## Thành phần 1 · Source Collector
-
-Chịu trách nhiệm thu thập nguồn từ internet và lưu kèm metadata.
-
-### Input
-
-Brief nghiên cứu từ giai đoạn 1 chứa câu hỏi nghiên cứu, phạm vi, tiêu chí loại trừ.
-
-### Output
-
-Source Log dạng markdown table hoặc CSV, mỗi dòng là một nguồn với các cột bắt buộc.
+## Sơ đồ luồng kiến trúc (v2.0)
 
 ```
-source_id, url, title, date_collected, query_used, source_type,
- language, authority_tier, collection_reason
+Brief nghiên cứu (brief.md · Cổng D1)
+        │
+        ▼
+┌───────────────────────────────────────────────────────────────┐
+│ 1. Multi-Signal Source Collector & PTC Sandbox                │
+│    - unified-search (auto/academic/legal/news/company/deep)   │
+│    - tavily (search/map/extract/crawl/research)               │
+│    - gstack /scrape + /skillify (trang cần phiên đăng nhập)   │
+│    - Lọc nhiễu qua /tmp/ & bọc rào UNTRUSTED WEB CONTENT      │
+└───────────────────────────────┬───────────────────────────────┘
+                                │
+                                ▼
+             source-log.csv + raw-sources/ (kèm primary_origin_url)
+                                │
+                                ▼
+┌───────────────────────────────────────────────────────────────┐
+│ 2. Atomic Fact Extractor (Fable 5.1 Claim Discipline)         │
+│    - Tách sự thật nguyên tử + exact_quote + content_hash      │
+│    - Gắn nhãn OBSERVED | DERIVED | PRIOR | ASSUMED            │
+└───────────────────────────────┬───────────────────────────────┘
+                                │
+                                ▼
+                    fact-cards/F-YYYY-NNN.yaml (raw)
+                                │
+                                ▼
+┌───────────────────────────────────────────────────────────────┐
+│ 3. Echo-Chamber & Conflict Detector                           │
+│    - Gộp thẻ trùng + Tính independent_origin_count            │
+│    - Sinh thẻ Decision Brief D<N> vào conflict-queue.md       │
+└───────────────────────────────┬───────────────────────────────┘
+                                │
+         ◄── [Human Checkpoint: Phán xử Conflict Queue D<N>]
+                                │
+                                ▼
+┌───────────────────────────────────────────────────────────────┐
+│ 4. Gap Analyzer & Trust Classifier                            │
+│    - Sinh gap-checklist.md kèm query bù đắp                   │
+│    - Gán nhãn verified / probable / unverified cơ học         │
+└───────────────────────────────┬───────────────────────────────┘
+                                │
+                                ▼
+┌───────────────────────────────────────────────────────────────┐
+│ 5. 4D Enrichment Pass & Bộ 02 ETL Exporter                    │
+│    - Đối chiếu chéo, phân loại, độ tươi, đánh dấu xuất L1     │
+└───────────────────────────────┬───────────────────────────────┘
+                                │
+                                ▼
+┌───────────────────────────────────────────────────────────────┐
+│ 6. Constraint Loop Verifier & Synthesizer                     │
+│    - Kiểm tra 4 ngưỡng định lượng & khớp 100% mã [F-YYYY-NNN] │
+│    - Xuất report-final.md + gói Fact Cards chuẩn              │
+└───────────────────────────────────────────────────────────────┘
 ```
 
-Trong đó `source_type` thuộc tập {báo chí, học thuật, blog cá nhân, social media, dữ liệu chính phủ, tài liệu doanh nghiệp, forum, video, podcast}.
+## Thành phần 1 · Multi-Signal Source Collector & PTC Sandbox
 
-`authority_tier` thuộc tập {tier-1, tier-2, tier-3} dựa trên uy tín của nguồn. Tier 1 là chính phủ, tổ chức quốc tế, học thuật peer-reviewed, báo chí kinh tế lớn. Tier 2 là báo chí phổ thông, blog của chuyên gia có danh tiếng, preprint chưa peer-reviewed. Tier 3 là social media, forum, blog ẩn danh.
+Chịu trách nhiệm định tuyến truy vấn, thu thập dữ liệu từ web, lọc nhiễu ngoài ngữ cảnh và ghi nhật ký nguồn kèm dấu vết nguồn gốc đầu tiên.
 
-### Công cụ
+### Đầu vào
 
-Web search qua một search engine hoặc API search. Web scraping qua Python với requests và BeautifulSoup hoặc Playwright cho trang dynamic. Gọi API khi có thể (Twitter API, Reddit API, GitHub API). Manual collection từ database học thuật.
+File `brief.md` chứa câu hỏi nghiên cứu, phạm vi thời gian và địa lý, danh sách tên miền ưu tiên hoặc loại trừ.
 
-### Lưu ý sinh viên
+### Cơ chế Định tuyến Đa Tín hiệu (`Multi-Signal Routing`)
 
-Tôn trọng robots.txt và terms of service của website. Không scrape ồ ạt site nhỏ. Khi không chắc, dùng API chính thức hoặc liên hệ chủ site.
+Thay vì dùng một công cụ tìm kiếm đơn lẻ, module này chọn công cụ theo tín hiệu truy vấn.
+- **Tin tức, tài chính, pháp lý, học thuật đa nguồn.** Gọi MCP `unified-search` (`web_search` với `mode` tương ứng gồm `news`, `legal`, `academic`, `company`, `code`, `deep`, `hybrid` và `web_extract`) để tận dụng bộ xoay vòng 18 khóa API qua ba công cụ `Tavily`, `Exa` và `Linkup`.
+- **Khám phá cấu trúc và cào toàn bộ chuyên mục tài liệu.** Dùng `tavily-map` để lấy danh sách URL và `tavily-crawl` / `tavily-extract` để bóc tách nội dung Markdown sạch.
+- **Báo cáo tổng quan đa góc nhìn.** Dùng `tavily-research` (`--model pro`) để lấy khung tham chiếu ban đầu, sau đó bóc tách từng nguồn được trích dẫn.
+- **Trang yêu cầu đăng nhập hoặc ứng dụng web động.** Dùng `gstack /scrape` qua trình duyệt phiên thật (hoặc headless browser kèm `/setup-browser-cookies`). Nếu một trang bảng giá hoặc cổng dữ liệu cần lấy định kỳ, dùng `/skillify` để biên dịch thành kỹ năng trình duyệt chạy trong 200ms.
 
-## Thành phần 2 · Fact Extractor
+### Cơ chế Cô lập Ngữ cảnh PTC (`Programmatic Tool Calling`)
 
-Đọc từng nguồn thô và trích các mẩu sự thật vào fact card.
+Mọi kết quả tìm kiếm có kèm nội dung trang (`raw_content`) bắt buộc phải ghi ra tệp tạm trong `/tmp/` hoặc `raw-sources/` và xử lý bằng script Python. Chỉ kết quả đã lọc (tiêu đề, URL, điểm số và các đoạn văn khớp từ khóa hoặc chứa số liệu) mới được in ra `stdout` để đưa vào ngữ cảnh của Agent. Toàn bộ nội dung trích xuất từ web phải được đặt trong cặp thẻ cảnh báo `--- BEGIN UNTRUSTED EXTERNAL CONTENT ---` và `--- END UNTRUSTED EXTERNAL CONTENT ---`.
 
-### Input
+### Đầu ra · `source-log.csv`
 
-Một nguồn thô từ Source Collector. Có thể là HTML, PDF, markdown, transcript.
+```csv
+source_id,url,primary_origin_url,title,date_published,date_collected,query_used,search_mode,extraction_method,source_type,language,authority_tier,raw_snapshot_path,collection_reason
+S001,https://economysea.withgoogle.com/report,https://economysea.withgoogle.com/report,"e-Conomy SEA 2024",2024-11-05,2026-10-25,"Southeast Asia digital payments GMV 2024",company,unified-extract,tài liệu doanh nghiệp,en,tier-1,raw-sources/S001.md,"Báo cáo gốc đo lường quy mô GMV khu vực"
+S002,https://technewspaper.example/sea-gmv,https://economysea.withgoogle.com/report,"SEA Digital Economy Hits New High",2024-11-07,2026-10-25,"SEA fintech growth 2024",news,ptc-search,báo chí,en,tier-2,raw-sources/S002.md,"Bài báo phân tích lại báo cáo e-Conomy SEA"
+```
 
-### Output
+Trường `primary_origin_url` là chìa khóa để phát hiện hiện tượng phòng vang. Ở ví dụ trên, dù `S001` và `S002` là hai URL khác nhau nhưng cùng trỏ về một `primary_origin_url`, do đó hệ thống tự động nhận diện chúng chỉ là `1 datum`.
 
-Một hoặc nhiều fact card cho mỗi nguồn. Mỗi card có cấu trúc YAML hoặc JSON.
+## Thành phần 2 · Atomic Fact Extractor (Kỷ luật Nhận định Fable 5.1)
+
+Đọc từng đoạn văn bản đã lọc từ `raw-sources/` và chuyển hóa thành các thẻ sự thật nguyên tử (`Fact Cards`).
+
+### Đầu ra · Schema `fact-cards/F-YYYY-NNN.yaml`
 
 ```yaml
 fact_id: F-2026-001
-content: "Thị trường X tăng trưởng 18.5% trong năm 2024"
-sources: [source_id_3, source_id_12]
+content: "Thị trường thanh toán số Đông Nam Á đạt tổng giá trị giao dịch 114 tỷ USD trong năm 2024"
+exact_quote: "Southeast Asia digital payments GMV reached US$114B in 2024"
+content_hash: "sha256:8f3c2a1b"
+claim_label: OBSERVED
+sources:
+  - S001
+  - S002
+primary_origins:
+  - "https://economysea.withgoogle.com/report"
+independent_origin_count: 1
 fact_type: numerical-claim
-domain: market-data
+domain: digital-payments
 role: evidence-for-thesis-1
-date_extracted: 2026-06-26
-extracted_by: human  # hoặc agent
-notes: "Số liệu công bố trong báo cáo quý 4"
+date_extracted: 2026-10-25
+extracted_by: agent
+notes: "S002 trích dẫn lại S001 nên independent_origin_count = 1"
 ```
 
-Các trường bắt buộc là fact_id, content, sources, fact_type, date_extracted. Các trường khác là tuỳ chọn nhưng nên có cho dự án nghiêm túc.
+Các quy tắc bảo toàn dữ liệu.
+- `claim_label` nhận một trong bốn giá trị `OBSERVED`, `DERIVED`, `PRIOR`, `ASSUMED`.
+- `exact_quote` giữ nguyên văn câu gốc trong tài liệu nguồn để kiểm toán viên hoặc script có thể đối chiếu tức thì.
+- `content_hash` là 8 ký tự đầu của mã băm SHA-256 tính trên chuỗi `content + exact_quote`, giúp phát hiện nếu nội dung thẻ bị sửa đổi ngoài ý muốn ở các bước sau.
 
-`fact_type` thuộc tập {numerical-claim, qualitative-claim, event, statement, definition, relationship}. Phân biệt rõ giữa "X xảy ra" (event hoặc qualitative-claim) và "Y nói X" (statement).
+## Thành phần 3 · Echo-Chamber & Conflict Detector
 
-### Công cụ
+Quét toàn bộ thư mục `fact-cards/` để gộp các thẻ trùng, tính số lượng nguồn gốc độc lập và lập hàng đợi xung đột.
 
-LLM với prompt template cho extraction. Prompt template trong thư mục templates ở file fact-extraction-prompt.md. Prompt yêu cầu LLM trả về JSON theo schema cố định.
+### Logic xử lý
 
-### Lưu ý
+1. **Tính `independent_origin_count`.** Với mỗi thẻ, tập hợp toàn bộ `primary_origin_url` từ các nguồn trong danh sách `sources`. Số phần tử duy nhất (`unique set size`) của tập `primary_origin_url` chính là `independent_origin_count`.
+2. **Gộp trùng (`Merge`).** Hai thẻ cùng chỉ số, cùng kỳ thời gian và cùng giá trị thì gộp `sources` và tính lại `independent_origin_count`.
+3. **Đóng gói Xung đột theo chuẩn `Decision Brief D<N>`.** Khi hai thẻ cùng chỉ số và kỳ thời gian nhưng lệch giá trị, xuất vào `conflict-queue.md` theo cấu trúc thẻ quyết định `D<N>` để con người phê duyệt.
 
-Một fact card chỉ chứa một sự thật nguyên tử. Không gộp hai sự thật vào một card. Khi nghi ngờ, tách thành hai cards.
+## Thành phần 4 · Gap Analyzer & Trust Classifier
 
-## Thành phần 3 · Conflict Detector
+### Bộ phân tích lỗ hổng (`Gap Analyzer`)
 
-Quét tập fact cards để tìm trùng lặp và xung đột.
+Quét tìm các thẻ mang nhãn `ASSUMED` hoặc `PRIOR`, các chuỗi số liệu bị khuyết năm hoặc khuyết quốc gia trong phạm vi `brief.md`, sau đó xuất ra `gap-checklist.md` kèm cấu hình truy vấn bù đắp (`suggested_query`, `search_mode`, `target_tier`).
 
-### Input
+### Bộ phân hạng tin cậy tất định (`Deterministic Trust Classifier`)
 
-Tập fact cards thô từ Fact Extractor.
+Áp dụng hàm phân loại cơ học không phụ thuộc cảm tính của mô hình.
 
-### Output
+```python
+def classify_trust_tier(card, source_map):
+    if card["claim_label"] in ("PRIOR", "ASSUMED"):
+        return "unverified"
+    tiers = [source_map[s]["authority_tier"] for s in card["sources"]]
+    indep_count = card.get("independent_origin_count", 0)
+    if indep_count >= 2 and any(t in ("tier-1", "tier-2") for t in tiers):
+        return "verified"
+    if indep_count == 1 and "tier-1" in tiers:
+        return "verified"
+    if indep_count >= 1 and any(t in ("tier-1", "tier-2") for t in tiers):
+        return "probable"
+    return "unverified"
+```
 
-Hai thứ. Một tập fact cards đã deduplicate. Một conflict queue chứa các cặp cards mâu thuẫn nhau.
+Lưu ý. Trong trường hợp nguồn `tier-1` chỉ là một bài báo kinh tế điểm tin chứ không phải báo cáo nghiên cứu gốc hoặc số liệu thống kê chính thức, người dùng có thể cấu hình hạ mức `indep_count == 1` của báo chí xuống `probable` để ép buộc phải có nguồn độc lập thứ hai mới đạt `verified`.
 
-### Logic
+## Thành phần 5 · 4D Enrichment Pass & Bộ 02 ETL Exporter
 
-Hai cards trùng lặp khi `content` của chúng nói cùng một sự thật với cùng giá trị. Phát hiện qua so sánh ngữ nghĩa (embedding similarity) hoặc so sánh cấu trúc nếu cards có schema rõ ràng. Khi trùng, merge các sources vào một card duy nhất.
-
-Hai cards xung đột khi nói cùng một sự thật với giá trị khác nhau. Ví dụ một card nói thị trường tăng 18%, card khác nói thị trường tăng 25%. Đẩy cả hai vào conflict queue, không tự chọn.
-
-### Công cụ
-
-Vector embedding cho similarity search. Có thể dùng sentence-transformers hoặc OpenAI embeddings. Hoặc đơn giản hơn dùng LLM với prompt comparison cho từng cặp cards (tốn token hơn nhưng dễ thực hiện).
-
-### Lưu ý
-
-Threshold similarity nên đặt cao hơn 0.85 để tránh false positive merge. Khi nghi ngờ, giữ tách và đẩy vào hàng đợi review.
-
-## Thành phần 4 · Trust Classifier
-
-Gán nhãn tin cậy ba mức cho mỗi fact card.
-
-### Input
-
-Tập fact cards đã deduplicate sau Conflict Detector và phán xử conflict queue.
-
-### Output
-
-Tập fact cards có thêm trường `trust_tier` với giá trị verified, probable, hoặc unverified.
-
-### Logic
-
-Verified khi card có ít nhất một trong hai điều kiện. Hai nguồn độc lập (không cite lẫn nhau) cùng xác nhận. Một nguồn cấp cao tier-1 xác nhận.
-
-Probable khi card có một nguồn tier-1 hoặc tier-2 đáng tin nhưng chưa có cross-reference.
-
-Unverified khi card chỉ có nguồn tier-3 hoặc nguồn không rõ.
-
-### Công cụ
-
-Có thể tự động hoá bằng quy tắc cứng dựa trên metadata trong source log. Đếm số nguồn độc lập, tier cao nhất, có cross-reference không. Output deterministic.
-
-### Lưu ý
-
-"Nguồn độc lập" là khái niệm khó định nghĩa rigorously. Quy tắc đơn giản. Hai báo chí cite cùng một báo cáo gốc thì không độc lập, chỉ tính một nguồn. Hai báo cáo nghiên cứu của hai tổ chức khác nhau thì độc lập kể cả khi cùng một topic.
-
-## Thành phần 5 · Enrichment Pass
-
-Làm giàu metadata cho mỗi fact card.
-
-### Input
-
-Tập fact cards đã được Trust Classifier.
-
-### Output
-
-Cards có thêm các trường metadata làm giàu.
+Bổ sung khối `enrichment` vào từng thẻ sự thật đã phân hạng và chuẩn bị gói dữ liệu xuất sang Bộ 02 (`Kernel Registry`).
 
 ```yaml
+trust_tier: verified
 enrichment:
-  cross_references: [F-2026-005, F-2026-012]  # các facts liên quan
-  classification: market-growth, fintech-segment
-  recency_status: current  # hoặc historical, outdated
-  importance_rank: high  # hoặc medium, low
-  gaps_implied: [needs-data-for-2025-Q1, needs-source-for-claim-X]
+  cross_references: [F-2026-005, F-2026-012]
+  classification: [market-sizing, sea-fintech]
+  recency_status: current
+  importance_rank: high
+  gaps_implied: [G-002]
+  bo02_bridge:
+    export_ready: true
+    target_layer: L1
+    suggested_fact_id: L1-sea-digital-payments-gmv-2024
+    unit: USD
+    numeric_value: 114000000000
 ```
 
-### Logic
+## Thành phần 6 · Constraint Loop Verifier & Synthesizer
 
-Cross-references tìm bằng similarity search nhưng với threshold thấp hơn deduplication, để tìm relate chứ không phải trùng.
+Trước khi sinh báo cáo cuối (`report-final.md`), chạy script kiểm chứng `Constraint Loop`.
 
-Classification gán bằng LLM với taxonomy đã định sẵn trong project.
+```python
+# Kiểm tra tự động 4 điều kiện hoàn thành của Bộ 01 v2.0
+assert verified_ratio >= 0.40, "Tỷ lệ thẻ verified chưa đạt 40%"
+assert unresolved_conflicts == 0, "Còn xung đột chưa được con người phán xử trong conflict-queue.md"
+assert high_priority_open_gaps < 10, "Còn từ 10 lỗ hổng mức cao trở lên chưa đóng"
+assert missing_citation_ids == set(), f"Báo cáo trích dẫn mã thẻ không tồn tại: {missing_citation_ids}"
+```
 
-Recency status tự động dựa trên ngày publish của nguồn so với ngày thu thập.
+Sau khi vượt qua cổng kiểm tra, `Synthesizer` xuất `report-final.md` gồm đúng 3 phần tách biệt và bảng danh mục tài liệu tham chiếu tự động kết xuất từ `source-log.csv`.
 
-Importance rank được người dùng đặt thủ công dựa trên role trong lập luận.
-
-Gaps implied phát hiện bằng LLM khi quét card, tìm xem có claim hoặc số liệu nào card này dựa vào mà chưa có card khác trong tập support không.
-
-## Thành phần 6 · Synthesizer
-
-Tổng hợp tập cards thành báo cáo cuối.
-
-### Input
-
-Tập fact cards hoàn chỉnh sau Enrichment Pass.
-
-### Output
-
-Báo cáo cuối ba phần. Phần 1 kết luận chính dựa trên verified facts. Phần 2 giả thuyết dựa trên probable facts. Phần 3 câu hỏi mở từ gap checklist và unverified facts cần kiểm chứng.
-
-### Logic
-
-Mỗi câu trong báo cáo trích dẫn fact card bằng ID dạng inline `[F-2026-001]`. Khi pre-publish, generate phần References tự động từ tập card IDs đã được trích dẫn.
-
-### Công cụ
-
-LLM với prompt template trong templates/synthesis-prompt.md. Prompt yêu cầu LLM chỉ được trích dẫn fact card có trong tập input. Không được fabricate facts mới.
-
-### Lưu ý
-
-LLM có xu hướng paraphrase và mất chính xác. Yêu cầu LLM giữ nguyên văn các con số và tên riêng. Sau khi LLM ra báo cáo, làm pass thủ công kiểm tra các con số và tên có match với fact cards không.
-
-## Data structures tổng kết
-
-Toàn bộ pipeline xuất ra ba artifact chính cho mỗi cycle nghiên cứu.
+## Cấu trúc thư mục của một chu kỳ nghiên cứu
 
 ```
 research-cycle-YYYY-MM-DD/
-├── brief.md                       (giai đoạn 1)
-├── source-log.csv                 (giai đoạn 2)
-├── raw-sources/                   (giai đoạn 2)
-│   ├── source-001.html
-│   ├── source-002.pdf
-│   └── ...
-├── fact-cards/                    (giai đoạn 3-6)
+├── brief.md                       (Giai đoạn 1 · Đã khóa qua cổng D1)
+├── source-log.csv                 (Giai đoạn 2 · Kèm primary_origin_url & search_mode)
+├── raw-sources/                   (Giai đoạn 2 · Bản lưu Markdown/JSON đã lọc PTC)
+│   ├── S001.md
+│   └── S002.md
+├── fact-cards/                    (Giai đoạn 3 đến 6 · Thẻ sự thật nguyên tử YAML)
 │   ├── F-2026-001.yaml
-│   ├── F-2026-002.yaml
-│   └── ...
-├── conflict-queue.md              (giai đoạn 4)
-├── gap-checklist.md               (giai đoạn 5)
-├── enrichment-log.md              (giai đoạn 6)
-└── report-final.md                (giai đoạn 7)
+│   └── F-2026-002.yaml
+├── conflict-queue.md              (Giai đoạn 4 · Các thẻ Decision Brief D<N> đã phán xử)
+├── gap-checklist.md               (Giai đoạn 5 · Danh sách lỗ hổng & query bù đắp)
+├── enrichment-log.md              (Giai đoạn 6 · Nhật ký làm giàu & cầu nối Bộ 02)
+└── report-final.md                (Giai đoạn 7 · Báo cáo 3 phần đã qua Constraint Loop)
 ```
 
-Cấu trúc thư mục này tái sử dụng được giữa các cycle. Khi sinh viên làm cycle thứ hai cho cùng một đề tài, có thể nạp lại fact cards cũ và bổ sung cards mới.
+## Tích hợp liên thông với Bộ 02 và Bộ 03
 
-## Tools stack đề xuất
-
-Đối với sinh viên không có ngân sách, stack tools đề xuất gồm.
-
-LLM. Claude qua API hoặc Cursor. Hoặc GPT-4 qua API. Hoặc model open-source local như Llama nếu có GPU.
-
-Search engine. Brave Search API miễn phí mức cơ bản. Hoặc Tavily Search API. Hoặc Serper.
-
-Web scraping. Python với requests và BeautifulSoup cho trang tĩnh. Playwright cho trang dynamic.
-
-Storage. Markdown files trong Git repo. YAML cho fact cards. CSV cho source log.
-
-Embedding. sentence-transformers chạy local hoặc OpenAI embeddings API.
-
-Vector search. Đối với tập card nhỏ dưới 1000 cards, không cần vector DB phức tạp. Chỉ cần numpy hoặc faiss in-memory.
-
-## Tích hợp với Bộ 02 Kernel Registry
-
-Đầu ra của Bộ 01 (fact cards) tương ứng với L1 Sự thật lưu sẵn trong Bộ 02 Kernel Registry. Sinh viên có thể chuyển trực tiếp tập fact cards từ Bộ 01 vào registry của Bộ 02 sau cycle nghiên cứu hoàn tất. Schema fact card được thiết kế tương thích.
-
-## Tích hợp với Bộ 03 Vibecode Kit
-
-Khi sinh viên dùng Vibecode Kit để xây ứng dụng dựa trên kết quả nghiên cứu của Bộ 01, fact cards là input cho TIP (Task Intent Prompt) và Blueprint. AI agent được giao việc có thể đọc fact cards trực tiếp để có context chính xác cho nhiệm vụ.
+- **Nối sang Bộ 02 (`Kernel Registry SOT`).** Mọi thẻ `Fact Card` có `trust_tier: verified` và `bo02_bridge.export_ready: true` được chuyển thẳng thành tệp `registry/stored-facts/L1-*.yaml` trong Bộ 02, giữ nguyên mã băm `content_hash` và đường dẫn nguồn.
+- **Nối sang Bộ 03 (`Vibecode Kit v6.1`).** Khi xây dựng sản phẩm phần mềm ở Bộ 03, Chủ thầu (`Contractor`) đính kèm các mã thẻ `[F-YYYY-NNN]` vào tài liệu `RRI`, `Blueprint` và gói giao việc `TIP` để Thợ (`Builder`) thi công dựa trên dữ liệu thị trường và quy định đã được kiểm chứng.

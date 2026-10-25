@@ -1,0 +1,7 @@
+component_id,component_type,path,domain,source_hash,date_added,date_updated,freshness_status,status
+L1-revenue-product-A-Q4-2026,L1-stored-fact,registry/stored-facts/L1-revenue-product-A-Q4-2026.yaml,financial-metrics,sha256:1a2b3c4d,2026-10-25,2026-10-25,FRESH,active
+L1-revenue-product-B-Q4-2026,L1-stored-fact,registry/stored-facts/L1-revenue-product-B-Q4-2026.yaml,financial-metrics,sha256:5e6f7a8b,2026-10-25,2026-10-25,FRESH,active
+L2-total-revenue-Q4-2026,L2-derived-fact,registry/derived-facts/L2-total-revenue-Q4-2026.yaml,financial-metrics,sha256:computed,2026-10-25,2026-10-25,FRESH,active
+decree-13-2023-nd-cp,L3-obligation-source,obligations/decree-13-2023-nd-cp/obligations.yaml,data-protection,sha256:4f3c8e9a,2026-10-25,2026-10-25,FRESH,active
+L4-brand-voice-core,L4-style,style/L4-style.yaml,brand-communication,sha256:none,2026-10-25,2026-10-25,N/A,active
+skill-quarterly-report,skill-package,skills/skill-quarterly-report/SKILL.md,reporting,sha256:7c9e2f1a,2026-10-25,2026-10-25,FRESH,active

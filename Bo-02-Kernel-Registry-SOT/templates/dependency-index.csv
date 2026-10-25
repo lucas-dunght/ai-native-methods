@@ -1,18 +1,20 @@
-from_id,to_id,relationship,date_added,notes
-# Relationship hợp lệ:
-# - derives-from   : L2 derive từ L1
-# - extracted-from : L3 obligation rút từ source document
-# - references     : Skill reference fact ID
-# - must-comply    : Skill phải tuân obligation
-# - uses           : Skill dùng style
-# - supersedes     : Entry mới thay thế entry cũ
-# - deprecates     : Đánh dấu entry cũ deprecated
+from_id,to_id,relationship,provenance_tag,impact_if_stale,date_added,notes
+# Các giá trị relationship hợp lệ:
+# - derives-from   : Mục L2 dẫn xuất từ mục L1
+# - extracted-from : Nghĩa vụ L3 rút từ văn bản nguồn
+# - imported-from  : Mục L1 nhập từ Fact Card của Bộ 01
+# - references     : Skill hoặc Blueprint (Bộ 03) tham chiếu mã L1/L2
+# - must-comply    : Skill hoặc Blueprint bắt buộc tuân thủ nghĩa vụ L3
+# - uses           : Skill áp dụng hồ sơ phong cách L4
+# - supersedes     : Mục mới thay thế mục cũ
 #
-# Ví dụ
-# L2-total-revenue-Q1-2026,L1-revenue-product-A-Q1-2026,derives-from,2026-04-15,
-# L2-total-revenue-Q1-2026,L1-revenue-product-B-Q1-2026,derives-from,2026-04-15,
-# OBL-decree-XXX-001,decree-XXX-2024,extracted-from,2024-04-01,
-# skill-X,L1-revenue-product-A-Q1-2026,references,2026-04-15,
-# skill-X,OBL-financial-disclosure-001,must-comply,2026-04-15,
-# skill-X,style/voice-guide.md,uses,2026-04-15,
-# L1-product-price-X-2026-Q3,L1-product-price-X-2026-Q2,supersedes,2026-07-01,Giá Q3 thay giá Q2
+# Các giá trị provenance_tag hợp lệ (tương thích chuẩn ak-graphify):
+# - EXTRACTED      : Quan hệ tường minh từ khai báo inputs, pointers hoặc AST
+# - INFERRED       : Quan hệ do AI suy luận ngữ nghĩa
+# - AMBIGUOUS      : Quan hệ chưa chắc chắn, chờ con người xác nhận
+L2-total-revenue-Q4-2026,L1-revenue-product-A-Q4-2026,derives-from,EXTRACTED,recompute-l2,2026-10-25,Đầu vào doanh thu sản phẩm A
+L2-total-revenue-Q4-2026,L1-revenue-product-B-Q4-2026,derives-from,EXTRACTED,recompute-l2,2026-10-25,Đầu vào doanh thu sản phẩm B
+OBL-decree-13-001,decree-13-2023-nd-cp,extracted-from,EXTRACTED,review-obligation,2026-10-25,Trích từ Điều 28 khoản 2
+skill-quarterly-report,L2-total-revenue-Q4-2026,references,EXTRACTED,block-skill-output,2026-10-25,Skill báo cáo quý tham chiếu tổng doanh thu
+skill-quarterly-report,OBL-decree-13-001,must-comply,EXTRACTED,block-skill-output,2026-10-25,Skill báo cáo phải tuân thủ quy định bảo mật
+skill-quarterly-report,L4-brand-voice-core,uses,EXTRACTED,advisory-only,2026-10-25,Skill áp dụng giọng văn chuẩn của tổ chức

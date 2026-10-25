@@ -1,58 +1,25 @@
-# L3 Obligation Template
-# Sinh có ràng buộc, nghĩa vụ rút từ văn bản pháp quy hoặc văn bản nội bộ chính thức
-# Mỗi nguồn (nghị định, thông tư, quy chế) một file riêng
-
-# File structure trong thư mục obligations/source-id/obligations.yaml
+# L3 Obligation Template · Nghĩa vụ Pháp quy & Quy chế Nội bộ (v2.0)
+# Đặt tại: obligations/<source-id>/obligations.yaml kèm bản sao văn bản gốc.
 
 source_metadata:
-  source_id: source-identifier
-  title: "Tên đầy đủ của văn bản gốc"
-  authority: "Cơ quan ban hành"
+  source_id: decree-13-2023-nd-cp
+  title: "Tên đầy đủ của văn bản pháp quy hoặc quy chế chính thức"
+  authority: "Cơ quan hoặc cấp có thẩm quyền ban hành"
   date_issued: YYYY-MM-DD
   date_effective: YYYY-MM-DD
-  date_expires: YYYY-MM-DD  # nếu có
-  source_document_path: ./source-doc.pdf
+  date_expires: null
+  source_document_path: "./source-doc.pdf"
+  source_hash: "sha256:4f3c8e9a1b2d7c6e"
+  verification_status: FRESH
 
 obligations:
   - obligation_id: OBL-source-id-001
-    description: "Mô tả nghĩa vụ rõ ràng, không mơ hồ"
+    description: "Mô tả nghĩa vụ cụ thể, rõ chủ thể và hành động bắt buộc"
     article: "Điều X, khoản Y"
-    severity: high
-    # Các giá trị hợp lệ: low, medium, high, critical
+    severity: high  # low | medium | high | critical
     applies_to: target-entity-or-role
+    compliance_check_type: mandatory-gate  # mandatory-gate | periodic-audit | advisory
     date_added: YYYY-MM-DD
-    status: active
-    notes: "Ghi chú thêm nếu cần"
-
-  - obligation_id: OBL-source-id-002
-    description: "..."
-    article: "..."
-    severity: medium
-    applies_to: "..."
-    date_added: YYYY-MM-DD
-    status: active
-
-# Lưu ý
-# - Mỗi nghĩa vụ là một entry riêng có ID duy nhất
-# - Mô tả phải cụ thể, không paraphrase mơ hồ
-# - Article phải reference được trong văn bản gốc
-# - severity là phán xét của người trích, có thể tranh luận
-# - Khi văn bản được sửa đổi, thêm obligations mới, deprecated obligations cũ
-# - KHÔNG xoá obligations cũ, đánh dấu deprecated
-
-# Ví dụ
-# source_metadata:
-#   source_id: decree-XXX-2024
-#   title: "Nghị định XXX/2024 về bảo vệ dữ liệu cá nhân"
-#   authority: "Chính phủ"
-#   date_issued: 2024-03-15
-#   date_effective: 2024-07-01
-#
-# obligations:
-#   - obligation_id: OBL-decree-XXX-001
-#     description: "Tổ chức xử lý dữ liệu cá nhân phải có cán bộ bảo vệ dữ liệu cá nhân nếu xử lý dữ liệu của trên 10000 người"
-#     article: "Điều 5, khoản 2"
-#     severity: high
-#     applies_to: organizations-processing-personal-data
-#     date_added: 2024-04-01
-#     status: active
+    status: active  # active | deprecated | superseded
+    superseded_by: null
+    notes: "Ghi chú phạm vi áp dụng nếu cần"

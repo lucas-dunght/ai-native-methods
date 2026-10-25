@@ -1,46 +1,52 @@
-# Fact Card Template
-# Mỗi card là một đơn vị nguyên tử của thông tin
-# Một card chỉ chứa MỘT sự thật. Khi có nhiều sự thật, tách thành nhiều cards.
+# Fact Card Template · Thẻ Sự thật Nguyên tử (v2.0)
+# Mỗi card chỉ chứa DUY NHẤT MỘT khẳng định sự thật.
+# Tuyệt đối không dùng em-dash, không paraphrase làm lệch con số hoặc tên riêng.
 
-# Trường BẮT BUỘC
 fact_id: F-YYYY-NNN
-content: "Một câu khẳng định cụ thể, ngắn gọn"
+content: "Một câu khẳng định sự thật cụ thể, ngắn gọn và giữ nguyên số liệu"
+exact_quote: "Câu trích dẫn nguyên văn từ tài liệu nguồn trong raw-sources/"
+content_hash: "sha256:8-ky-tu-dau-cua-content-cong-exact-quote"
+
+# Nhãn nhận định theo chuẩn Fable 5.1 Claim Discipline:
+# - OBSERVED : Đọc và trích trực tiếp từ nguồn trong source-log.csv
+# - DERIVED  : Tính toán từ các thẻ OBSERVED bằng công thức rõ ràng
+# - PRIOR    : Kiến thức nền của mô hình chưa có nguồn trong phiên (cấm gán verified)
+# - ASSUMED  : Giả định tạm thời (bắt buộc gắn vào gap-checklist.md)
+claim_label: OBSERVED
+
 sources:
-  - source_id_1
-  - source_id_2
+  - S001
+  - S002
+primary_origins:
+  - "https://economysea.withgoogle.com/2024"
+independent_origin_count: 1
+
+# Giá trị fact_type hợp lệ:
+# numerical-claim | qualitative-claim | event | statement | definition | relationship
 fact_type: numerical-claim
-# Các giá trị fact_type hợp lệ:
-#   numerical-claim, qualitative-claim, event,
-#   statement, definition, relationship
-date_extracted: YYYY-MM-DD
-
-# Trường nên có cho dự án nghiêm túc
-extracted_by: human
-# hoặc agent, nếu được trích tự động bởi AI agent
 domain: tag-domain
-role: evidence-for-thesis-N
-notes: "Ghi chú thêm khi cần"
+role: evidence-for-thesis-1
+date_extracted: YYYY-MM-DD
+extracted_by: agent
+notes: "Ghi chú ngữ cảnh hoặc công thức nếu claim_label là DERIVED"
 
-# Trường được điền sau giai đoạn 6 (Trust Classifier + Enrichment)
+# Điền ở Giai đoạn 6 (Trust Classifier & 4D Enrichment):
+# Giá trị trust_tier hợp lệ: verified | probable | unverified
 trust_tier: probable
-# Các giá trị hợp lệ: verified, probable, unverified
 
 enrichment:
   cross_references:
     - F-YYYY-XXX
-    - F-YYYY-YYY
   classification:
-    - tag-classification-1
-    - tag-classification-2
-  recency_status: current
-  # Các giá trị hợp lệ: current, historical, outdated
-  importance_rank: high
-  # Các giá trị hợp lệ: high, medium, low
+    - tag-1
+    - tag-2
+  recency_status: current  # current | historical | outdated
+  importance_rank: high    # high | medium | low
   gaps_implied:
-    - G-NNN
-
-# Lưu ý voice rules
-# - Không em-dash trong content
-# - Phân biệt fact (X xảy ra) và statement (Y nói X)
-# - Giữ nguyên văn con số và tên riêng
-# - Không paraphrase nguồn gốc
+    - G-001
+  bo02_bridge:
+    export_ready: false    # Chỉ bật true khi trust_tier == verified
+    target_layer: L1
+    suggested_fact_id: L1-domain-key-001
+    unit: USD
+    numeric_value: 0

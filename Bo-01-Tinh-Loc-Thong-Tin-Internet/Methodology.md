@@ -1,137 +1,138 @@
-# Methodology · Tinh lọc và làm giàu thông tin từ internet
+# Methodology · Tinh lọc và làm giàu thông tin từ internet (v2.0 · 2026.10)
 
 ## Triết lý nền
 
-Internet là kho thông tin lớn nhưng độ tin cậy không đồng đều và độ trùng lặp rất cao. Khi đưa thông tin thô vào AI để tổng hợp, AI thường khuếch đại cả tín hiệu và nhiễu. Kết quả là một văn bản trông mạch lạc nhưng chứa lẫn lộn sự thật, ý kiến, đồn đoán và lỗi sự thật. Đối với một sinh viên hoặc nghiên cứu sinh, kết quả này có thể nguy hiểm vì khó phân biệt phần đáng tin với phần không.
+Internet là kho thông tin khổng lồ nhưng độ tin cậy phân hóa mạnh, độ nhiễu định dạng (HTML rác, thanh điều hướng, quảng cáo) rất lớn và hiệu ứng phòng vang (hàng chục trang báo chép lại cùng một nguồn) diễn ra phổ biến. Khi đổ thẳng kết quả tìm kiếm thô vào cửa sổ ngữ cảnh của AI để nhờ tóm tắt, hai thảm họa xảy ra cùng lúc. Một là ngữ cảnh của AI bị ngập bởi hàng trăm nghìn ký tự rác làm suy giảm năng lực suy luận. Hai là AI khuếch đại cả tín hiệu lẫn tin đồn, tạo ra một văn bản trôi chảy nhưng trộn lẫn sự thật, ý kiến chủ quan và số liệu sai lệch.
 
-Phương pháp này tiếp cận khác. Không yêu cầu AI làm thẩm phán cuối cùng cho độ tin cậy. AI chỉ làm các tác vụ deterministic và transparent. Phân loại nguồn theo nhãn rõ ràng. Trích sự thật theo bản mẫu cố định. Phát hiện trùng lặp và xung đột bằng so sánh cấu trúc. Mọi quyết định khó được surface cho người dùng phán xử.
+Phương pháp Tinh lọc và Làm giàu Thông tin v2.0 tiếp cận theo hướng cơ học và minh bạch.
+- Không đổ rác vào ngữ cảnh suy luận. Dữ liệu thô được xử lý qua lớp đệm cô lập kiểu **PTC (`Programmatic Tool Calling`)** để chỉ đưa tín hiệu tinh khiết vào mô hình.
+- Không yêu cầu AI làm thẩm phán cuối cùng khi các nguồn mâu thuẫn. AI thực thi các quy tắc tất định gồm phân loại nguồn, trích xuất sự thật nguyên tử kèm trích dẫn nguyên văn (`exact_quote`), kiểm tra đồ thị nguồn gốc (`Citation Graph`) để khử phòng vang và đóng gói mọi xung đột thành thẻ **Decision Brief `D<N>`** cho con người phán xử.
+- Sản phẩm chính của phương pháp là **tập thẻ sự thật (`Fact Cards`) có thể truy vết và nạp thẳng vào hệ thống khác (như Bộ 02 Kernel Registry và Bộ 03 Vibecode Kit)**. Báo cáo tổng hợp cuối cùng chỉ là một góc nhìn xuất ra từ tập thẻ sự thật đó.
 
-Mục tiêu cuối không phải là một báo cáo đẹp. Là một tập sự thật có nguồn, có phân hạng tin cậy, không trùng lặp, có thể tra ngược về nguồn gốc. Báo cáo cuối là sản phẩm phụ. Tập sự thật là sản phẩm chính.
+## Sáu nguyên tắc cốt lõi (v2.0)
 
-## Bốn nguyên tắc cốt lõi
+### Nguyên tắc 1 · Mọi sự thật đều có nguồn gốc độc lập và nhãn nhận định (`Fable 5.1 Claim Discipline`)
 
-### Nguyên tắc 1 · Mọi sự thật có nguồn
+Không có sự thật mồ côi trong tập đầu ra. Mỗi thẻ sự thật phải gắn với ít nhất một định danh nguồn trong `source-log.csv`, lưu câu trích dẫn nguyên văn (`exact_quote`) và bắt buộc mang một trong bốn nhãn nhận định theo chuẩn Fable 5.1.
+- **OBSERVED.** Đọc và trích trực tiếp từ tài liệu nguồn đã thu thập trong phiên làm việc hiện tại.
+- **DERIVED.** Tính toán hoặc suy diễn tất định từ các thẻ `OBSERVED` thông qua công thức rõ ràng.
+- **PRIOR.** Tri thức nền có sẵn của mô hình AI chưa được kiểm chứng bằng nguồn thu thập trong phiên. Thẻ `PRIOR` không bao giờ được nâng lên hạng `verified`.
+- **ASSUMED.** Giả định làm việc tạm thời, bắt buộc phải đi kèm mô tả rủi ro nếu sai và gắn vào danh sách lỗ hổng (`gap-checklist.md`).
 
-Không có sự thật mồ côi trong tập đầu ra. Mỗi mẩu sự thật phải gắn với ít nhất một URL hoặc một định danh nguồn truy được. Nếu một sự thật xuất phát từ nhiều nguồn cùng nói, ghi tất cả. Khi không có nguồn cụ thể, mẩu thông tin đó không phải sự thật mà chỉ là giả thuyết, ghi nhãn rõ ràng.
+### Nguyên tắc 2 · Cô lập ngữ cảnh tìm kiếm và Rào chắn chống Prompt Injection
 
-### Nguyên tắc 2 · Xung đột không bị AI tự xử
+Một lệnh tìm kiếm toàn văn bản thường trả về từ 200.000 đến 400.000 ký tự HTML và văn bản phụ. Đưa trực tiếp khối dữ liệu này vào ngữ cảnh của Agent làm loãng sự chú ý và gây tốn kém token.
 
-Khi hai nguồn nói khác nhau về cùng một sự kiện hoặc cùng một con số, AI không được tự chọn nguồn nào là đúng. AI nhiệm vụ duy nhất là làm sạch và đẩy cả hai vào hàng đợi xung đột để người quyết. Đây là ranh giới vai trò nghiêm ngặt. Chọn sai canonical fact có thể dẫn đến kết luận nghiên cứu sai và không có cách phát hiện sau này nếu AI tự xử.
+Phương pháp v2.0 bắt buộc tách bước **Tải dữ liệu (`Fetch/Save`)** và bước **Suy luận (`Reason`)**. Dữ liệu thô từ `unified-search` hoặc `tavily-*` được lưu xuống đĩa (`/tmp/` hoặc `raw-sources/`), sau đó lọc qua script Python để chỉ trích xuất các đoạn văn chứa số liệu, mốc thời gian và thuật ngữ mục tiêu. Đồng thời, toàn bộ nội dung từ internet đều được bao bọc trong rào chắn `UNTRUSTED WEB CONTENT` để ngăn chặn các đoạn mã hoặc chỉ dẫn độc hại cài cắm trên trang web điều khiển ngược lại Agent.
 
-### Nguyên tắc 3 · Phân hạng tin cậy ba mức
+### Nguyên tắc 3 · Xung đột không bị AI tự xử mà trình qua thẻ `Decision Brief D<N>`
 
-Mỗi sự thật trong tập đầu ra có một trong ba nhãn tin cậy.
+Khi hai nguồn nói khác nhau về cùng một sự kiện hoặc cùng một con số, AI tuyệt đối không tự chọn nguồn nào diễn đạt mượt hơn làm sự thật chuẩn (`canonical`). AI có trách nhiệm đặt cả hai thẻ vào `conflict-queue.md` và lập thẻ quyết định **Decision Brief `D<N>`** gồm giải thích ngắn gọn (`ELI10`), hậu quả nếu chọn sai (`Stakes`), phân tích độ uy tín và phương pháp luận của từng nguồn, điểm độ phủ (`Completeness X/10`) cùng một phương án khuyến nghị `(recommended)` để con người ký duyệt.
 
-Verified nghĩa là có ít nhất hai nguồn độc lập xác nhận hoặc một nguồn cấp cao có thẩm quyền ví dụ báo cáo của cơ quan chính phủ, tài liệu của tổ chức quốc tế chính thức, công bố của doanh nghiệp niêm yết.
+### Nguyên tắc 4 · Phân hạng tin cậy ba mức có khử phòng vang (`Echo-Chamber Check`)
 
-Probable nghĩa là có một nguồn đáng tin nhưng chưa có cross-reference từ nguồn độc lập khác. Đa số sự thật từ báo chí kinh tế tier 1, blog của chuyên gia có danh tiếng, paper preprint chưa peer-reviewed.
+Mỗi sự thật trong tập đầu ra mang một trong ba nhãn tin cậy dựa trên số lượng **nguồn gốc độc lập (`independent_origin_count`)**, không đếm theo số lượng đường link bài viết. Hai hay mười bài báo cùng trích dẫn lại một báo cáo gốc duy nhất chỉ được tính là một nguồn độc lập (`1 datum`).
 
-Unverified nghĩa là nguồn có chất lượng không rõ ràng hoặc nguồn là social media, blog cá nhân, forum thảo luận. Vẫn lưu lại vì có thể có giá trị, nhưng phải được nâng cấp lên Probable hoặc Verified trước khi dùng làm cơ sở cho kết luận quan trọng.
+- **Verified.** Thẻ mang nhãn `OBSERVED` hoặc `DERIVED`, được xác nhận bởi ít nhất **hai nguồn gốc độc lập (`independent_origin_count >= 2`)** hoặc **một nguồn cấp cao chính thức hạng `tier-1`** (cơ quan nhà nước, tổ chức quốc tế, báo cáo kiểm toán chính thức, công trình khoa học peer-reviewed).
+- **Probable.** Thẻ có một nguồn `tier-1` (báo chí kinh tế, báo cáo tư vấn) hoặc `tier-2` đáng tin cậy nhưng mới chỉ có một gốc dữ liệu duy nhất (`independent_origin_count == 1`).
+- **Unverified.** Thẻ chỉ có nguồn `tier-3` (mạng xã hội, diễn đàn, blog ẩn danh), hoặc không truy được nguồn gốc đầu tiên, hoặc mang nhãn `PRIOR` / `ASSUMED`. Vẫn lưu trữ để theo dõi tín hiệu sớm nhưng cấm đưa vào phần kết luận cốt lõi.
 
-### Nguyên tắc 4 · Làm giàu không phải tóm tắt
+### Nguyên tắc 5 · Làm giàu bốn chiều thay vì tóm tắt
 
-Tóm tắt rút gọn thông tin. Làm giàu thêm chiều thông tin mà nguồn gốc không có. Bốn dạng làm giàu trong phương pháp này.
+Tóm tắt làm mất chi tiết. Làm giàu bổ sung bốn lớp thông tin cấu trúc mà nguồn đơn lẻ không có.
+- **Một, đối chiếu chéo (`Cross-reference`).** Liên kết các thẻ sự thật bổ sung hoặc giải thích nguyên nhân và hệ quả cho nhau.
+- **Hai, phân loại đa trục (`Taxonomy classification`).** Gắn nhãn lĩnh vực, vai trò trong luận điểm và mức độ trọng yếu.
+- **Ba, định vị ngữ cảnh và độ tươi (`Recency & Provenance`).** Ghi nhận ngày công bố của dữ liệu gốc, ngày thu thập, chế độ tìm kiếm (`search_mode`) và công cụ bóc tách đã dùng.
+- **Bốn, phát hiện lỗ hổng kéo theo (`Implied Gaps`).** Khi thẻ A nhắc tới một tiền đề B chưa có bằng chứng trong kho, tự động sinh mục lỗ hổng `G-NNN` để truy vấn bù đắp.
 
-Một, đối chiếu chéo. Mỗi sự thật được kiểm xem có mâu thuẫn hoặc bổ sung sự thật khác trong tập không.
+### Nguyên tắc 6 · Kiểm chứng cơ học bằng Vòng lặp Ràng buộc (`Constraint Loop`)
 
-Hai, gán phân loại. Mỗi sự thật được gán nhãn lĩnh vực, vai trò trong lập luận, mức độ quan trọng.
+Mọi báo cáo nghiên cứu trước khi bàn giao phải đi qua bước kiểm tra tự động để đảm bảo không có mã trích dẫn ảo, không có con số bị làm tròn sai lệch so với `Fact Card` gốc và không còn xung đột treo.
 
-Ba, gắn ngữ cảnh tạm. Ngày thu thập, nguồn thu thập, query đã dùng để tìm ra nguồn này.
+## Quy trình bảy giai đoạn chi tiết
 
-Bốn, đánh dấu lỗ hổng. Khi sự thật A có vẻ phụ thuộc sự thật B nhưng B không tồn tại trong tập, đánh dấu B là lỗ đặc tả cần điền sau.
+```
+Giai đoạn 1: Brief & Thẻ D1
+     ↓
+Giai đoạn 2: Thu thập Đa tín hiệu + Cô lập PTC + /scrape
+     ↓
+Giai đoạn 3: Trích Fact Cards Nguyên tử (Fable 5.1 Claim Labels)
+     ↓
+Giai đoạn 4: Khử trùng lặp + Khử phòng vang + Hàng đợi Xung đột D<N>
+     ↓
+Giai đoạn 5: Phát hiện Lỗ hổng (Gap Checklist + Query bù đắp)
+     ↓
+Giai đoạn 6: Phân hạng Tin cậy (Verified/Probable/Unverified) + Làm giàu 4 chiều
+     ↓
+Giai đoạn 7: Cổng Constraint Loop + Báo cáo 3 phần + Xuất sang Bộ 02
+```
 
-## Quy trình bảy giai đoạn
+### Giai đoạn 1 · Định nghĩa câu hỏi, phạm vi và tiêu chí loại trừ
 
-Phương pháp đi qua bảy giai đoạn theo thứ tự cố định. Không skip giai đoạn nào. Có thể lặp một giai đoạn nếu cần thiết, nhưng không bỏ qua.
+Viết xuống bốn nội dung cốt lõi vào `brief.md` gồm câu hỏi nghiên cứu gắn với quyết định thực tế, phạm vi thời gian và địa lý, tiêu chí loại trừ kèm tên miền ưu tiên hoặc cấm cùng ngưỡng chất lượng đầu ra. Nếu yêu cầu ban đầu còn mơ hồ, Agent dùng thẻ `Decision Brief D1` để giúp người dùng khóa phạm vi ngay từ đầu.
 
-### Giai đoạn 1 · Định nghĩa câu hỏi và phạm vi
+### Giai đoạn 2 · Thu thập có chủ đích qua Định tuyến Đa tín hiệu và Cô lập PTC
 
-Trước khi thu thập, viết xuống ba thứ. Câu hỏi nghiên cứu chính cần trả lời. Phạm vi thời gian và địa lý của dữ liệu cần thu. Tiêu chí loại trừ rõ ràng cho nguồn không phù hợp.
+Thay vì tìm kiếm thủ công rời rạc, Agent phối hợp ba lớp công cụ.
+- **Lớp 1 · Tìm kiếm đa tín hiệu (`unified-search` / `tavily-search`).** Chọn chế độ phù hợp (`academic`, `legal`, `news`, `company`, `deep`, `hybrid`), lưu kết quả thô xuống đĩa và lọc qua Python sandbox để chọn các URL có điểm tín hiệu cao nhất.
+- **Lớp 2 · Bóc tách sâu (`tavily-map`, `tavily-extract`, `tavily-crawl`, `tavily-research`).** Lập bản đồ cấu trúc website, bóc tách toàn văn Markdown sạch của những trang được chọn và chạy nghiên cứu tổng hợp đa nguồn cho các chủ đề phức tạp.
+- **Lớp 3 · Trình duyệt phiên thật chỉ đọc (`gstack /scrape` + `/skillify`).** Dùng cho các trang dữ liệu động hoặc cổng thông tin yêu cầu đăng nhập tài khoản của người dùng, tuân thủ nghiêm ngặt hợp đồng chỉ đọc (`read-only`) và không chạm vào mật khẩu.
 
-Đầu ra giai đoạn 1 là một file nghiên cứu brief 1 đến 2 trang. Không có brief, không bắt đầu giai đoạn 2.
+### Giai đoạn 3 · Trích sự thật nguyên tử theo bản mẫu
 
-### Giai đoạn 2 · Thu thập có chủ đích
+Đọc từng nguồn đã lọc và tách thành các `Fact Cards` độc lập. Mỗi card chỉ chứa một khẳng định duy nhất, lưu kèm câu trích dẫn nguyên văn (`exact_quote`), mã băm (`content_hash`) và nhãn nhận định (`OBSERVED`, `DERIVED`, `PRIOR`, `ASSUMED`). Phân biệt rạch ròi giữa sự kiện thực tế và lời phát biểu của một cá nhân hay tổ chức.
 
-Thực hiện các query tìm kiếm, web scraping, gọi API. Lưu mỗi nguồn vào một source log với metadata đầy đủ. URL gốc, ngày thu, query đã dùng, độ dài, ngôn ngữ, định dạng.
+### Giai đoạn 4 · Phát hiện trùng lặp, khử phòng vang và lập hàng đợi xung đột
 
-Tránh thu bừa. Mỗi nguồn thu về phải có một lý do liên quan câu hỏi nghiên cứu ở giai đoạn 1. Ghi lý do thu vào source log.
+So sánh ngữ nghĩa và cấu trúc giữa các thẻ.
+- Các thẻ trùng nội dung và giá trị được gộp danh sách nguồn.
+- Kiểm tra cột `primary_origin_url` để gom các bài báo chép lại cùng một nguồn gốc về đúng số lượng gốc độc lập (`independent_origin_count`).
+- Các thẻ mâu thuẫn số liệu hoặc ngược chiều nhận định được đưa vào `conflict-queue.md` dưới dạng thẻ quyết định `Decision Brief D<N>` chờ con người phán xử.
 
-Đầu ra giai đoạn 2 là source log đầy đủ và bộ nguồn thô chưa xử lý.
+### Giai đoạn 5 · Phát hiện lỗ hổng và lập kế hoạch thu bù
 
-### Giai đoạn 3 · Trích sự thật theo bản mẫu
+Rà soát toàn bộ tập thẻ để phát hiện các tuyên bố thiếu dữ liệu chứng minh, các chuỗi thời gian bị đứt quãng hoặc các giả định `ASSUMED` chưa được kiểm chứng. Mỗi lỗ hổng trong `gap-checklist.md` đều phải đi kèm câu lệnh truy vấn gợi ý và chế độ tìm kiếm tương ứng để vòng thu thập tiếp theo thực thi ngay.
 
-Đọc từng nguồn và trích các mẩu sự thật vào fact card. Mỗi fact card là một đơn vị nguyên tử của thông tin có ID duy nhất, nội dung sự thật, danh sách nguồn, vai trò trong lập luận, ngày trích.
+### Giai đoạn 6 · Phân hạng tin cậy và làm giàu bốn chiều
 
-Trích chỉ sự thật. Không trích quan điểm, suy luận, dự đoán trừ khi đó là sự thật về việc ai đó đã có quan điểm gì. Phân biệt sự thật về fact và sự thật về statement.
+Áp dụng quy tắc phân hạng `verified`, `probable`, `unverified` dựa trên số lượng nguồn gốc độc lập và cấp độ uy tín `authority_tier`. Bổ sung khối `enrichment` gồm liên kết chéo, phân loại, trạng thái độ tươi (`current`, `historical`, `outdated`), thứ hạng quan trọng và đánh dấu các thẻ `verified` đủ chuẩn để chuyển giao sang kho `L1` của Bộ 02.
 
-Đầu ra giai đoạn 3 là tập fact cards ban đầu, có thể dày tới hàng trăm hoặc nghìn cards với dự án vừa.
+### Giai đoạn 7 · Kiểm tra Constraint Loop và tổng hợp xuất bản
 
-### Giai đoạn 4 · Phát hiện trùng lặp và xung đột
+Chạy kiểm tra cơ học 4 tiêu chí hoàn thành, sau đó tổng hợp thành báo cáo 3 phần rõ ràng (Kết luận từ `verified`, Giả thuyết từ `probable`, Câu hỏi mở từ `gap-checklist`). Xuất đồng thời báo cáo cho con người đọc và thư mục `fact-cards/` cho hệ thống AI tái sử dụng.
 
-Quét tập fact cards để tìm các cards nói về cùng một sự thật. Cards nói cùng một thứ với cùng giá trị thì merge nguồn vào một card. Cards nói cùng một thứ với giá trị khác nhau thì giữ tách và đẩy vào conflict queue.
+## Cơ chế ép buộc (`Forcing Functions`)
 
-Cũng quét tìm các cards mâu thuẫn nhau dù không nói cùng một sự thật. Ví dụ một card nói thị trường tăng 20% năm 2024, một card khác nói thị trường giảm 5% năm 2024. Xung đột logic, đẩy vào conflict queue.
+Năm hàng rào kỹ thuật ngăn quy trình bị cắt xén.
 
-Đầu ra giai đoạn 4 là tập fact cards đã được deduplicate cộng với conflict queue chờ phán xử.
+**Một, cổng chặn Brief.** Không chạy bất kỳ lệnh tìm kiếm hay cào dữ liệu nào khi `brief.md` chưa khóa đủ 4 thành phần.
 
-### Giai đoạn 5 · Phát hiện lỗ hổng
+**Hai, cổng chặn Cô lập PTC và Chống Injection.** Không nạp trực tiếp dữ liệu tìm kiếm thô chưa qua lọc vào ngữ cảnh chính và luôn đặt nội dung web trong rào chắn không đáng tin.
 
-Đọc tập fact cards và tìm các điểm nghi vấn. Một sự thật được nhắc đến trong nguồn nhưng không có chi tiết cụ thể. Một quy luật được khẳng định nhưng không có evidence cụ thể. Một xu hướng được mô tả nhưng không có thời gian cụ thể.
+**Ba, cổng chặn Phòng vang.** Không cấp nhãn `verified` cho một thẻ nếu các nguồn của nó thực chất chỉ chép lại cùng một `primary_origin_url` (trừ khi nguồn gốc đầu tiên đó là tài liệu chính thức hạng `tier-1`).
 
-Mỗi lỗ hổng đẩy vào gap checklist với mô tả cụ thể và hành động đề xuất. Hành động thường là thu thêm nguồn ở giai đoạn 2 cho vòng tiếp.
+**Bốn, cổng chặn Hàng đợi Xung đột.** Báo cáo cuối không được phép xuất bản khi trong `conflict-queue.md` vẫn còn thẻ `D<N>` chưa được con người phê duyệt.
 
-Đầu ra giai đoạn 5 là gap checklist.
+**Năm, cổng chặn Đối chiếu Trích dẫn.** Mọi con số, tên riêng và mã `[F-YYYY-NNN]` trong báo cáo cuối phải khớp tuyệt đối với dữ liệu trong thư mục `fact-cards/`.
 
-### Giai đoạn 6 · Phán hạng tin cậy và làm giàu
+## Năm bẫy phổ biến cần tránh (`Anti-patterns`)
 
-Đi qua từng fact card và gán nhãn tin cậy verified, probable, hoặc unverified theo nguyên tắc 3. Cards có hai nguồn độc lập trở lên hoặc một nguồn cấp cao là verified. Cards có một nguồn đáng tin là probable. Cards còn lại là unverified.
+**Bẫy 1 · Đổ thẳng kết quả tìm kiếm vào LLM và nhờ tóm tắt.** Vừa làm tràn ngữ cảnh bởi HTML rác, vừa bỏ qua toàn bộ kiểm tra phòng vang và xung đột.
 
-Đồng thời làm giàu theo bốn dạng ở nguyên tắc 4. Đối chiếu chéo, gán phân loại, gắn ngữ cảnh tạm, đánh dấu lỗ hổng.
+**Bẫy 2 · Ảo giác đa nguồn từ hiệu ứng phòng vang.** Thấy 5 tờ báo cùng đăng một con số liền tin là đã kiểm chứng chéo, trong khi cả 5 bài đều dịch lại từ một bài blog duy nhất.
 
-Đầu ra giai đoạn 6 là tập fact cards hoàn chỉnh có nhãn tin cậy và metadata làm giàu.
+**Bẫy 3 · Trộn lẫn sự thật (`Fact`) với phát ngôn (`Statement`) và suy đoán (`Prior`).** Không gắn nhãn `claim_label` khiến người đọc nhầm kiến thức phỏng đoán của mô hình với số liệu đo đạc thực tế.
 
-### Giai đoạn 7 · Tổng hợp và xuất
+**Bẫy 4 · Để AI tự làm trọng tài xóa bỏ xung đột.** AI có xu hướng chọn nguồn viết câu chữ trau chuốt hơn thay vì nguồn có phương pháp đo lường chuẩn xác hơn.
 
-Dựa trên tập fact cards đã hoàn chỉnh, viết báo cáo tổng hợp trả lời câu hỏi nghiên cứu ở giai đoạn 1. Mọi khẳng định trong báo cáo phải tham chiếu fact card bằng ID. Không có khẳng định nào không có nguồn.
-
-Báo cáo nên có ba phần. Phần một là tóm tắt kết luận chính dựa trên cards verified. Phần hai là các giả thuyết dựa trên cards probable cần kiểm chứng thêm. Phần ba là các câu hỏi mở từ gap checklist chưa giải quyết.
-
-Đầu ra giai đoạn 7 là báo cáo cuối plus tập fact cards xuất ra file để tái sử dụng.
-
-## Forcing functions
-
-Bốn cơ chế ép để phương pháp không bị bỏ qua giai đoạn.
-
-**Một, không bắt đầu giai đoạn 2 khi chưa có brief.** Người làm phải viết brief 1 đến 2 trang ra trước. Brief không có nghĩa là cần dùng giai đoạn 1 hoặc câu hỏi nghiên cứu chưa rõ ràng.
-
-**Hai, không gán nhãn tin cậy bằng cảm tính.** Mỗi card có nhãn verified phải có thể trace ngược về ít nhất hai nguồn độc lập hoặc một nguồn cấp cao. Nếu không trace được, phải hạ xuống probable.
-
-**Ba, conflict queue phải có deadline phán xử.** Cuối cycle research, mọi item trong conflict queue phải có quyết định human, không được skip. Cards xung đột chưa quyết không được dùng trong báo cáo cuối.
-
-**Bốn, gap checklist được review ở giai đoạn 7.** Trước khi xuất báo cáo, review gap checklist. Các gap chưa giải quyết được liệt kê công khai trong phần 3 của báo cáo. Tránh che giấu lỗ hổng.
-
-## Anti-pattern
-
-Năm bẫy phổ biến cần tránh.
-
-**Bẫy 1 · Paste vào AI và nhờ tóm tắt.** Cách này skip mọi gate kiểm chứng. Kết quả trông gọn nhưng không trace được nguồn, không phát hiện được xung đột, không phân hạng được tin cậy.
-
-**Bẫy 2 · Trộn quan điểm với sự thật.** Card phải phân biệt rõ "X xảy ra" (sự thật về fact) với "Y nghĩ X" (sự thật về statement). Trộn hai loại là cách nhanh nhất tạo báo cáo sai.
-
-**Bẫy 3 · Cho AI tự chọn canonical fact khi xung đột.** Đây là vi phạm nguyên tắc 2 ở dạng nghiêm trọng nhất. AI luôn chọn nguồn nào diễn đạt mạch lạc hơn, không phải nguồn nào chính xác hơn.
-
-**Bẫy 4 · Bỏ qua nguồn unverified.** Cards unverified vẫn có giá trị. Chúng có thể chỉ ra xu hướng đang nổi hoặc topic chưa được nghiên cứu nhiều. Bỏ qua sớm có thể miss insight quan trọng.
-
-**Bẫy 5 · Báo cáo cuối thay thế fact cards.** Sản phẩm chính của phương pháp là tập fact cards, không phải báo cáo. Báo cáo là sản phẩm phụ. Khi tổ chức nhận chuyển giao kết quả, nhận cả hai. Báo cáo cho con người đọc, cards cho hệ thống tái sử dụng.
+**Bẫy 5 · Coi bài báo cáo văn xuôi là sản phẩm duy nhất.** Bỏ quên hoặc làm mất tập `Fact Cards` YAML khiến các chu kỳ nghiên cứu sau hoặc các dự án phần mềm ở Bộ 02 và Bộ 03 phải làm lại từ đầu.
 
 ## Đo lường thành công
 
-Sau cycle nghiên cứu, đánh giá phương pháp đã work hay chưa qua bốn câu hỏi.
+Đánh giá chất lượng mỗi chu kỳ nghiên cứu qua năm chỉ số định lượng.
 
-Tỷ lệ cards verified trên tổng số cards có lớn hơn 40% không. Nếu nhỏ hơn 30%, nguồn thu chưa đủ chất lượng, cần thu lại với nguồn cấp cao hơn.
-
-Conflict queue có được clear hết trước khi xuất báo cáo không. Nếu còn item chưa clear, báo cáo phải declare rõ.
-
-Gap checklist được nêu trong phần 3 báo cáo có ít hơn 10 item không. Nếu nhiều hơn, phạm vi nghiên cứu quá rộng, cần thu hẹp ở cycle sau.
-
-Người đọc báo cáo có thể trace ngược một khẳng định bất kỳ về fact card và về nguồn gốc không. Test thử với 5 khẳng định ngẫu nhiên. Nếu không trace được, có lỗi trong quy trình.
+1. **Tỷ lệ sự thật đã kiểm chứng (`Verified Ratio`).** Số lượng thẻ `verified` đạt từ `40%` tổng số thẻ trở lên.
+2. **Độ sạch xung đột (`Conflict Clearance`).** `100%` mục trong `conflict-queue.md` đã có phán quyết trước khi xuất báo cáo.
+3. **Kiểm soát lỗ hổng (`Gap Bound`).** Số lượng lỗ hổng mức `high` còn mở trong phần 3 của báo cáo nhỏ hơn `10` mục.
+4. **Độ toàn vẹn trích dẫn (`Citation Traceability`).** Kiểm tra ngẫu nhiên hoặc tự động 100% mã `[F-YYYY-NNN]` trong báo cáo đều mở ra đúng file YAML và đúng câu `exact_quote` trong nguồn gốc.
+5. **Hiệu suất ngữ cảnh (`Context Efficiency`).** Dung lượng dữ liệu đưa vào ngữ cảnh suy luận được nén tối thiểu `20 lần` so với dữ liệu HTML/JSON thô lưu trên đĩa.

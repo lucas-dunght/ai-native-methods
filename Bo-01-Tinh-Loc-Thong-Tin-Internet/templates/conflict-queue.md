@@ -1,77 +1,30 @@
-# Conflict Queue Template
+# Conflict Queue Template · Hàng đợi Xung đột theo Thẻ Decision Brief D<N> (v2.0)
 
-Hàng đợi xung đột giữa các fact cards. Người dùng phán xử, không phải agent.
+Hàng đợi chứa các cặp hoặc nhóm `Fact Cards` mâu thuẫn nhau về số liệu hoặc logic. AI Agent tuyệt đối không tự chọn sự thật chuẩn (`canonical`), mà bắt buộc đóng gói từng xung đột thành thẻ quyết định **Decision Brief `D<N>`** để con người phán xử.
 
-## Quy tắc
+## Bản mẫu Thẻ Quyết định Xung đột
 
-Mỗi entry là một cặp hoặc nhóm cards mâu thuẫn nhau về cùng một sự thật.
+### D1 · Conflict C-001 · Chênh lệch quy mô thị trường EdTech ĐNA năm 2023
 
-Agent KHÔNG được tự chọn cards nào đúng. Agent đẩy thông tin lên cho user quyết định.
+- **Dự án / Chu kỳ nghiên cứu.** `research-cycle-2026-10-25` · Giai đoạn 4 (Xử lý xung đột).
+- **Giải thích ELI10.** Chúng ta có hai báo cáo uy tín đưa ra hai con số khác nhau về tổng quy mô thị trường EdTech Đông Nam Á năm 2023 (`6.7 tỷ USD` so với `8.2 tỷ USD`). Nguyên nhân là báo cáo thứ nhất chỉ tính học phí trực tuyến K-12 và Upskilling, trong khi báo cáo thứ hai cộng thêm cả doanh thu bán phần cứng thiết bị trường học.
+- **Rủi ro nếu chọn sai (Stakes).** Nếu chọn con số `8.2 tỷ USD` cho bài toán phần mềm thuần túy, dự phóng dung lượng thị trường (`TAM`) của dự án sẽ bị thổi phồng thêm `1.5 tỷ USD` không thuộc phân khúc mục tiêu.
+- **Đối chiếu hai thẻ sự thật.**
+  - **Card A (`F-2026-004`).** Quy mô đạt `6.7 tỷ USD` năm 2023 · Nguồn `S001` (`tier-1`, khảo sát 50 nền tảng phần mềm giáo dục, công bố tháng 03/2024).
+  - **Card B (`F-2026-018`).** Quy mô đạt `8.2 tỷ USD` năm 2023 · Nguồn `S015` (`tier-2`, bài tổng hợp thị trường gộp cả thiết bị phần cứng, công bố tháng 06/2024).
+- **Khuyến nghị (Recommendation).** Chọn phương án **A** vì phạm vi `brief.md` của chúng ta chỉ xét phần mềm K-12 và Upskilling, khớp hoàn toàn với phương pháp đo của `F-2026-004`.
+- **Điểm độ phủ (Completeness).** `A = 10/10`, `B = 8/10`, `C = 5/10`.
+- **Các phương án lựa chọn.**
+  - **A) Giữ `F-2026-004` làm chuẩn cho mảng phần mềm và tách `F-2026-018` thành thẻ riêng ghi rõ bao gồm phần cứng (recommended)**
+    - Ưu điểm. Bảo toàn tính chính xác của số liệu phần mềm và không làm mất thông tin tổng thể ngành.
+    - Nhược điểm. Cần cập nhật lại trường `content` và `notes` của cả hai thẻ để nêu rõ ranh giới đo lường.
+  - **B) Chỉ giữ `F-2026-004` (`6.7 tỷ USD`) và đánh dấu `F-2026-018` là `deprecated`**
+    - Ưu điểm. Gọn kho thẻ sự thật, tập trung đúng phân khúc phần mềm.
+    - Nhược điểm. Mất dữ liệu tham chiếu về quy mô chi tiêu thiết bị giáo dục.
+  - **C) Từ chối cả hai và chạy vòng thu thập bổ sung từ nguồn thứ ba**
+    - Ưu điểm. Độ an toàn cao nhất nếu nghi ngờ cả hai báo cáo.
+    - Nhược điểm. Tốn thêm 1 vòng thu thập trong khi sự khác biệt đã giải thích được bằng phạm vi đo.
+- **Tổng kết đánh đổi (Net).** Đánh đổi 2 phút cập nhật mô tả phạm vi đo để giữ được cả độ chính xác của phân khúc cốt lõi lẫn bức tranh toàn ngành.
 
-User phán xử dựa trên uy tín nguồn, ngày publish, methodology của nghiên cứu gốc, hoặc dựa trên kinh nghiệm domain.
-
-## Format mẫu
-
-### Conflict C-001
-
-**Vấn đề**. Hai cards nói về cùng một sự thật với giá trị khác nhau.
-
-**Card A · F-2026-004**
-- Content. Thị trường edtech ĐNA đạt 6.7 tỷ USD trong năm 2023.
-- Sources. S001 (báo cáo của hãng tư vấn quốc tế, tier-1)
-- Methodology. Khảo sát top 50 doanh nghiệp.
-- Date. Báo cáo công bố tháng 3 năm 2024.
-
-**Card B · F-2026-018**
-- Content. Thị trường edtech ĐNA đạt 8.2 tỷ USD trong năm 2023.
-- Sources. S015 (báo chí kinh tế khu vực, tier-2)
-- Methodology. Không rõ.
-- Date. Bài viết tháng 6 năm 2024.
-
-**Đề xuất phán xử của agent**.
-
-Card A có nguồn tier-1 cao hơn và có methodology rõ ràng. Card B có nguồn tier-2 và methodology không rõ. Nghiêng về giữ Card A là canonical, đánh dấu Card B là conflict đã giải quyết với nhãn deprecated.
-
-**Quyết định của user**.
-
-[Ghi quyết định cuối ở đây]
-
-- [ ] Giữ Card A, deprecate Card B
-- [ ] Giữ Card B, deprecate Card A
-- [ ] Giữ cả hai (giá trị khác do methodology khác, ghi rõ trong notes)
-- [ ] Reject cả hai (cần thu thêm nguồn primary)
-- [ ] Khác. [mô tả]
-
-**Người phán xử**. [Tên]
-
-**Ngày phán xử**. [YYYY-MM-DD]
-
----
-
-### Conflict C-002
-
-**Vấn đề**. Hai cards mâu thuẫn logic dù không nói cùng một sự thật.
-
-**Card A · F-2026-022**
-- Content. Việt Nam có 23 startup edtech được đầu tư từ 2022 đến 2024.
-
-**Card B · F-2026-028**
-- Content. Việt Nam có 31 lượt đầu tư edtech từ 2022 đến 2024.
-
-**Mâu thuẫn logic**. Số startup được đầu tư khác với số lượt đầu tư (một startup có thể nhận nhiều vòng). Cần phân biệt rõ.
-
-**Đề xuất phán xử**. Không phải mâu thuẫn thật, là hai metric khác nhau. Edit Card A thành "23 startup unique" và Card B thành "31 lượt deal" để phân biệt rõ. Đánh dấu liên quan trong cross_references.
-
-**Quyết định của user**. [Ghi quyết định cuối ở đây]
-
----
-
-## Lưu ý
-
-Conflict queue phải được clear hết trước khi xuất báo cáo cuối ở giai đoạn 7.
-
-Cards có liên quan đến conflict chưa giải quyết không được dùng trong báo cáo.
-
-Khi clear, cập nhật field notes của cards liên quan với link đến conflict ID đã được phán xử.
-
-Lưu lại lịch sử conflict trong git để có thể trace ngược khi cần audit research process.
+**Quyết định của con người.** `[ ] Phương án A  |  [ ] Phương án B  |  [ ] Phương án C`
+**Người phê duyệt.** `[Tên]` · **Ngày phê duyệt.** `[YYYY-MM-DD]`

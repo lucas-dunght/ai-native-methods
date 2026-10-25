@@ -4,29 +4,31 @@
 ![Version](https://img.shields.io/badge/version-2026.10-blue.svg)
 ![Language](https://img.shields.io/badge/lang-Vietnamese-red.svg)
 
-Bộ tài liệu chuyển giao ba phương pháp làm việc với AI cho sinh viên, giảng viên đại học và các nhóm phát triển sản phẩm. Mọi thương hiệu cụ thể đã được loại bỏ. Mỗi phương pháp đứng độc lập, có thể áp dụng riêng hoặc kết hợp thành một chuỗi liên hoàn.
+Bộ tài liệu chuyển giao ba phương pháp làm việc với AI cho sinh viên, giảng viên đại học và các nhóm phát triển sản phẩm. Mọi thương hiệu cụ thể đã được loại bỏ. Mỗi phương pháp đứng độc lập, có thể áp dụng riêng hoặc kết hợp thành một chuỗi liên hoàn từ thu thập tri thức internet, tổ chức nguồn sự thật nội bộ cho tới xây dựng và phát hành phần mềm.
 
 ---
 
-## Tổng quan ba bộ
+## Tổng quan ba bộ (Phiên bản đồng bộ 2026.10)
 
-### Bộ 01 · Phương pháp tinh lọc và làm giàu thông tin từ internet
+### Bộ 01 · Phương pháp tinh lọc và làm giàu thông tin từ internet (v2.0)
 
-Khung làm việc đa giai đoạn biến thông tin thô thu thập từ internet thành tri thức có chất lượng kiểm chứng được. Đầu vào là kết quả tìm kiếm hỗn loạn. Đầu ra là tập sự thật có nguồn, có phân hạng tin cậy, không trùng lặp, có đối chiếu chéo.
+Khung làm việc 7 giai đoạn biến thông tin thô thu thập từ internet thành tri thức nguyên tử có chất lượng kiểm chứng cơ học. Đầu vào là kết quả tìm kiếm đa tín hiệu (`unified-search` / `tavily-*`), lọc cô lập ngữ cảnh kiểu PTC (`Programmatic Tool Calling`), cào trình duyệt phiên thật chỉ đọc (`gstack /scrape` + `/skillify`) và nghiên cứu tổng hợp (`tavily-research`). Đầu ra là tập thẻ sự thật (`Fact Cards`) có nguồn gốc độc lập, có nhãn nhận định Fable 5.1 (`OBSERVED` / `DERIVED` / `PRIOR` / `ASSUMED`), đã khử phòng vang (`Echo-Chamber Check`), giải quyết xung đột qua thẻ quyết định `Decision Brief D<N>` và vượt qua cổng kiểm tra định lượng (`Constraint Loop Gate`).
 
-Dùng cho nghiên cứu thị trường, phân tích đối thủ cạnh tranh, tổng quan tài liệu, due diligence.
+Dùng cho nghiên cứu thị trường, phân tích đối thủ cạnh tranh, tổng quan tài liệu khoa học, thẩm định dự án (`due diligence`) và tạo dữ liệu đầu vào `L1` cho Bộ 02.
 
 📂 [`Bo-01-Tinh-Loc-Thong-Tin-Internet/`](./Bo-01-Tinh-Loc-Thong-Tin-Internet/)
 
-### Bộ 02 · Kernel Registry và nguồn sự thật
+### Bộ 02 · Kernel Registry và nguồn sự thật đa xuất xứ (v2.0)
 
-Khung tổ chức tri thức theo bốn xuất xứ L1 L2 L3 L4. Sự thật lưu sẵn, sự thật dẫn xuất, sự thật rút từ văn bản pháp quy, phán xét tự do. Mỗi xuất xứ có chế độ tin riêng và lưu trong kho riêng.
+Khung tổ chức tri thức theo bốn xuất xứ độc lập gồm Sự thật lưu sẵn (`L1`), Sự thật dẫn xuất (`L2`), Nghĩa vụ rút từ văn bản pháp quy (`L3`) và Phán xét phong cách tự do (`L4`). Mỗi xuất xứ có chế độ kiểm chứng riêng và lưu trong kho riêng.
 
-Dùng cho quản lý tri thức nội bộ, xây assistant AI nội bộ, refactor knowledge base.
+Bản nâng cấp **v2.0 (2026.10)** bổ sung kiểm toán độ tươi bằng mã băm SHA-256 (`FRESH / STALE / EXPIRED`), bộ tính công thức `L2` tất định bằng script kèm dấu vết `audit_trace`, phân tầng chỉ mục phụ thuộc từ `dependency-index.csv` lên đồ thị tri thức `ak-graphify` và bộ nhớ đồng bộ `gstack /sync-gbrain` (có kiểm soát `brain_trust_policy` và kiểm toán rò rỉ `--audit`), khóa phạm vi chỉ sao chép (`Copy-Only Scope Freeze`) và cầu nối liên thông tự động giữa Bộ 01, Bộ 02 và Bộ 03.
+
+Dùng cho quản trị tri thức doanh nghiệp, xây dựng trợ lý AI nội bộ chống bịa số liệu và làm nền tảng dữ liệu chuẩn cho Bộ 03.
 
 📂 [`Bo-02-Kernel-Registry-SOT/`](./Bo-02-Kernel-Registry-SOT/)
 
-### Bộ 03 · Vibecode Kit v6.1
+### Bộ 03 · Vibecode Kit (v6.1)
 
 Khung làm việc để xây sản phẩm phần mềm bằng cách điều phối đội ngũ AI agent. Ba vai trò chính (Chủ thầu, Thợ thi công, Chủ nhà) kết hợp cùng lớp Cố vấn và Trọng tài độc lập (Kongming / Arbiter). Quy trình 8 bước tự co giãn theo phân tầng rủi ro R0 đến R3.
 
@@ -56,7 +58,7 @@ Bo-XX-Ten-Phuong-Phap/
 
 Ngoài các file markdown, mỗi bộ còn có hai dạng deliverable ở thư mục gốc.
 
-- **File `.docx`** ở root repo. Bản tài liệu cho người đọc, có mục lục tự sinh, mở được trên Word, Pages, Google Docs.
+- **File `.docx`** ở root repo. Bản tài liệu cho người đọc, mở được trên Word, Pages, Google Docs.
 - **File `.skill`** ở root repo. Bản đóng gói zip của `SKILL.md` cùng các thư mục `templates/`, `references/` và `examples/`. Cài vào Claude hoặc hệ thống AI agent bằng cách nạp file vào mục Skills.
 
 ---
@@ -80,8 +82,8 @@ Ngoài các file markdown, mỗi bộ còn có hai dạng deliverable ở thư m
 
 ### Cho người muốn cài skill vào Claude hoặc Antigravity
 
-1. Tải file `.skill` của bộ liên quan (ví dụ `vibecode-kit-v6.skill`).
-2. Trong Claude, mở Settings → Capabilities → Skills và tải file `.skill` lên. Trong Antigravity hoặc Claude Code, giải nén vào thư mục skills cấu hình của hệ thống.
+1. Tải file `.skill` của bộ liên quan (`internet-info-refinement.skill`, `kernel-registry-sot.skill`, `vibecode-kit-v6.skill`).
+2. Trong Claude, mở Settings → Capabilities → Skills và tải file `.skill` lên. Trong Antigravity hoặc Claude Code, giải nén vào thư mục skills cấu hình của hệ thống (`~/.gemini/config/skills/`).
 3. Agent sẽ tự đọc phần khai báo frontmatter của `SKILL.md` và kích hoạt đúng quy trình.
 
 ---
@@ -90,9 +92,9 @@ Ngoài các file markdown, mỗi bộ còn có hai dạng deliverable ở thư m
 
 Ba bộ chia sẻ bốn nguyên tắc nền tảng.
 
-**Một, AI không thay thế phán xét cuối cùng của con người.** Mọi quyết định có hậu quả nghiêm trọng hoặc đi qua cánh cửa một chiều phải có một con người ký nhận trách nhiệm. AI hỗ trợ khảo sát, tổng hợp, đề xuất, phản biện và thi công. Con người chọn hướng và chịu trách nhiệm.
+**Một, AI không thay thế phán xét cuối cùng của con người.** Mọi quyết định có hậu quả nghiêm trọng hoặc đi qua cánh cửa một chiều phải được trình qua thẻ quyết định `Decision Brief D<N>` để một con người ký nhận trách nhiệm. AI hỗ trợ khảo sát, tổng hợp, đề xuất, phản biện và thi công. Con người chọn hướng và chịu trách nhiệm.
 
-**Hai, mọi khẳng định và báo cáo hoàn thành đều phải có bằng chứng truy ngược được.** Không chấp nhận nguồn thông tin mồ côi (Bộ 01), không trộn lẫn sự thật cứng với phong cách cá nhân (Bộ 02) và không nghiệm thu phần mềm khi thiếu bằng chứng chạy kiểm thử tươi mới gắn với dấu vân tay mã nguồn (Bộ 03 v6.1).
+**Hai, mọi khẳng định và báo cáo hoàn thành đều phải có bằng chứng cơ học truy ngược được.** Không chấp nhận nguồn thông tin mồ côi hoặc hiệu ứng phòng vang (Bộ 01 v2.0), không trộn lẫn sự thật cứng với phong cách cá nhân hoặc để dữ liệu trôi mã băm (Bộ 02 v2.0) và không nghiệm thu phần mềm khi thiếu bằng chứng chạy kiểm thử tươi mới gắn với dấu vân tay mã nguồn (Bộ 03 v6.1).
 
 **Ba, không tự xây cái thị trường hoặc kho mã nguồn đã có sẵn.** Trước khi tự dựng quy trình hay viết hàm mới, luôn rà soát bậc thang tái sử dụng từ công cụ sẵn có trong dự án, thư viện chuẩn cho tới các mô hình ngôn ngữ lớn.
 
@@ -100,24 +102,24 @@ Ba bộ chia sẻ bốn nguyên tắc nền tảng.
 
 ---
 
-## Phối hợp ba bộ
+## Phối hợp liên hoàn ba bộ
 
-Khi thực hiện một dự án nghiên cứu và phát triển sản phẩm hoàn chỉnh, có thể kết hợp cả ba bộ theo trình tự.
+Khi thực hiện một dự án nghiên cứu và phát triển sản phẩm hoàn chỉnh, cả ba bộ kết nối tự động qua cầu nối dữ liệu chuẩn.
 
 ```
-Bộ 01 (Tinh lọc thông tin từ internet)
+Bộ 01 v2.0 (Tinh lọc thông tin từ internet · PTC + Echo-Chamber Check)
    │
-   │  Fact cards có nguồn và phân hạng tin cậy
+   │  Fact Cards hạng verified (exact_quote + content_hash)
    ▼
-Bộ 02 (Kernel Registry SOT)
+Bộ 02 v2.0 (Kernel Registry SOT · SHA-256 Freshness + L2 Tất định)
    │
-   │  Tri thức phân lập theo L1, L2, L3, L4
+   │  Con trỏ [L1-*], [L2-*], [OBL-*], [L4-*] trạng thái FRESH
    ▼
-Bộ 03 (Vibecode Kit v6.1)
+Bộ 03 v6.1 (Vibecode Kit · Worktree Isolation + Arbiter C3 + Dual-Stage Ship)
    │
-   │  Đội ngũ AI thiết kế, thi công cô lập, chấm chéo và phát hành
+   │  Sản phẩm phần mềm + WTREE_FINGERPRINT + Calibration Card 100 điểm
    ▼
-Deliverable cuối đã kiểm chứng
+Deliverable cuối đã kiểm chứng toàn diện
 ```
 
 Không bắt buộc dùng cả ba cùng lúc. Mỗi bộ đều có thể vận hành độc lập.
@@ -135,7 +137,7 @@ Không bắt buộc dùng cả ba cùng lúc. Mỗi bộ đều có thể vận 
 
 ## Phiên bản
 
-Phiên bản hiện hành của kho tài liệu là **2026.10** (trong đó Bộ 01 và Bộ 02 ở bản `2026.06`, Bộ 03 được nâng cấp lên **Vibecode Kit v6.1 · 2026.10**). Khi áp dụng vào dự án, vui lòng ghi rõ phiên bản đã sử dụng trong báo cáo để thuận tiện đối chiếu.
+Phiên bản hiện hành của toàn bộ kho tài liệu là **2026.10** (Bộ 01 v2.0, Bộ 02 v2.0 và Bộ 03 v6.1). Khi áp dụng vào dự án, vui lòng ghi rõ phiên bản đã sử dụng trong báo cáo để thuận tiện đối chiếu.
 
 ---
 
@@ -174,6 +176,6 @@ Khi sử dụng trong báo cáo học thuật hoặc dự án, vui lòng trích 
 
 ```
 Nguyễn, C. L. (2026). AI-Native Methods · Ba phương pháp làm việc với AI
-(Version 2026.10, Vibecode Kit v6.1) [Computer software]. GitHub.
+(Version 2026.10 · Bộ 01 v2.0, Bộ 02 v2.0, Bộ 03 v6.1) [Computer software]. GitHub.
 https://github.com/lucas-dunght/ai-native-methods
 ```
