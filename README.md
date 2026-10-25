@@ -38,6 +38,15 @@ Dùng cho đồ án xây ứng dụng, luận văn có deliverable phần mềm,
 
 📂 [`Bo-03-Vibecode-Kit-v6/`](./Bo-03-Vibecode-Kit-v6/)
 
+### Bộ Công Cụ & Kỹ Năng Đi Kèm (`tools/` · All-in-One Bootstrap)
+
+Để người dùng mới có thể vận hành ngay cả ba bộ phương pháp mà không cần tự tìm kiếm từng công cụ bên ngoài, thư mục [`tools/`](./tools/) đóng gói sẵn toàn bộ hệ sinh thái phụ trợ đã được khử sạch mọi khóa API/Token cá nhân.
+- **`tools/unified-search-mcp/`** chứa máy chủ MCP `Unified Search Pool v2.0` (định tuyến đa tín hiệu 8 chế độ qua `Tavily`, `Exa` và `Linkup` kèm xoay vòng khóa Round-Robin và mẫu `.mcp_env.example`).
+- **`tools/skills/`** chứa **58 kỹ năng phụ trợ (`Companion Skills`)** gồm 8 kỹ năng `tavily-*`, 19 kỹ năng `akkit` (`ak-fable-thinking`, `ak-graphify`, `ak-orchestrate`, `ak-ship`...) và 31 kỹ năng `gstack` (`scrape`, `skillify`, `setup-gbrain`, `sync-gbrain`, `autoplan`, `qa`, `cso`...).
+- **`tools/gstack-bin/`** và **`tools/hooks/`** chứa 21 tiện ích dòng lệnh (`gstack-wtree`, `gstack-evidence`, `gstack-verify-gate`...) và 13 mô-đun kiểm định hợp đồng PR (`pr-body-contract.cjs`, `writing-language.cjs`...).
+
+📂 [`tools/`](./tools/)
+
 ---
 
 ## Cấu trúc mỗi bộ
@@ -80,11 +89,15 @@ Ngoài các file markdown, mỗi bộ còn có hai dạng deliverable ở thư m
 3. Các bản mẫu trong `templates/` và tình huống trong `examples/` dùng làm bài tập thực hành.
 4. File `.docx` ở root tiện in ấn hoặc phát trực tiếp cho sinh viên.
 
-### Cho người muốn cài skill vào Claude hoặc Antigravity
+### Cho người muốn cài trọn bộ Skill và Công cụ vào Antigravity hoặc Claude Code (1 lệnh)
 
-1. Tải file `.skill` của bộ liên quan (`internet-info-refinement.skill`, `kernel-registry-sot.skill`, `vibecode-kit-v6.skill`).
-2. Trong Claude, mở Settings → Capabilities → Skills và tải file `.skill` lên. Trong Antigravity hoặc Claude Code, giải nén vào thư mục skills cấu hình của hệ thống (`~/.gemini/config/skills/`).
-3. Agent sẽ tự đọc phần khai báo frontmatter của `SKILL.md` và kích hoạt đúng quy trình.
+1. Mở Terminal tại thư mục gốc của repo và chạy lệnh cài đặt tự động:
+   ```bash
+   chmod +x tools/install-all.sh
+   ./tools/install-all.sh
+   ```
+   Script sẽ cài đặt cả 3 Bộ Phương Pháp cốt lõi, 58 kỹ năng phụ trợ (`tavily-*`, `ak-*`, `gstack`), 21 tiện ích `gstack-bin`, 13 `hooks` và khởi tạo máy chủ MCP `unified-search` kèm file mẫu `~/.mcp_env`.
+2. Nếu dùng Claude Desktop / Web, bạn cũng có thể tải trực tiếp các file `.skill` ở thư mục gốc (`internet-info-refinement.skill`, `kernel-registry-sot.skill`, `vibecode-kit-v6.skill`) vào mục Settings → Capabilities → Skills.
 
 ---
 

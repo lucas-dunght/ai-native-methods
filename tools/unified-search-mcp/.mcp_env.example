@@ -1,0 +1,10 @@
+# ==============================================================================
+# UNIFIED SEARCH POOL v2.0 - SAMPLE ENVIRONMENT CONFIGURATION (~/.mcp_env)
+# Copy this file to ~/.mcp_env (chmod 600 ~/.mcp_env) and fill in your API keys.
+# Separate multiple keys with commas for Round-Robin load balancing & failover.
+# NEVER commit real API keys to Git!
+# ==============================================================================
+
+export TAVILY_KEY_POOL="tvly-YOUR_KEY_1,tvly-YOUR_KEY_2,tvly-YOUR_KEY_3"
+export EXA_KEY_POOL="YOUR_EXA_UUID_KEY_1,YOUR_EXA_UUID_KEY_2"
+export LINKUP_KEY_POOL="lkp_YOUR_KEY_1,lkp_YOUR_KEY_2"
