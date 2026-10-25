@@ -1,0 +1,6 @@
+file_path,section_scope,classified_as,confidence,decision_tier,selectivity_priority,reason,notes
+raw-docs/pricing/pricing-table-2026-Q4.pdf,Toàn bộ bảng đơn giá trang 3,L1,high,Mechanical,P0-high-value,Bảng số liệu đơn giá bán lẻ tất định tra cứu thường xuyên,Tách thành các mục L1 theo từng dòng SKU chính
+raw-docs/finance/budget-plan-2026-Q4.xlsx,Sheet Summary các dòng tổng cộng,L2,high,Mechanical,P0-high-value,Các ô chứa công thức SUM và RATIO tính từ đơn giá và sản lượng,Lưu công thức vào derived-facts
+raw-docs/legal/decree-13-2023-nd-cp.pdf,Chương II và Chương III,L3,high,Mechanical,P0-high-value,Văn bản pháp quy của Chính phủ quy định nghĩa vụ bảo vệ dữ liệu,Trích xuất thành các mục OBL-decree-13-NNN
+raw-docs/brand/ceo-writing-style.md,Toàn bộ tài liệu,L4,high,Mechanical,P1-normal,Hướng dẫn giọng văn và từ vựng ưa thích của lãnh đạo,Đưa vào kho style/ đứng ngoài đường kiểm
+raw-docs/meetings/board-notes-2026-09.md,Biên bản họp giao ban tháng 9,MIXED,low,User_Challenge,P2-defer,Pha trộn cả đề xuất đổi giá (L1) lẫn nhận định chiến lược (L4),Đẩy vào unclassified-queue.md trình thẻ D<N>

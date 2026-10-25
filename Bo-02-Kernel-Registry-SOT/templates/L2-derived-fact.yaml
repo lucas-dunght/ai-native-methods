@@ -1,41 +1,36 @@
-# L2 Derived Fact Template
-# Sự thật dẫn xuất, tính từ L1 bằng công thức
-# KHÔNG lưu giá trị, lưu công thức và inputs
+# L2 Derived Fact Template · Sự thật Dẫn xuất Tất định (v2.0)
+# Tính từ các đầu vào L1 bằng công thức rõ ràng và câu lệnh thực thi tất định (deterministic_eval_cmd).
+# Tuyệt đối không để AI tự nhẩm tính giá trị L2 trong đầu.
 
 fact_id: L2-domain-key-NNN
 fact_type: L2
-domain: tag-domain
+domain: financial-metrics
 key: unique-key-for-lookup
+
 formula:
+  # Giá trị type hợp lệ: sum | product | ratio | difference | custom
   type: sum
-  # Các giá trị hợp lệ: sum, product, ratio, difference, custom
+  expression: "L1_input_1 + L1_input_2 + L1_input_3"
   inputs:
     - L1-domain-input-1
     - L1-domain-input-2
     - L1-domain-input-3
-  # Khi formula type = custom, thêm trường expression
-  # expression: "input_1 * 0.8 + input_2 * 0.2"
-unit: VND
+
+deterministic_eval_cmd: "python3 scripts/eval_l2.py --id L2-domain-key-NNN"
+
+computed_cache:
+  last_computed_value: 485000000
+  unit: VND
+  computed_at: YYYY-MM-DDTHH:MM:SSZ
+  input_hashes:
+    L1-domain-input-1: "sha256:1a2b3c4d"
+    L1-domain-input-2: "sha256:5e6f7a8b"
+    L1-domain-input-3: "sha256:9c0d1e2f"
+  audit_trace: "150000000 + 210000000 + 125000000 = 485000000"
+
+# Nếu bất kỳ L1 input nào đổi giá trị làm lệch input_hashes, trạng thái tự động chuyển sang STALE
+verification_status: FRESH
 date_updated: YYYY-MM-DD
 updated_by: agent
 status: active
-notes: "Mô tả công thức bằng natural language"
-
-# Khi truy vấn L2, hệ thống tính giá trị từ formula và inputs
-# Khi một L1 input thay đổi, L2 tự cập nhật
-
-# Ví dụ
-# fact_id: L2-total-revenue-Q1-2026
-# domain: financial-metrics
-# key: total-revenue-Q1-2026
-# formula:
-#   type: sum
-#   inputs:
-#     - L1-revenue-product-A-Q1-2026
-#     - L1-revenue-product-B-Q1-2026
-#     - L1-revenue-product-C-Q1-2026
-# unit: VND
-# date_updated: 2026-04-15
-# updated_by: agent
-# status: active
-# notes: "Tổng doanh thu Q1 = sum của 3 sản phẩm"
+notes: "Mô tả ý nghĩa công thức bằng ngôn ngữ tự nhiên"

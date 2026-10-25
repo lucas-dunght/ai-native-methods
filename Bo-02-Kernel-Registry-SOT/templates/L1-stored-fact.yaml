@@ -1,49 +1,35 @@
-# L1 Stored Fact Template
-# Sự thật lưu sẵn, đo được, deterministic
-# Lưu key-value có kiểu, có ID, có nguồn
+# L1 Stored Fact Template · Sự thật Lưu sẵn kèm Kiểm toán Độ tươi (v2.0)
+# Đo được, tất định, lưu dưới dạng key-value có kiểu, có mã băm nguồn gốc (source_hash) và trạng thái độ tươi.
 
-# Trường BẮT BUỘC
 fact_id: L1-domain-key-NNN
 fact_type: L1
 domain: tag-domain
 key: unique-key-for-lookup
 value: 12500000
 unit: VND
+
 source:
+  # Giá trị type hợp lệ: internal-document | bo01-fact-card | external-regulation | database-snapshot
   type: internal-document
-  document_id: source-document-identifier
-  document_path: docs/path/to/source.pdf
+  document_id: pricing-table-2026-Q4
+  document_path: raw-docs/pricing/pricing-table-2026-Q4.pdf
+  source_hash: "sha256:9f86d081884c7d65"
+  bo01_fact_id: null  # Điền mã F-YYYY-NNN nếu nhập sang từ Bộ 01
   page: 3
   cell: B7
-date_updated: YYYY-MM-DD
-updated_by: human
-# hoặc agent nếu agent tạo entry
-status: active
-# Các giá trị hợp lệ: active, deprecated, superseded
 
-# Trường nên có
 date_effective: YYYY-MM-DD
 date_expires: YYYY-MM-DD
-notes: "Ghi chú thêm về context của fact"
+date_updated: YYYY-MM-DD
+updated_by: human
 
-# Trường khi entry superseded entry khác
-superseded_by: L1-domain-key-NNN
-# Khi deprecated, không xoá entry. Đánh dấu deprecated và pointer tới entry mới
+# Trạng thái độ tươi cơ học:
+# - FRESH   : source_hash khớp với tài liệu gốc và chưa quá hạn date_expires
+# - STALE   : Tài liệu gốc tại document_path đã thay đổi mã băm
+# - EXPIRED : Đã vượt quá ngày date_expires
+verification_status: FRESH
 
-# Ví dụ
-# fact_id: L1-product-price-X-2026-Q2
-# domain: product-pricing
-# key: product-X-retail-price-2026-Q2
-# value: 12500000
-# unit: VND
-# source:
-#   type: internal-document
-#   document_id: pricing-table-2026-Q2
-#   document_path: docs/pricing/pricing-table-2026-Q2.pdf
-#   page: 3
-#   cell: B7
-# date_effective: 2026-04-01
-# date_expires: 2026-06-30
-# date_updated: 2026-04-01
-# updated_by: human
-# status: active
+# Trạng thái vòng đời: active | deprecated | superseded
+status: active
+superseded_by: null
+notes: "Mô tả ngắn gọn về ý nghĩa của sự thật L1 này"

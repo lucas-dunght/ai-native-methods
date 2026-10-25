@@ -1,327 +1,220 @@
-# Architecture · Kiến trúc Kernel Registry
+# Architecture · Kiến trúc Kỹ thuật của Bộ 02 (v2.0 · 2026.10)
 
 ## Tổng quan
 
-Hệ thống gồm ba kho lưu trữ chính cộng một dependency index cộng hai hàng đợi human. Tổng cộng sáu thành phần. Mọi thành phần dùng định dạng văn bản đơn giản (YAML, CSV, Markdown) để dễ version qua Git và dễ inspect bằng mắt.
+Hệ thống **Kernel Registry v2.0** được thiết kế theo kiến trúc tệp văn bản chuẩn hóa trên Git (`Filesystem-First Git SOT`) gồm bảy thành phần cốt lõi kết hợp với bộ kiểm toán độ tươi bằng mã băm (`SHA-256 Freshness Engine`), bộ tính công thức `L2` tất định (`Deterministic L2 Evaluator`), lớp mở rộng chỉ mục phân tầng (`CSV -> ak-graphify -> gstack /sync-gbrain`) và cầu nối liên thông trực tiếp với **Bộ 01** và **Bộ 03**.
 
-Không có database engine bắt buộc. Có thể nâng cấp lên database sau khi scale lên.
+Mọi thành phần đều sử dụng định dạng `YAML`, `CSV` và `Markdown` thuần túy để con người có thể kiểm tra bằng mắt thường, quản lý lịch sử thay đổi từng dòng qua `git diff` và kiểm chứng tự động qua CI/CD.
 
-## Sơ đồ thành phần
+## Sơ đồ kiến trúc tổng thể (v2.0)
 
 ```
-Kernel Registry (filesystem-based)
+[Bộ 01 · Fact Cards Verified] ──(Cầu nối ETL)──┐
+[Tài liệu nội bộ gốc (Read-Only)] ────────────┼──► Phase 1-4 (Manifest, Phân loại, Thẻ D<N>)
+                                               │
+                                               ▼
+Kernel Registry v2.0 (Copy-Only Scope Freeze · Bảo toàn 100% bản gốc)
 │
-├── registry/                  Kho L1 + L2
-│   ├── stored-facts/          L1 entries
-│   │   ├── product-price-001.yaml
-│   │   ├── capability-matrix-001.yaml
-│   │   └── ...
-│   └── derived-facts/         L2 entries
-│       ├── total-revenue-Q1.yaml
-│       └── ...
+├── registry/                              Kho L1 + L2 (Kiểm chứng cơ học)
+│   ├── stored-facts/                      Mục L1 (kèm source_hash & verification_status)
+│   │   ├── L1-product-price-001.yaml
+│   │   └── L1-sea-digital-payments-gtv-2024.yaml
+│   └── derived-facts/                     Mục L2 (kèm formula, deterministic_eval_cmd & audit_trace)
+│       └── L2-total-revenue-Q1-2026.yaml
 │
-├── obligations/               Kho L3
-│   ├── decree-XXX-2024/       Một thư mục cho mỗi nguồn pháp quy
-│   │   ├── obligations.yaml   Các nghĩa vụ rút từ nguồn này
-│   │   └── source-doc.pdf     Văn bản gốc lưu kèm
-│   ├── circular-YYY-2024/
-│   └── ...
+├── obligations/                           Kho L3 (Truy vết điều khoản pháp quy gốc)
+│   └── decree-13-2023-nd-cp/
+│       ├── obligations.yaml               Các nghĩa vụ OBL-* kèm source_hash
+│       └── source-doc.pdf                 Bản sao văn bản gốc
 │
-├── style/                     Kho L4 (không trộn với registry)
+├── style/                                 Kho L4 (Đứng NGOÀI đường kiểm cơ học)
+│   ├── L4-style.yaml                      Metadata định danh hồ sơ phong cách
 │   ├── voice-guide.md
-│   ├── tone-examples.md
-│   └── ...
+│   └── vocabulary.md
 │
-├── skills/                    Skills là gói nội dung
-│   ├── skill-X/
-│   │   ├── SKILL.md           Pointer tới registry và obligations
-│   │   └── templates/
-│   └── ...
+├── skills/                                Gói quy trình chỉ chứa Con trỏ (Pointer IDs)
+│   └── financial-report-skill/
+│       └── SKILL.md                       Trỏ tới [L1-*], [L2-*], [OBL-*], [L4-*]
 │
-├── dependency-index.csv       Quan hệ giữa các thành phần
+├── dependency-index.csv                   Chỉ mục phụ thuộc kèm provenance_tag (Tầng 1)
+├── manifest.csv                           Bảng kiểm kê toàn bộ thành phần & độ tươi
 │
-├── queues/                    Hàng đợi human phán xử
+├── queues/                                Hàng đợi phán xử theo thẻ Decision Brief D<N>
 │   ├── conflict-queue.md
-│   └── unclassified-queue.md
+│   ├── unclassified-queue.md
+│   └── migration-map.md
 │
-└── manifest.csv               Inventory tất cả thành phần
+└── .graph-and-brain/                      Tầng mở rộng khi quy mô >= 500 entries (Tầng 2)
+    ├── graphify-out/graph.json            Đồ thị AST + Tài liệu (EXTRACTED/INFERRED/AMBIGUOUS)
+    └── gbrain-sync-config.json            Cấu hình đồng bộ GBrain & brain_trust_policy
 ```
 
-## Thành phần 1 · Registry (L1 + L2)
+## Thành phần 1 · Kho `registry/` (`L1` Stored Facts & `L2` Derived Facts)
 
-### Subfolder stored-facts cho L1
+### 1.1. Schema chuẩn của `L1` (`registry/stored-facts/*.yaml`)
 
-Mỗi L1 entry là một file YAML có schema cố định.
+Mỗi tệp `L1` lưu một sự thật định lượng hoặc định danh đã được xác minh, kèm mã băm `source_hash` của tài liệu gốc và trạng thái độ tươi `verification_status`.
 
 ```yaml
 fact_id: L1-product-price-001
 fact_type: L1
 domain: product-pricing
+key: product-X-retail-price-2026-Q4
 value: 12500000
 unit: VND
-key: product-X-retail-price-2026-Q2
 source:
-  type: internal-document
-  document_id: pricing-table-2026-Q2
-  document_path: docs/pricing/pricing-table-2026-Q2.pdf
+  type: internal-document  # hoặc bo01-fact-card | external-regulation
+  document_id: pricing-table-2026-Q4
+  document_path: raw-docs/pricing/pricing-table-2026-Q4.pdf
+  source_hash: "sha256:9f86d081884c7d65"
+  bo01_fact_id: null       # Điền F-YYYY-NNN nếu nhập từ Bộ 01
   page: 3
   cell: B7
-date_effective: 2026-04-01
-date_expires: 2026-06-30
-date_updated: 2026-04-01
+date_effective: 2026-10-01
+date_expires: 2026-12-31
+date_updated: 2026-10-25
 updated_by: human
-status: active
-notes: "Giá retail SKU X-001 cho Q2 2026"
+verification_status: FRESH # FRESH | STALE | EXPIRED
+status: active             # active | deprecated | superseded
+superseded_by: null
+notes: "Giá bán lẻ niêm yết SKU X-001 áp dụng cho Quý 4/2026"
 ```
 
-Trường bắt buộc. fact_id, fact_type, domain, key, source, date_updated, status. Trường khác tuỳ chọn.
+Cơ chế chuyển trạng thái tự động.
+- Nếu tệp tại `source.document_path` bị sửa đổi làm mã băm thực tế khác với `source.source_hash`, script kiểm toán lập tức chuyển `verification_status` sang `STALE`.
+- Nếu ngày hiện tại vượt quá `date_expires`, trạng thái chuyển sang `EXPIRED`.
+- Khi một mục `L1` bị thay thế bởi mục mới, giữ nguyên tệp cũ, đổi `status: superseded` và điền mã mục mới vào `superseded_by`.
 
-`status` thuộc tập {active, deprecated, superseded}. Khi entry deprecated, không xoá. Đánh dấu deprecated và thêm pointer tới entry mới superseded nó.
+### 1.2. Schema chuẩn của `L2` (`registry/derived-facts/*.yaml`)
 
-### Subfolder derived-facts cho L2
-
-L2 entry không lưu giá trị mà lưu công thức.
+Mục `L2` lưu công thức tính toán tất định từ các đầu vào `L1` kèm dấu vết kiểm toán `audit_trace`.
 
 ```yaml
-fact_id: L2-total-revenue-Q1-2026
+fact_id: L2-total-revenue-Q4-2026
 fact_type: L2
 domain: financial-metrics
-key: total-revenue-Q1-2026
+key: total-revenue-Q4-2026
 formula:
-  type: sum
+  type: sum  # sum | product | ratio | difference | custom
+  expression: "L1_rev_A + L1_rev_B + L1_rev_C"
   inputs:
-    - L1-revenue-product-A-Q1-2026
-    - L1-revenue-product-B-Q1-2026
-    - L1-revenue-product-C-Q1-2026
-unit: VND
-date_updated: 2026-04-15
-updated_by: agent
+    - L1-revenue-product-A-Q4-2026
+    - L1-revenue-product-B-Q4-2026
+    - L1-revenue-product-C-Q4-2026
+deterministic_eval_cmd: "python3 scripts/eval_l2.py --id L2-total-revenue-Q4-2026"
+computed_cache:
+  last_computed_value: 485000000
+  unit: VND
+  computed_at: 2026-10-25T10:30:00Z
+  input_hashes:
+    L1-revenue-product-A-Q4-2026: "sha256:1a2b3c4d"
+    L1-revenue-product-B-Q4-2026: "sha256:5e6f7a8b"
+    L1-revenue-product-C-Q4-2026: "sha256:9c0d1e2f"
+  audit_trace: "150000000 + 210000000 + 125000000 = 485000000"
+verification_status: FRESH
 status: active
-notes: "Tổng doanh thu Q1 = sum của 3 sản phẩm"
+notes: "Tổng doanh thu kế hoạch Quý 4 tính bằng tổng 3 dòng sản phẩm A, B, C"
 ```
 
-Khi truy vấn L2, hệ thống tính giá trị từ công thức và inputs. Khi L1 inputs thay đổi, L2 tự cập nhật.
+Nếu bất kỳ mã băm nào trong `input_hashes` thay đổi so với tệp `L1` hiện tại, `verification_status` của `L2` tự động chuyển thành `STALE` để bắt buộc tính lại.
 
-`formula.type` thuộc tập {sum, product, ratio, difference, custom}. Khi custom, có một field `formula.expression` chứa expression Python hoặc DSL.
+## Thành phần 2 · Kho `obligations/` (`L3` Constrained Obligations)
 
-### Truy vấn registry
-
-API đơn giản dạng `get(fact_id)` hoặc `query(domain, key)`. Có thể implement bằng Python script vài chục dòng đọc YAML files. Không cần ORM hoặc database engine.
-
-## Thành phần 2 · Obligations (L3)
-
-Mỗi nguồn pháp quy (nghị định, thông tư, khung tiêu chuẩn) có một thư mục riêng.
+Mỗi nguồn văn bản pháp quy hoặc quy chế chính thức được đặt trong một thư mục riêng kèm bản sao văn bản gốc và mã băm kiểm chứng.
 
 ```yaml
-# decree-XXX-2024/obligations.yaml
-
 source_metadata:
-  source_id: decree-XXX-2024
-  title: "Nghị định XXX/2024 về bảo vệ dữ liệu cá nhân"
-  authority: "Chính phủ"
-  date_issued: 2024-03-15
-  date_effective: 2024-07-01
+  source_id: decree-13-2023-nd-cp
+  title: "Nghị định 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân"
+  authority: "Chính phủ Việt Nam"
+  date_issued: 2023-04-17
+  date_effective: 2023-07-01
+  date_expires: null
+  source_document_path: "./source-doc.pdf"
+  source_hash: "sha256:4f3c8e9a1b2d7c6e"
+  verification_status: FRESH
 
 obligations:
-  - obligation_id: OBL-decree-XXX-001
-    description: "Tổ chức xử lý dữ liệu cá nhân phải có cán bộ bảo vệ dữ liệu cá nhân nếu xử lý dữ liệu của trên 10000 người"
-    article: "Điều 5, khoản 2"
-    severity: high
-    applies_to: organizations-processing-personal-data
-    date_added: 2024-04-01
-
-  - obligation_id: OBL-decree-XXX-002
-    description: "Phải thông báo cho cơ quan bảo vệ dữ liệu trong 72 giờ khi có sự cố lộ dữ liệu"
-    article: "Điều 12, khoản 1"
-    severity: high
-    applies_to: all-data-controllers
-    date_added: 2024-04-01
-
-  - ...
+  - obligation_id: OBL-decree-13-001
+    description: "Tổ chức xử lý dữ liệu cá nhân nhạy cảm phải chỉ định bộ phận và nhân sự bảo vệ dữ liệu cá nhân"
+    article: "Điều 28, khoản 2"
+    severity: critical
+    applies_to: data-controllers-and-processors
+    compliance_check_type: mandatory-gate
+    date_added: 2026-10-25
+    status: active
+    superseded_by: null
 ```
 
-Mỗi obligation có ID duy nhất theo format `OBL-source_id-NNN`. Khi nghị định được sửa đổi bổ sung, có thể thêm obligations mới hoặc đánh dấu obligations cũ deprecated, nhưng không xoá.
+## Thành phần 3 · Kho `style/` (`L4` Free Judgment)
 
-Văn bản gốc lưu kèm trong thư mục để có thể reference khi cần.
+Kho `style/` lưu các tài liệu hướng dẫn văn phong bằng Markdown đi kèm một tệp định danh `L4-style.yaml` ghi rõ ràng buộc không kiểm chứng cơ học (`verification_mode: non-mechanically-verifiable`).
 
-## Thành phần 3 · Style (L4)
-
-Style book lưu prose, không structured. Không cố ép vào schema cứng.
-
+```yaml
+style_id: L4-brand-voice-core
+fact_type: L4
+domain: brand-communication
+verification_mode: non-mechanically-verifiable
+files:
+  - style/voice-guide.md
+  - style/vocabulary.md
+date_updated: 2026-10-25
+updated_by: human
+status: active
+notes: "Chỉ dùng làm đầu vào điều chỉnh giọng văn và thẩm mỹ, tuyệt đối không dùng để suy diễn số liệu L1/L2 hay nghĩa vụ L3."
 ```
-style/
-├── voice-guide.md         Tổng quan voice
-├── tone-examples.md       Ví dụ tone cho các tình huống
-├── vocabulary.md          Từ ngữ ưa thích và cấm
-└── audience-profiles.md   Profile các nhóm khán giả
-```
 
-Style book có thể có version history qua Git nhưng không có công thức verify.
+## Thành phần 4 · Gói `skills/` (Kiến trúc Con trỏ `Pointer-Only`)
 
-Khi skill cần style, skill reference path tới file style. Ví dụ trong SKILL.md viết "khi sinh văn bản, đọc style/voice-guide.md trước".
-
-## Thành phần 4 · Skills (gói nội dung)
-
-Mỗi skill là một thư mục với SKILL.md là pointer chính.
+Mỗi `Skill` trong tổ chức (hoặc các `SKILL.md` / `Blueprint` của Bộ 03) không chép lại giá trị của `L1/L2` hay câu chữ của `L3`, mà tham chiếu qua bảng con trỏ chuẩn.
 
 ```markdown
-# skills/skill-X/SKILL.md
+# Skill · Lập Báo cáo Tài chính & Tuân thủ Quý 4
 
-# Skill X · Sinh báo cáo tài chính quý
+## Con trỏ Nguồn Sự thật (`Kernel Registry Pointers`)
+- **Dữ liệu số liệu (`L1` & `L2`).**
+  - `[L1-product-price-001]` · Đơn giá bán lẻ SKU X-001
+  - `[L2-total-revenue-Q4-2026]` · Tổng doanh thu kế hoạch Quý 4
+- **Nghĩa vụ bắt buộc (`L3`).**
+  - `[OBL-decree-13-001]` · Kiểm tra điều kiện bảo vệ dữ liệu khách hàng trong báo cáo
+- **Phong cách trình bày (`L4`).**
+  - `[L4-brand-voice-core]` (`style/voice-guide.md`)
 
-## Khi nào dùng
-[mô tả use case]
-
-## Quy trình
-1. Đọc dữ liệu từ registry. Reference:
-   - L1-revenue-product-A-{quarter}
-   - L1-revenue-product-B-{quarter}
-   - L2-total-revenue-{quarter}
-
-2. Đọc obligations áp dụng:
-   - OBL-financial-disclosure-001
-   - OBL-financial-disclosure-002
-
-3. Sinh báo cáo theo style:
-   - style/voice-guide.md
-   - style/audience-profiles.md (chọn profile board-of-directors)
-
-4. Output format theo template:
-   - skills/skill-X/templates/quarterly-report.md
+## Quy tắc thực thi
+Trước khi xuất báo cáo, chạy kiểm tra độ tươi trên toàn bộ con trỏ. Nếu bất kỳ con trỏ `L1`, `L2`, `L3` nào có trạng thái `STALE` hoặc `EXPIRED`, dừng lại và yêu cầu cập nhật kho trước.
 ```
 
-Skill không có sách luật riêng. Mọi obligation, mọi data fact, mọi style được reference qua pointer.
+## Thành phần 5 · Chỉ mục Phụ thuộc Phân tầng (`dependency-index.csv` + `Graphify` / `GBrain`)
 
-## Thành phần 5 · Dependency Index
-
-Một file CSV duy nhất theo dõi quan hệ giữa các thành phần.
+### Tầng 1 · `dependency-index.csv` (Bắt buộc cho mọi quy mô)
 
 ```csv
-from_id,to_id,relationship,date_added
-L2-total-revenue-Q1-2026,L1-revenue-product-A-Q1-2026,derives-from,2026-04-15
-L2-total-revenue-Q1-2026,L1-revenue-product-B-Q1-2026,derives-from,2026-04-15
-OBL-decree-XXX-001,decree-XXX-2024,extracted-from,2024-04-01
-skill-X,L1-revenue-product-A-Q1-2026,references,2026-04-15
-skill-X,OBL-financial-disclosure-001,must-comply,2026-04-15
-skill-X,style/voice-guide.md,uses,2026-04-15
+from_id,to_id,relationship,provenance_tag,impact_if_stale,date_added,notes
+L2-total-revenue-Q4-2026,L1-revenue-product-A-Q4-2026,derives-from,EXTRACTED,recompute-l2,2026-10-25,"Đầu vào công thức tổng doanh thu"
+OBL-decree-13-001,decree-13-2023-nd-cp,extracted-from,EXTRACTED,review-obligation,2026-10-25,"Trích từ Điều 28 khoản 2"
+skill-quarterly-report,L2-total-revenue-Q4-2026,references,EXTRACTED,block-skill-output,2026-10-25,"Skill dùng con trỏ L2"
+skill-quarterly-report,OBL-decree-13-001,must-comply,EXTRACTED,block-skill-output,2026-10-25,"Skill phải tuân thủ nghĩa vụ bảo mật"
+skill-quarterly-report,L4-brand-voice-core,uses,EXTRACTED,advisory-only,2026-10-25,"Skill áp dụng giọng văn thương hiệu"
 ```
 
-Relationships hợp lệ. derives-from, extracted-from, references, must-comply, uses, supersedes, deprecates.
+Trong đó cột `provenance_tag` kế thừa chuẩn phân loại độ tin cậy liên kết của `ak-graphify` gồm.
+- `EXTRACTED`. Liên kết tường minh rút trực tiếp từ khai báo `inputs`, `pointers` hoặc AST.
+- `INFERRED`. Liên kết do AI phát hiện qua phân tích ngữ nghĩa tài liệu ở Phase 2 và Phase 3.
+- `AMBIGUOUS`. Liên kết nghi ngờ, cần con người xác nhận trong hàng đợi trước khi khóa.
 
-Khi cần audit "Nghị định XXX thay đổi thì những thành phần nào bị ảnh hưởng", grep dependency index với `to_id` = `decree-XXX-2024`. Output là danh sách trực tiếp, có thể follow chain.
+### Tầng 2 · Mở rộng lên `ak-graphify` và `gstack /sync-gbrain` (Khi quy mô >= 500 thành phần)
 
-## Thành phần 6 · Queues
+Khi tổ chức có hàng nghìn tệp tài liệu kết hợp cùng kho mã nguồn phần mềm, xem giao thức chi tiết tại `references/hybrid-indexing-and-gbrain.md` để kết nối `dependency-index.csv` với đồ thị `graphify-out/graph.json` và bộ nhớ `gbrain` (có kiểm tra `brain_trust_policy` và kiểm toán rò rỉ `--audit`).
 
-### Conflict queue
+## Thành phần 6 & 7 · Hàng đợi Quyết định `D<N>` (`queues/`) và Bảng Kiểm kê (`manifest.csv`)
 
-Khi phase 3 phát hiện hai L1 entries nói khác nhau về cùng một sự thật, đẩy vào conflict queue.
+- `queues/conflict-queue.md`. Chứa các thẻ quyết định `Decision Brief D<N>` cho mọi xung đột giá trị giữa các nguồn.
+- `queues/unclassified-queue.md`. Chứa các thẻ `D<N>` cho các tài liệu pha trộn nhiều xuất xứ cần con người quyết định cách tách.
+- `queues/migration-map.md`. Bảng ánh xạ đường dẫn sao chép từ thư mục gốc sang `kernel-registry/` kèm biên bản kiểm chứng `ORIGINAL_TREE_FINGERPRINT`.
+- `manifest.csv`. Danh mục trung tâm liệt kê toàn bộ các thành phần trong `Kernel Registry` cùng trạng thái độ tươi (`FRESH / STALE / EXPIRED`).
 
-```markdown
-# queues/conflict-queue.md
+## Tích hợp Liên thông Bộ 01 → Bộ 02 → Bộ 03
 
-## Conflict C-001
-- Date: 2026-04-20
-- Entry A: L1-product-price-001 nói giá X = 12.5 triệu VND, nguồn pricing-table-2026-Q2 trang 3
-- Entry B: L1-product-price-001-alt nói giá X = 13.0 triệu VND, nguồn pricing-table-2026-Q2-revised trang 3
-- Đề xuất phán xử của agent: Entry B có file revised, có thể là bản update của Entry A. Cần user xác nhận.
-- Quyết định của user: [chưa quyết]
-- Người phán xử: [...]
-- Ngày phán xử: [...]
-```
-
-### Unclassified queue
-
-Khi phase 2 phát hiện file không rõ thuộc L1/L2/L3/L4, đẩy vào unclassified queue.
-
-```markdown
-# queues/unclassified-queue.md
-
-## Unclassified U-001
-- File: docs/strategy/board-meeting-notes-2026-Q1.md
-- Phát hiện: file chứa cả số liệu (như L1), nghĩa vụ về reporting (như L3) và voice của CEO (như L4)
-- Đề xuất: tách thành 3 phần và đẩy mỗi phần vào kho tương ứng
-- Quyết định của user: [chưa quyết]
-```
-
-Queues phải được clear định kỳ, không tích đọng.
-
-## Thành phần 7 · Manifest
-
-Inventory toàn bộ thành phần trong kernel registry.
-
-```csv
-component_id,component_type,path,domain,date_added,date_updated,status
-L1-product-price-001,L1-stored-fact,registry/stored-facts/product-price-001.yaml,product-pricing,2026-04-01,2026-04-01,active
-L2-total-revenue-Q1-2026,L2-derived-fact,registry/derived-facts/total-revenue-Q1.yaml,financial-metrics,2026-04-15,2026-04-15,active
-decree-XXX-2024,obligation-source,obligations/decree-XXX-2024/,data-protection,2024-04-01,2024-04-01,active
-skill-X,skill,skills/skill-X/,reporting,2026-04-15,2026-04-15,active
-```
-
-Manifest là entry point để hệ thống biết có gì trong registry. Khi audit hoặc khi nạp registry vào AI agent context, đọc manifest trước.
-
-## Luồng vận hành
-
-### Thêm một fact mới
-
-1. Determine L1 hay L2 hay L3 hay L4.
-2. Tạo file YAML theo template tương ứng.
-3. Gán ID duy nhất.
-4. Cập nhật manifest.csv.
-5. Nếu fact phụ thuộc fact khác, cập nhật dependency-index.csv.
-6. Commit qua Git.
-
-### Truy vấn fact
-
-1. AI agent hoặc human nhận query.
-2. Đọc manifest.csv để xác định component_id liên quan.
-3. Đọc file tương ứng để get giá trị hoặc reference.
-4. Đối với L2, tính giá trị từ formula và inputs.
-5. Trả về kết quả với metadata về nguồn.
-
-### Cập nhật một thông tư
-
-1. Cập nhật obligations.yaml trong thư mục thông tư đó.
-2. Đánh dấu obligations cũ deprecated, thêm obligations mới.
-3. Grep dependency-index.csv để tìm các thành phần phụ thuộc.
-4. Review từng thành phần phụ thuộc, cập nhật nếu cần.
-5. Commit qua Git với commit message rõ thông tư nào đã được cập nhật.
-
-### Audit khi có incident
-
-1. Identify entry point của incident (báo cáo sai, quyết định sai).
-2. Trace ngược qua dependency-index.csv.
-3. Identify root cause (L1 sai, công thức L2 sai, obligation thay đổi mà skill không update, style chỉ dẫn sai).
-4. Fix root cause.
-5. Re-run các thành phần phụ thuộc để propagate fix.
-
-## Versioning
-
-Toàn bộ registry trong một Git repo. Mỗi thay đổi là một commit. Commit message theo format `[L1|L2|L3|L4|skill|dep] <component_id>: <hành động>`. Ví dụ `[L1] product-price-001: update giá Q2 2026`.
-
-Tags Git cho các phiên bản registry được công bố nội bộ. Ví dụ `registry-v2026.06`.
-
-## Tools đề xuất
-
-Đối với tổ chức nhỏ hoặc dự án sinh viên.
-
-Storage. Git repo với markdown, YAML, CSV files.
-Search. ripgrep hoặc git grep cho find theo content.
-Versioning. Git.
-CI. GitHub Actions hoặc GitLab CI cho validation YAML schema và check dependency consistency.
-
-Đối với tổ chức lớn hoặc khi scale lên hàng ngàn entries.
-
-Storage. PostgreSQL với JSONB cho YAML content, hoặc DuckDB cho query analytics.
-Search. Elasticsearch hoặc Meilisearch.
-Versioning. Git LFS hoặc DVC.
-Pipeline. Airflow hoặc Prefect cho ETL.
-
-Không upgrade lên stack lớn quá sớm. Bắt đầu với filesystem-based, scale up khi có evidence cụ thể.
-
-## Tích hợp với Bộ 01
-
-Output của Bộ 01 (fact cards) là L1-equivalent. Sinh viên có thể convert fact cards thành L1 entries bằng một script ETL đơn giản. Schema fact card được thiết kế tương thích với schema L1.
-
-## Tích hợp với Bộ 03
-
-Khi Vibecode Kit (Bộ 03) được dùng để xây ứng dụng, AI agent có thể access kernel registry để có context chính xác. Skills của Bộ 03 reference registry entries qua ID, đảm bảo agent không drift hoặc fabricate.
+Xem đặc tả kỹ thuật chi tiết và script chuyển đổi tự động tại `references/bo01-bo02-bo03-bridge.md`.
+- **Từ Bộ 01 sang Bộ 02.** Mọi thẻ `Fact Card` có `trust_tier: verified` từ Bộ 01 được ánh xạ tự động sang tệp `L1-stored-fact.yaml` trong `registry/stored-facts/` với trường `source.bo01_fact_id` giữ nguyên liên kết truy ngược.
+- **Từ Bộ 02 sang Bộ 03 (`Vibecode Kit v6.1`).** Trong bước `SCAN`, `RRI`, `BLUEPRINT` và `BUILD` của Bộ 03, Chủ thầu và Thợ truy xuất trực tiếp `manifest.csv` và nhúng mã định danh `[L1-*]`, `[L2-*]`, `[OBL-*]`, `[L4-*]` vào bảng tiêu chí nghiệm thu (`REQ-ID`), đảm bảo sản phẩm phần mềm tuân thủ 100% quy tắc nghiệp vụ và số liệu chuẩn của tổ chức.

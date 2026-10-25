@@ -1,0 +1,28 @@
+# L4 Style Profile Template · Hồ sơ Phong cách & Phán xét Tự do (v2.0)
+# Đặt tại: style/L4-style.yaml
+# Lưu ý quan trọng: L4 đứng NGOÀI đường kiểm cơ học. Tuyệt đối không trộn vào kho registry/ (L1/L2).
+
+style_id: L4-brand-voice-core
+fact_type: L4
+domain: brand-communication
+verification_mode: non-mechanically-verifiable
+
+owner: "Ban Giám đốc / Trưởng bộ phận Thương hiệu"
+target_audiences:
+  - board-of-directors
+  - enterprise-clients
+  - internal-team
+
+files:
+  - style/voice-guide.md
+  - style/tone-examples.md
+  - style/vocabulary.md
+
+guardrails:
+  - "Chỉ dùng làm đầu vào định hướng cách diễn đạt khi sinh văn bản hoặc thiết kế giao diện"
+  - "Tuyệt đối không dùng nhận định trong L4 để ghi đè số liệu L1/L2 hoặc bỏ qua nghĩa vụ L3"
+
+date_updated: YYYY-MM-DD
+updated_by: human
+status: active
+notes: "Hồ sơ định danh cho kho style/ của tổ chức"
