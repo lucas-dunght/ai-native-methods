@@ -45,7 +45,7 @@ Dùng cho đồ án xây ứng dụng, luận văn có deliverable phần mềm,
 - **`tools/skills/`** chứa **58 kỹ năng phụ trợ (`Companion Skills`)** gồm 8 kỹ năng `tavily-*`, 19 kỹ năng `akkit` (`ak-fable-thinking`, `ak-graphify`, `ak-orchestrate`, `ak-ship`...) và 31 kỹ năng `gstack` (`scrape`, `skillify`, `setup-gbrain`, `sync-gbrain`, `autoplan`, `qa`, `cso`...).
 - **`tools/gstack-bin/`** và **`tools/hooks/`** chứa 21 tiện ích dòng lệnh (`gstack-wtree`, `gstack-evidence`, `gstack-verify-gate`...) và 13 mô-đun kiểm định hợp đồng PR (`pr-body-contract.cjs`, `writing-language.cjs`...).
 
-📂 [`tools/`](./tools/)
+📂 [`tools/`](./tools/) · 📖 [`docs/`](./docs/) (Tài liệu hướng dẫn cấu hình API Key Pool & mở rộng công cụ theo chuẩn Diataxis: [Tutorial 15 phút](./docs/tutorial-first-15-minutes-with-tools.md) · [How-To thêm API Key & thêm Provider mới](./docs/how-to-configure-and-extend-api-tools.md) · [Reference kỹ thuật](./docs/reference-tools-and-api-config.md) · [Giải thích kiến trúc](./docs/explanation-multi-signal-router-and-key-pool.md))
 
 ---
 

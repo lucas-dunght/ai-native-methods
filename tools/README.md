@@ -22,6 +22,13 @@ Lệnh trên sẽ tự động thực hiện 5 bước:
 4. Cài đặt **13 Governance Hooks** (`pr-body-contract.cjs`, `writing-language.cjs`, `privacy-checker.cjs`...) vào `~/.claude/hooks/lib/`.
 5. Khởi tạo môi trường ảo Python `.venv` cho máy chủ MCP **`unified-search` v2.0**, tạo file mẫu `~/.mcp_env` (nếu chưa tồn tại) và in sẵn đoạn cấu hình JSON để dán vào `mcp_config.json`.
 
+### 📖 Bộ Tài Liệu Hướng Dẫn Cấu Hình API & Mở Rộng Công Cụ (Chuẩn Diataxis tại [`../docs/`](../docs/))
+
+- **Bài học thực hành (Tutorial):** [15 phút đầu tiên cài đặt `tools/` và chạy truy vấn đa tín hiệu](../docs/tutorial-first-15-minutes-with-tools.md)
+- **Sổ tay thao tác (How-To):** [Cách lấy/thêm API Key Pool (`~/.mcp_env`), kết nối AI Client và viết code tích hợp thêm nhà cung cấp API mới vào `search_pool.py`](../docs/how-to-configure-and-extend-api-tools.md)
+- **Tham chiếu kỹ thuật (Reference):** [Bảng biến môi trường, chữ ký hàm MCP, 21 tiện ích `gstack-bin`, 13 `hooks` và 58 kỹ năng phụ trợ](../docs/reference-tools-and-api-config.md)
+- **Giải thích kiến trúc (Explanation):** [Tại sao thiết kế Bộ định tuyến Đa tín hiệu chống bắt nhầm & Xoay vòng khóa hai tầng an toàn](../docs/explanation-multi-signal-router-and-key-pool.md)
+
 ---
 
 ## 2. Cấu Trúc Chi Tiết Thư Mục `tools/`
