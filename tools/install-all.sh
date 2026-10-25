@@ -45,8 +45,12 @@ for group in tavily akkit gstack; do
   fi
 done
 
-# 3. Cài đặt GStack CLI Binaries & Post-Upgrade Hook
-echo "⚙️  [3/5] Cài đặt GStack CLI Binaries (gstack-wtree, gstack-evidence, ...) và Hooks..."
+# 3. Cài đặt GStack CLI Binaries, Libs & Post-Upgrade Hook
+echo "⚙️  [3/5] Cài đặt GStack CLI Binaries (gstack-wtree, gstack-evidence, ...), Libs và Hooks..."
+if [ -d "${TOOLS_DIR}/lib" ]; then
+  mkdir -p "${GEMINI_SKILLS_DIR}/lib"
+  cp -R "${TOOLS_DIR}/lib/"* "${GEMINI_SKILLS_DIR}/lib/"
+fi
 for bin_file in "${TOOLS_DIR}/gstack-bin"/*; do
   [ -f "${bin_file}" ] || continue
   bname="$(basename "${bin_file}")"
