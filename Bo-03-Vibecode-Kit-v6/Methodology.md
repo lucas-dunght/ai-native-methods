@@ -1,172 +1,152 @@
-# Methodology · Vibecode Kit v6.1
+# Phương Pháp Luận Vibecode Kit v6.2 (`× pstack`)
 
-## Triết lý nền tảng
-
-Chủ thầu biết tổng thể, giao việc rõ ràng, nghiệm thu bằng bằng chứng cơ học.
-
-Thợ thi công xuất sắc trong phạm vi được giao, tự kiểm tra kỹ, báo cáo trung thực kèm dấu vân tay mã nguồn.
-
-Con người giữ quyền phán xét cuối cùng ở các quyết định chiến lược và chịu trách nhiệm về sản phẩm.
-
-AI đã học hàng tỷ dòng code và hàng triệu mẫu thiết kế. Phương pháp luận định nghĩa cái cần đạt (WHAT và tiêu chuẩn bằng chứng), không trói buộc từng bước suy nghĩ nội tâm của AI (HOW).
-
-Tin AI nhưng luôn kiểm chứng đầu ra. Một báo cáo tự khen "đã xong" không có giá trị nếu thiếu bằng chứng kiểm thử gắn với trạng thái mã nguồn hiện hành.
-
-## Ba vai trò chính và Lớp Cố vấn Độc lập
-
-```
-                     CON NGƯỜI (Homeowner)
-                     Muốn. Chọn. Chịu trách nhiệm.
-                            │
-               ┌────────────┴────────────┐
-               ▼                         ▼
-        CHỦ THẦU                      THỢ
-       (Contractor)                 (Builder)
-      Thiết kế + Điều phối        Code + Test + Báo cáo
-               ◄── TIP / Handoff / Report ──►
-               │                         ▲
-               └──► QUÂN SƯ / TRỌNG TÀI ─┘
-                   (Kongming / Arbiter C3)
-                 Phản biện độc lập · Không code
-```
-
-| Vai trò | Bản chất | Ranh giới tín nhiệm (Trust boundary) |
-|---|---|---|
-| Con người (Homeowner) | Đề ra mục tiêu, chọn phương án ở cửa một chiều, duyệt Blueprint, quyết định phát hành | Không viết code, không sa đà vào chi tiết kỹ thuật vụn vặt |
-| Chủ thầu (Contractor) | Khảo sát, phỏng vấn ngược, thiết kế Blueprint, chia TIP, điều phối đa Thợ, nghiệm thu | Không viết code sản phẩm. Có toàn quyền điều chỉnh quy trình theo thực tế và ghi lại lý do. |
-| Thợ (Builder) | Nhận TIP, viết code trong phạm vi khóa, viết test, tự chạy kiểm tra, lập báo cáo hoàn thành | Chỉ sửa các file thuộc quyền sở hữu của TIP. Thấy cách tốt hơn thì đề xuất, không tự ý đổi kiến trúc. |
-| Quân sư / Trọng tài (Kongming / Arbiter) | Phiên AI độc lập (ưu tiên model mạnh nhất hoặc khác họ model) đóng vai cố vấn và chấm chéo | Chỉ đưa lời khuyên Go/No-Go, vạch trần điểm mù và chấm đối chiếu. Tuyệt đối không sửa code. |
-
-Tại sao phiên bản v6.1 bổ sung lớp **Quân sư và Trọng tài độc lập**? Khi cùng một phiên AI vừa lập kế hoạch, vừa viết code, vừa tự chấm điểm, nó rất dễ mắc thiên kiến tự xác nhận (self-grading bias). Tách một phiên Trọng tài có ngữ cảnh mới tinh (hoặc khác dòng mô hình như Claude chấm chéo với GPT/Codex) giúp phát hiện lỗi kiến trúc và lỗi lách luật kiểm thử trước khi sản phẩm tới tay Con người.
-
-## Phân tầng rủi ro (Risk Tiers R0 đến R3) và Sự co giãn của Quy trình
-
-Không có một quy trình cứng nhắc áp cho mọi việc. Chủ thầu phân loại tác vụ dựa trên hai trục là **Mức độ tác động nếu sai (Impact)** và **Khả năng đảo ngược (Reversibility)**.
-
-| Mức tác động \ Khả năng đảo ngược | Đảo ngược tức thì (Reversible) | Đảo ngược một phần (Partial) | Khó hoặc không thể đảo ngược (Irreversible) |
-|---|---|---|---|
-| **Thấp (Low)** | **R0** (Trivial) | **R1** (Low) | **R2** (Medium) |
-| **Trung bình (Medium)** | **R1** (Low) | **R2** (Medium) | **R3** (High) |
-| **Cao / Nghiêm trọng (High / Critical)** | **R2** (Medium) | **R3** (High) | **R3** (Critical) |
-
-Cách quy trình 8 bước tự co giãn theo từng phân tầng.
-
-- **Tác vụ R0 (5 đến 15 phút, ví dụ sửa nhãn nút bấm, chỉnh màu sắc).** Chủ thầu rút gọn tối đa. Quét nhanh file liên quan, viết TIP một dòng, Thợ sửa và chạy kiểm tra nhanh, ghi một dòng hiệu chỉnh vào nhật ký. Bỏ qua RRI và Blueprint.
-- **Tác vụ R1 (1 TIP, dưới 2 giờ, ví dụ thêm bộ lọc cục bộ, sửa một lỗi đơn lẻ).** Có TIP chuẩn, Blueprint ngắn gọn nửa trang, Thợ thi công với khóa phạm vi (`Scope Freeze`), nộp Completion Report có bằng chứng chạy test và thẻ hiệu chỉnh ngắn.
-- **Tác vụ R2 (2 đến 5 TIPs, ví dụ làm tính năng đăng nhập, tạo module báo cáo).** Chạy đầy đủ 8 bước. Phỏng vấn RRI bằng thẻ quyết định `D<N>`, duyệt kế hoạch qua 4 lăng kính, chia Task Graph rõ ràng, kiểm thử bề mặt thật và lập Calibration Card 100 điểm sau khi phát hành.
-- **Tác vụ R3 (5+ TIPs, ứng dụng mới, thanh toán, phân quyền bảo mật hoặc chạy nhiều Thợ song song).** Chạy đủ 8 bước kèm toàn bộ cơ chế bảo vệ nâng cao. Bật cố vấn Kongming ở các điểm chốt, phản biện Red-Team 4 góc nhìn (hoặc Ultra Best-of-5), cô lập từng Thợ trên một Git Worktree riêng, nghiệm thu qua Trọng tài độc lập và phát hành 2 chặng (`Beta -> Stable`).
-
-Chủ thầu có quyền nâng hoặc hạ phân tầng ngay giữa chừng nếu phát hiện bài toán phức tạp hơn hoặc đơn giản hơn dự kiến ban đầu, miễn là ghi rõ lý do vào Audit Trail.
-
-## Tám bước trong một chu kỳ Vibecode v6.1
-
-```
-SCAN → RRI → VISION → BLUEPRINT → TASK GRAPH → BUILD → VERIFY → REFINE & SHIP
-```
-
-### Bước 1 · SCAN (Khảo sát Hiện trạng và Kỷ luật Nhận định)
-
-Trước khi đặt câu hỏi hay vẽ kiến trúc, Builder phải khảo sát thực tế kho mã nguồn và môi trường vận hành. Với dự án mới hoàn toàn, kiểm tra nhanh thư mục, công cụ dòng lệnh và môi trường sẵn có. Với dự án đang tồn tại, quét toàn diện cấu trúc thư mục, công nghệ sử dụng, các quy ước ngầm, lỗ hổng bảo mật và độ phủ kiểm thử.
-
-Điểm nâng cấp cốt lõi ở v6.1 là mọi khẳng định quan trọng trong `SCAN REPORT` phải gắn một trong bốn nhãn **Kỷ luật Nhận định (Fable 5.1 Claim Discipline)**.
-- **OBSERVED.** Sự thật đã quan sát trực tiếp trong phiên làm việc thông qua việc đọc file, chạy lệnh hoặc đo đạc.
-- **DERIVED.** Kết luận suy ra một cách logic từ các dữ kiện OBSERVED kèm cơ chế rõ ràng.
-- **PRIOR.** Kiến thức tổng quát từ dữ liệu huấn luyện của mô hình. Nếu thông tin này ảnh hưởng đến thiết kế, bắt buộc phải chạy công cụ kiểm tra để nâng cấp lên OBSERVED.
-- **ASSUMED.** Giả định chưa thể kiểm chứng ngay. Phải viết rõ câu cảnh báo về hậu quả nếu giả định này sai.
-
-Ảo giác nguy hiểm nhất của AI là viết một điều thuộc nhóm PRIOR hoặc ASSUMED bằng giọng văn khẳng định chắc nịch như thể đã OBSERVED. Kỷ luật này chặn đứng ảo giác ngay từ bước đầu tiên. Đọc chi tiết tại `references/claim-and-evidence-protocol.md` và `references/xray-and-scan-protocol.md`.
-
-### Bước 2 · RRI (Phỏng vấn Ngược và Phân loại Quyết định 3 tầng)
-
-Sau khi có kết quả Scan, Chủ thầu tự trả lời tất cả những gì mã nguồn đã thể hiện rõ. Những khoảng trống còn lại mới đưa vào phiên **Phỏng vấn Ngược (Reverse Requirements Interview)** qua 5 góc nhìn đại diện.
-1. **End User** (Người dùng cuối quan tâm luồng trải nghiệm và tốc độ phản hồi).
-2. **Business Analyst** (Chuyên viên nghiệp vụ quan tâm quy tắc miền, dữ liệu biên và tính hợp lệ).
-3. **QA / Tester** (Kỹ sư kiểm thử quan tâm kịch bản lỗi, trạng thái rỗng và dữ liệu độc hại).
-4. **Developer** (Lập trình viên quan tâm khả năng bảo trì, tích hợp và nợ kỹ thuật).
-5. **Operator** (Người vận hành quan tâm triển khai, giám sát, sao lưu và khôi phục khi sự cố).
-
-Ba chế độ đặt câu hỏi gồm **CHALLENGE** (Chủ thầu đề xuất phương án tối ưu, Con người chỉ cần gật hoặc lắc), **GUIDED** (Hỏi kèm 2 đến 3 lựa chọn gợi ý có phân tích ưu nhược điểm) và **EXPLORE** (Hỏi mở cho các ý tưởng hoàn toàn mới).
-
-Để tránh làm Con người mệt mỏi vì hàng chục câu hỏi vụn vặt, v6.1 áp dụng **Phân loại Quyết định 3 tầng (Decision Classification)**.
-- **Tầng 1 · Mechanical (Cơ học).** Những câu hỏi chỉ có một đáp án kỹ thuật đúng đắn hiển nhiên (ví dụ bật kiểm tra kiểu tĩnh, dùng biến môi trường cho khóa bí mật). Chủ thầu tự quyết định và ghi vào Decisions Log.
-- **Tầng 2 · Taste (Khẩu vị và Đánh đổi cân bằng).** Những lựa chọn có hai hướng khả thi tương đương. Chủ thầu đánh dấu phương án khuyến nghị `(recommended)` và gom lại thành một bảng tóm tắt để Con người duyệt nhanh ở cuối bước.
-- **Tầng 3 · User Challenge (Thách thức Chiến lược và Cửa một chiều).** Những quyết định làm thay đổi phạm vi, chi phí, trải nghiệm cốt lõi hoặc không thể hoàn tác dễ dàng. Chủ thầu bắt buộc trình bày dưới dạng thẻ **Decision Brief `D<N>`**.
-
-Mỗi thẻ **Decision Brief `D<N>`** bao gồm giải thích giản dị (**ELI10**), hậu quả nếu chọn sai (**Stakes**), điểm số độ hoàn thiện (**Completeness X/10**), thời gian thực hiện theo hai thang đo (**Con người làm thủ công** so với **AI Builder thực thi**) và phương án khuyến nghị. Nếu Con người chủ động chọn một phương án làm tắt có điểm `Completeness <= 7/10` để kịp tiến độ, quyết định đó tự động sinh ra một mục **Nợ Làm tắt (Shortcut Debt)** kèm điều kiện kích hoạt nâng cấp rõ ràng. Đọc thêm tại `references/plan-review-gates.md`.
-
-### Bước 3 · VISION (Định hướng Kiến trúc, Vết Mở rộng Tiến hóa và 4-Lens Review)
-
-Từ báo cáo Scan và RRI, Chủ thầu phác thảo tầm nhìn kỹ thuật gồm kiến trúc tổng thể, bộ công nghệ và định hướng giao diện.
-
-Phiên bản v6.1 bổ sung hai công cụ sắc bén vào bước Vision.
-- **Vết Mở rộng Tiến hóa (Evolutionary Extension Trace).** Để tránh cả hai thái cực là thiết kế quá cứng nhắc hoặc trừu tượng hóa quá đà (over-engineering), Chủ thầu chọn một biến thể thực tế tiếp theo có khả năng xảy ra cao nhất (ví dụ thêm cổng thanh toán thứ hai hoặc hỗ trợ thêm một định dạng xuất file) và thử dẫn nó qua kiến trúc đề xuất. Phần nào giữ nguyên được chính là giao diện ổn định (stable contract), phần nào phải sửa chính là vùng biến thiên cần cô lập. Những thứ chỉ là tưởng tượng xa xôi chưa có căn cứ thì kiên quyết cắt bỏ theo nguyên tắc YAGNI.
-- **Chuỗi Duyệt 4 Lăng kính (Autoplan 4-Lens Sequential Gate).** Với tác vụ R2 và R3, Chủ thầu tự rà soát tầm nhìn theo đúng thứ tự bốn chiếc mũ. Đầu tiên là **Lăng kính CEO** để hỏi xem sản phẩm 10 sao nằm ở đâu và chọn chế độ mở rộng hay thu hẹp phạm vi. Thứ hai là **Lăng kính Design** (khi có giao diện) để chấm điểm bố cục, phân cấp thị giác và loại bỏ các mẫu giao diện rập khuôn kiểu AI (AI Slop). Thứ ba là **Lăng kính DX** (khi làm API, CLI hoặc thư viện) để tối ưu thời gian chạy thử lần đầu và thiết kế thông báo lỗi rõ ràng cho cả lập trình viên lẫn AI agent. Cuối cùng luôn là **Lăng kính Eng** để khóa chặt sơ đồ luồng dữ liệu, máy trạng thái, xử lý ngoại lệ và ma trận kiểm thử.
-
-### Bước 4 · BLUEPRINT (Bản vẽ Khế ước và Cổng Phản biện Độc lập)
-
-Blueprint là bản vẽ kỹ thuật chi tiết hóa Vision thành sơ đồ kiến trúc, danh sách module, cấu trúc bảng dữ liệu, cây thư mục và bảng ánh xạ từng yêu cầu `REQ-ID` vào thành phần code tương ứng.
-
-Trước khi trình Con người phê duyệt ở các dự án R2 và R3, Blueprint phải đi qua **Cổng Phản biện Red-Team 4 góc nhìn** (tấn công vào Giả định ngầm, Kịch bản sập hệ thống, Nguy cơ phình phạm vi và Lỗ hổng bảo mật). Với những bài toán kiến trúc đặc biệt phức tạp hoặc gây tranh cãi, Chủ thầu có thể kích hoạt chế độ **Ultra Verifier (Best-of-5)** bằng cách đóng gói một bộ ngữ cảnh bất biến cho 5 luồng phân tích độc lập cùng đề xuất giải pháp, sau đó dùng mô hình mạnh nhất chấm chọn phương án vượt trội.
-
-Khi Con người ký xác nhận **APPROVED**, Blueprint trở thành khế ước cứng. Mọi thay đổi kiến trúc phát sinh sau thời điểm này đều phải quay lại cập nhật từ bước Vision và duyệt lại.
-
-### Bước 5 · TASK GRAPH (Đồ thị Gói Công việc TIP, Cô lập Worktree và Giao thức Dừng)
-
-Chủ thầu chia nhỏ Blueprint thành một đồ thị các **TIP (Task Instruction Pack)** có thứ tự trước sau rõ ràng. Mỗi TIP là một đơn vị giao việc tự chứa gồm Header, Context, Task, Acceptance Criteria (viết theo chuẩn Gherkin hoặc lệnh kiểm tra cơ học), Scope Freeze và Failure Protocol.
-
-Khi dự án có nhiều TIP có thể chạy song song cho nhiều Thợ, Chủ thầu bắt buộc tuân thủ hai nguyên tắc điều phối từ `ak-orchestrate`.
-- **Quyền Sở hữu File Rời nhau (Disjoint File Ownership).** Không bao giờ giao hai TIP chạy cùng lúc có quyền sửa chung một file. Các file nền tảng dùng chung (như định nghĩa kiểu dữ liệu, cấu hình cơ sở dữ liệu, file điều hướng gốc) phải được hoàn thành ở TIP giai đoạn trước hoặc giao cho một Thợ duy nhất đảm nhận.
-- **Cô lập bằng Không gian Git Worktree (Worktree Isolation).** Mỗi Thợ chạy song song làm việc trên một nhánh và một thư mục `git worktree` độc lập để quá trình biên dịch và chạy thử không làm hỏng cây thư mục của nhau.
-
-Đặc biệt, khi sử dụng chế độ **Cố vấn Kongming (`--advice`)** hoặc giao việc cho các mô hình Thợ tốc độ cao, mỗi TIP đều nhúng sẵn **Giao thức Dừng khi Kiểm chứng Đỏ (Failure Protocol)**. Nếu lệnh kiểm tra thất bại và Thợ không thể giải quyết bằng nguyên nhân hiển nhiên trong vòng 3 lần thử, Thợ phải dừng ngay lập tức, giữ nguyên hiện trường và gửi báo cáo lỗi về cho Chủ thầu/Kongming phân tích thay vì tự ý sửa xóa liên tiếp.
-
-### Bước 6 · BUILD (Thi công Khóa Phạm vi, Vòng lặp Ràng buộc và Handoff An toàn)
-
-Thợ nhận TIP và tiến hành xây dựng sản phẩm trong ranh giới đã khóa. Bốn nguyên tắc thi công của Thợ ở v6.1 gồm.
-
-1. **Khóa Phạm vi (Scope Freeze).** Chỉ tạo mới hoặc chỉnh sửa các file nằm trong danh sách cho phép của TIP. Nếu phát hiện lỗi hoặc code xấu ở thư mục khác, ghi vào phần `SUGGESTIONS` trong báo cáo, tuyệt đối không tiện tay sửa luôn.
-2. **Bậc thang Tái sử dụng (Reuse Ladder).** Trước khi viết hàm mới hoặc cài thêm thư viện ngoài, luôn tìm kiếm theo thứ tự ưu tiên từ hàm tiện ích có sẵn trong dự án, thư viện chuẩn của ngôn ngữ, tính năng nguyên bản của nền tảng rồi mới tới các gói đã cài sẵn trong `package.json` hay `requirements.txt`.
-3. **Vòng lặp Ràng buộc Cơ học (Constraint Loop).** Khi bài toán có các ràng buộc hình thức nghiêm ngặt (như chuẩn cấu trúc JSON/YAML, giới hạn độ dài, quy tắc văn phong hoặc không lộ khóa bí mật), Thợ không được chỉ đọc bằng mắt thường rồi kết luận đã đạt. Thợ phải tạo bản nháp, chạy lệnh hoặc script kiểm tra cơ học, sửa từng lỗi phát hiện được và chạy lại kiểm tra cho tới khi đạt 100%.
-4. **Hợp đồng Bàn giao Chuyển tiếp 9 mục (Redacted Handoff Contract).** Khi một tác vụ kéo dài qua nhiều phiên làm việc hoặc cần chuyển từ Chủ thầu sang Thợ trên một công cụ khác, người bàn giao xuất một file Markdown chuẩn 9 mục tại `vibecode-artifacts/handoffs/` (hoặc `plans/handoffs/`), tự động quét và che toàn bộ thông tin nhạy cảm (`[REDACTED]`) và đánh dấu rõ bước hành động an toàn đầu tiên (`First safe step`).
-
-Khi hoàn thành TIP, Thợ xuất `Completion Report` kèm theo **Dấu vân tay Cây thư mục (`WTREE_FINGERPRINT`)** và cấp độ bằng chứng thực tế đã chạy.
-
-### Bước 7 · VERIFY (Nghiệm thu Bề mặt Thật, Kiểm toán Test và Trọng tài Độc lập)
-
-Chủ thầu không bao giờ nghiệm thu chỉ bằng cách đọc lời tóm tắt của Thợ. Bước Verify kiểm tra ngược từng yêu cầu `REQ-ID` qua ba hàng rào.
-
-- **Tính tươi mới của Bằng chứng (Evidence Freshness).** Kiểm tra xem `WTREE_FINGERPRINT` lúc chạy test có khớp với trạng thái file hiện tại trên đĩa hay không. Nếu có bất kỳ chỉnh sửa nào sau lần chạy test cuối, bằng chứng đó bị đánh dấu là `STALE` và bắt buộc phải chạy lại. Đồng thời kiểm tra đúng cấp độ bằng chứng (`static-read`, `unit-test`, `fixture-replay`, `live-run`, `production`), không chấp nhận việc dùng dữ liệu giả lập (mock) để thay thế cho bài kiểm tra tích hợp thật khi TIP yêu cầu `live-run`.
-- **QA Nhận diện Bề mặt và Kiểm toán Test (Surface-Aware QA & Test Audit).** Kiểm tra trực tiếp trên bề mặt sản phẩm (mở trình duyệt thật kiểm tra giao diện và lỗi console đối với ứng dụng web, gọi request thật đối với API, chạy lệnh với tham số biên đối với CLI). Mọi lỗi tìm thấy phải được viết thành bài test tái hiện lỗi chạy đỏ trước khi sửa code cho xanh. Đồng thời rà soát để loại bỏ các bài test vô bổ không có câu lệnh khẳng định kết quả.
-- **Trọng tài Độc lập Chấm chéo (Independent Arbiter Pass).** Với dự án R2 và R3, Chủ thầu mở một phiên Trọng tài độc lập không chia sẻ lịch sử trò chuyện của Thợ để đối chiếu mã nguồn, kết quả chạy test và Blueprint trước khi phê duyệt.
-
-### Bước 8 · REFINE, DUAL-STAGE SHIP & CALIBRATION (Tinh chỉnh, Phát hành 2 Chặng và Hiệu chỉnh 100 điểm)
-
-Những lỗi hoặc thiếu sót phát hiện ở bước Verify được đưa vào bước Refine để xử lý dứt điểm. Nếu phát sinh mong muốn thêm tính năng mới nằm ngoài Blueprint, Chủ thầu ghi nhận cho vòng lặp tiếp theo và quay về bước Vision chứ không nhồi nhét vào cuối chu kỳ hiện tại.
-
-Khi sản phẩm đạt chuẩn nghiệm thu, quá trình phát hành và học hỏi diễn ra qua hai bước.
-- **Phát hành Hai Chặng (Dual-Stage Ship `Beta -> Stable`).** Đối với các dự án có môi trường thử nghiệm và môi trường chính thức, code được hợp nhất và kiểm tra hội tụ CI xanh trên nhánh `beta/staging` trước. Chỉ khi nhánh thử nghiệm hoạt động ổn định và được xác nhận không cuốn theo các commit ngoài phạm vi, Chủ thầu mới trình Con người đẩy lên nhánh `stable/main`.
-- **Thẻ Hiệu chỉnh 100 điểm (Calibration Card) và Thu hoạch Nợ Làm tắt (Shortcut Harvest).** Sau khi sản phẩm chạy thực tế, Chủ thầu lập `Calibration Card` để so sánh dự đoán ban đầu ở TIP với kết quả quan sát được. Nếu có độ lệch (Delta), Chủ thầu bắt buộc phân bổ đúng 100 điểm sai số vào 4 nguyên nhân gốc rễ gồm **Modeling** (hiểu sai bài toán hoặc thiết kế sai), **Timing** (phát hành sai thời điểm hoặc lệch nhịp phối hợp), **World-change** (môi trường, dữ liệu hoặc thư viện bên ngoài thay đổi) và **Execution** (thi công lỗi hoặc kiểm thử sót). Cùng lúc đó, toàn bộ các mục **Shortcut Debt** đã đánh dấu ở bước RRI và Build được gom lại để quyết định thời điểm nâng cấp ở chu kỳ kế tiếp.
-
-## Tích hợp Liên hoàn Ba Bộ Phương pháp (Bộ 01 · Bộ 02 · Bộ 03)
-
-Vibecode Kit v6.1 phát huy sức mạnh tối đa khi kết hợp cùng hai bộ phương pháp anh em trong kho `ai-native-methods`.
-
-- Khi bước **SCAN / VISION** cần nghiên cứu thị trường, tìm hiểu công nghệ mới hoặc phân tích đối thủ cạnh tranh từ internet, Chủ thầu kích hoạt **Bộ 01 (Tinh lọc và làm giàu thông tin từ internet)** để thu về các thẻ sự thật (`Fact Cards`) đã được phân hạng tin cậy (`Verified`, `Probable`, `Unverified`) và xử lý xung đột rõ ràng.
-- Khi dự án cần sử dụng các con số định mức, bảng giá, công thức tính toán, quy định pháp lý hoặc giọng văn thương hiệu, Chủ thầu và Thợ tham chiếu trực tiếp vào **Bộ 02 (Kernel Registry SOT)** theo đúng bốn xuất xứ `L1` (sự thật lưu sẵn), `L2` (sự thật dẫn xuất), `L3` (nghĩa vụ pháp quy) và `L4` (phong cách tự do) thông qua mã định danh ID thay vì viết cứng vào code hay prompt.
-
-## Mười nguyên tắc cốt lõi của Vibecode Kit v6.1
-
-1. **Tin AI, kiểm chứng đầu ra bằng bằng chứng tươi.** Không kiểm soát luồng suy nghĩ nội tâm của AI, nhưng mọi tuyên bố hoàn thành phải đi kèm kết quả chạy kiểm tra gắn với dấu vân tay mã nguồn hiện tại.
-2. **Chủ thầu không viết code sản phẩm.** Ranh giới cứng tuyệt đối để người thiết kế và nghiệm thu không bị cuốn vào việc tự bảo vệ code của chính mình.
-3. **Kỷ luật Nhận định rõ ràng.** Luôn phân biệt điều đã tận mắt đo đạc (`OBSERVED`), điều suy luận (`DERIVED`), kiến thức cũ (`PRIOR`) và giả định (`ASSUMED`).
-4. **Đề xuất trước, hỏi sau qua thẻ quyết định `D<N>`.** Tự khai thác mã nguồn để trả lời các câu hỏi cơ học, chỉ hỏi Con người ở những quyết định chiến lược kèm điểm `Completeness X/10`.
-5. **Blueprint là khế ước bất biến.** Đã duyệt kiến trúc thì giữ nguyên trong suốt pha thi công. Muốn đổi kiến trúc phải quay lại Vision.
-6. **Không sửa mò khi chưa rõ nguyên nhân gốc.** Quá 3 lần thử sửa lỗi thất bại liên tiếp phải dừng lại ngay để phân tích lại từ đầu hoặc tham vấn Quân sư Kongming.
-7. **Cô lập không gian và khóa phạm vi khi thi công.** Mỗi Thợ giữ đúng `Scope Freeze` và sở hữu tập file rời nhau trên các `git worktree` riêng biệt khi chạy song song.
-8. **Chấm chéo độc lập trước khi phát hành.** Ở các tác vụ quan trọng, người kiểm tra nghiệm thu phải là một phiên Trọng tài độc lập với phiên Thợ vừa viết code.
-9. **Mọi đường tắt đều phải để lại dấu vết.** Chọn phương án rút gọn (`Completeness <= 7/10`) là hợp lệ khi cần tốc độ, nhưng bắt buộc ghi nhận điều kiện nâng cấp vào sổ nợ kỹ thuật.
-10. **Dự đoán trước khi làm, hiệu chỉnh 100 điểm sau khi chạy thật.** Không có chu kỳ nào thực sự kết thúc nếu thiếu thẻ Calibration Card để cả Con người và hệ thống AI khôn lên ở vòng sau.
+> **Quy trình 8 bước tự co giãn theo Rủi ro · Kỷ luật Bằng chứng · Đòn bẩy `/control-app` · Đấu trường Kiến trúc 5 Pha (`/architect`)**
 
 ---
 
-**Vibecode Kit v6.1** · Nguyên tác v6.0 bởi Nguyễn Cảnh Lâm · Nâng cấp v6.1 tích hợp tinh hoa từ gstack & AgentKit.
+## 1. Bốn Tầng Rủi Ro (`Risk Tiers R0 -> R3`) và Cơ chế Tự Co Giãn
+
+Không phải bài toán nào cũng cần quy trình nặng nề như nhau. Trước khi bắt đầu, Chủ thầu phải phân loại yêu cầu vào đúng một trong 4 tầng rủi ro dưới đây để bật hoặc tắt các cổng kiểm soát tương ứng (đảm bảo các tác vụ nhỏ `R0`/`R1` chạy cực nhanh trong khi `R2`/`R3` được khóa chặt bằng chứng thực nghiệm):
+
+| Cấp độ | Tên gọi | Dấu hiệu nhận diện | Chế độ vận hành (`v6.2 × pstack`) |
+|---|---|---|---|
+| **R0** | **Thay đổi Nhỏ (`Trivial`)** | Sửa lỗi chính tả, đổi nhãn văn bản, chỉnh màu sắc nhỏ trong `< 3` file, không đụng logic hay API. | **Gộp 1 lượt (`Fast-Track`):** Đọc nhanh `Feature Map` -> Sửa trực tiếp -> Chạy `./bin/control-app` hoặc test/build -> Báo cáo kèm `WTREE_FINGERPRINT`. |
+| **R1** | **Thay đổi Vừa (`Standard`)** | Thêm hàm tiện ích, sửa lỗi có test tái hiện rõ ràng, nâng cấp thành phần giao diện cục bộ (`3–8` file). | **Rút gọn 4 nhịp:** `Indirect Prompting Restate` ngắn (2 câu) + đọc `Feature Map` -> Viết test đỏ -> Code xanh (áp dụng luật `Scrap when wrong` nếu lệch) -> Chạy `./bin/control-app` kiểm chứng sống -> Commit & Ship. |
+| **R2** | **Thay đổi Hệ thống (`Systemic`)** | Tính năng mới xuyên suốt Frontend + Backend + Database, đổi cấu trúc bảng, tích hợp bên thứ ba (`> 8` file). | **Đầy đủ 8 bước chuẩn:** Bắt buộc chạy bộ tứ `/teach = /how + /why + /recall`, thiết kế ngược `Working Backwards (4 ô Diátaxis + /unslop)`, dựng `/prototype` (nếu có UI), chạy `5-Phase /architect Arena`, chia việc theo `sequence-verifiable-units`, điều phối `Worktree (<= 10)` hoặc `Cloud /swarm (> 10)` và kiểm chứng qua `./bin/control-app`. |
+| **R3** | **Thay đổi Nghiêm trọng (`Critical`)** | Xác thực người dùng (Auth), phân quyền (RBAC), thanh toán, mật mã học, xóa/di chuyển dữ liệu lớn, hạ tầng Production. | **8 bước + Chế độ Cực đại (`Ultra / CSO`):** Bắt buộc có `5-Phase /architect Arena` đa model, tham vấn Quân sư (`Kongming`), kiểm toán bảo mật (`CSO / STRIDE`), Trọng tài độc lập (`C3`), phát hành 2 giai đoạn (`beta -> official`) và canh gác sau triển khai (`Canary`). |
+
+---
+
+## 2. Ba Vai Trò và Luồng Quyền Lực (`Chủ nhà / Người làm vườn · Chủ thầu · Thợ`)
+
+```text
++---------------------------------------------------------------------------------------------------+
+|                  CON NGƯỜI (CHỦ NHÀ / HOMEOWNER & NGƯỜI LÀM VƯỜN / THE GARDENER)                  |
+|  1. Đặt đề bài -> 2. Duyệt bản diễn đạt lại (Indirect Prompting) & Chốt D<N> (Completeness X/10)  |
+|  3. Tuần tra dòng chảy PR để nhổ cỏ dại kiến trúc từ sớm (The Gardener) & Nghiệm thu Live Proof   |
++-------------------------------------------------+-------------------------------------------------+
+                                                  |
+                                                  v
++---------------------------------------------------------------------------------------------------+
+|                             CHỦ THẦU (AI CONTRACTOR / COORDINATOR)                                |
+|  - Bước 1 (SCAN): Đọc Feature Map, chạy Indirect Prompting Restate & /teach = /how + /why + /recall|
+|  - Bước 2 (RRI): Hỏi tối đa 3 câu khử mơ hồ, lập Bảng Quyết định D<N> (Completeness X/10)          |
+|  - Bước 3 (VISION): Working Backwards (Caller README · 4 ô Diátaxis + /unslop) & /prototype UI    |
+|  - Bước 4 (BLUEPRINT): 5-Phase /architect Arena (Type Signatures Sketch) & Cổng 4 góc nhìn        |
+|  - Bước 5 (TASK GRAPH): Chia sequence-verifiable-units; <=10 Local Worktrees vs >10 Cloud /swarm  |
+|  - Bước 7 & 8 (VERIFY & SHIP): Chạy ./bin/control-app, gọi Trọng tài C3, xóa plan tạm sau merge   |
++------------------------+-------------------------------------------------+------------------------+
+                         |                                                 |
+                         v                                                 v
++------------------------------------------------+ +------------------------------------------------+
+|             THỢ 1 (AI BUILDER #1)              | |             THỢ 2 (AI BUILDER #2)              |
+|  - Làm việc trong nhánh cô lập (owned_files)   | |  - Làm việc trong nhánh cô lập (owned_files)   |
+|  - Code từ Type Signatures Sketch theo TDD     | |  - Code từ Type Signatures Sketch theo TDD     |
+|  - Báo SCRAP WHEN WRONG nếu phải dùng any/vá   | |  - Báo SCRAP WHEN WRONG nếu phải dùng any/vá   |
+|  - Chạy ./bin/control-app đóng vòng lặp kiểm   | |  - Chạy ./bin/control-app đóng vòng lặp kiểm   |
++------------------------------------------------+ +------------------------------------------------+
+```
+
+### Quy tắc Phân quyền Cứng:
+1. **Con người (`Chủ nhà & Người làm vườn`)** nắm quyền phủ quyết tối cao ở 3 điểm: (a) Duyệt bản diễn đạt lại đầu bài (`Indirect Prompting Restate`) và phương án tại `RRI`, (b) Duyệt kiến trúc tại `BLUEPRINT` và (c) Duyệt phát hành lên nhánh chính (`official`). Khi hệ thống đã có đòn bẩy kiểm chứng `./bin/control-app` chặt chẽ, kỹ sư thoát khỏi việc ngồi canh (`babysitting`) để đóng vai **Người làm vườn (`The Gardener`)**: liên tục tuần tra dòng chảy PR, nhổ bỏ "cỏ dại" từ trong trứng nước (như hàm tiện ích bị viết lặp lần thứ 3 trong tuần, lệnh tắt lint lan tràn) và chủ động refactor nền tảng ngay khi sản phẩm tăng trưởng nóng mà không gây downtime.
+2. **Chủ thầu (`AI Contractor`)** không trực tiếp sửa code nghiệp vụ khi đang điều phối nhiều Thợ ở cấp `R2/R3` để giữ sạch vùng nhớ ngữ cảnh (`Context Window`) và giữ tính khách quan khi nghiệm thu.
+3. **Thợ (`AI Builder`)** chỉ được phép sửa các tệp nằm trong danh sách `owned_files` của gói việc (`TIP`) được giao. Nếu phát hiện cần sửa tệp ngoài phạm vi, hoặc phát hiện kiến trúc trong `Blueprint` buộc phải truyền tham số vá víu qua nhiều tầng / ép kiểu `any`, Thợ phải dừng lại và phát tín hiệu **`Scrap when wrong`** về cho Chủ thầu.
+
+---
+
+## 3. Quy Trình 8 Bước Chuẩn (`Vibecode Kit v6.2 × pstack Workflow`)
+
+### Bước 1: `SCAN` · Quét Thực Tế, Đọc `Feature Map`, `Indirect Prompting` & Bộ Tứ `/teach`
+- **Mục tiêu:** Chặn đứng 2 điểm mù lớn nhất của Frontier Models (đầu bài mơ hồ và thiếu ngữ cảnh lịch sử/hệ thống) trước khi viết bất kỳ dòng code nào.
+- **Hành động bắt buộc:**
+  1. **Đọc Bộ nhớ Vật chất hóa (`Feature Map`):** Mở `references/features/README.md` (nếu dự án đã có) để nắm ngay danh mục tính năng, đường dẫn và lệnh `./bin/control-app` chạm tới màn hình/API liên quan mà không tốn hàng nghìn token mò mẫm.
+  2. **Kỹ thuật `Indirect Prompting` (*"Restate in your own words"*):** Thay vì áp đặt ngay giả thuyết giải pháp, Chủ thầu đọc nguồn thông tin nhiễu (thread báo lỗi, log, yêu cầu thô) và diễn đạt lại bản chất bài toán bằng lời tự nhiên, ngắn gọn, không dùng từ lóng kỹ thuật che đậy để Chủ nhà xác nhận không bị lệch ý.
+  3. **Xây dựng Mental Model hai chiều bằng bộ tứ `/teach = /how + /why + /recall`:**
+     - `/how`: Truy vết cơ chế hoạt động hiện tại ở tầng runtime (tự động phân luồng các explorer agents chạy song song nếu hệ thống trải rộng trên nhiều thư mục/service).
+     - `/why`: Truy tìm nguyên nhân lịch sử và ý đồ thiết kế bằng cách truy vấn song song `git log -S`, `git blame`, PR comments, ticket, tài liệu thiết kế và log lỗi (vì code chỉ cho biết *cái gì* đang chạy, không cho biết *tại sao* lại viết như vậy).
+     - `/teach`: Yêu cầu Agent giải thích trực quan và chứng minh bằng code/dữ liệu thực tế vì sao phương án dự kiến tốt hơn hiện trạng (cơ chế ép Agent đọc code thật thay vì phán tự tin nhưng rỗng).
+     - `/recall`: Rút trích ngữ cảnh từ lịch sử hội thoại hoặc phiên làm việc cũ (`transcripts`) thành bản tóm tắt trạng thái sạch.
+- **Đầu ra:** Báo cáo thực trạng có đính kèm `file:line`, bản `Indirect Prompting Restate` và bảng phân loại tầng rủi ro (`R0–R3`).
+
+### Bước 2: `RRI` · Phỏng Vấn Khử Mơ Hồ (`Requirement Readiness Index`)
+- **Mục tiêu:** Đạt điểm rõ ràng yêu cầu `RRI >= 8.5/10` trước khi thiết kế.
+- **Hành động:**
+  - Nếu còn điểm mơ hồ về nghiệp vụ, hiệu năng, bảo mật hoặc trường hợp biên, Chủ thầu đặt **tối đa 3 câu hỏi trắc nghiệm** có kèm phương án khuyến nghị.
+  - Mọi quyết định quan trọng được trình bày bằng **Bảng Quyết định `D<N>`**: có giải thích đơn giản (`ELI10`), điểm hoàn thiện (`Completeness X/10`), phân loại nợ kỹ thuật (`Shortcut Debt`) và bảng so sánh cam kết.
+- **Đầu ra:** Tài liệu [`RRI-template.md`](./templates/RRI-template.md) đã được Chủ nhà phê duyệt (`Status: approved`).
+
+### Bước 3: `VISION` · Thiết Kế Ngược `Working Backwards (Diátaxis + /unslop)` & Dựng `/prototype`
+- **Mục tiêu:** Chống "ảo giác tiến độ" (`illusion of progress`) của các bản kế hoạch trừu tượng vốn chỉ mô tả tiểu tiết cài đặt bên trong mà bỏ quên trải nghiệm của người gọi API hoặc người dùng cuối.
+- **Hành động:**
+  1. **Thiết kế Ngược từ README (`Working Backwards` & Khung 4 ô `Diátaxis`):** Khi thiết kế module, dịch vụ hoặc gói dùng chung, bắt buộc viết `Caller README / Tutorial` trước từ góc nhìn người sử dụng theo đúng 4 góc nhìn `Diátaxis` (`Tutorial`, `How-to`, `Reference`, `Explanation`) và lọc bỏ toàn bộ văn phong AI rườm rà bằng quy tắc `/unslop`.
+  2. **Lập kế hoạch giao diện bằng Code (`/prototype` Live Switcher):** Với các tính năng có giao diện hoặc trải nghiệm tương tác, thay vì tranh luận trên văn bản, dựng nhanh 2 đến 3 phương án thiết kế ẩn sau một nút chuyển trực tiếp trên màn hình (`Live UI Switcher`), dùng `./bin/control-app` chạy thật, chụp ảnh và đo đạc để Chủ nhà chọn phương án bằng bằng chứng thực nghiệm.
+- **Đầu ra:** Bản nháp `Caller README (Diátaxis)` đã khử văn phong AI rườm rà và ảnh chụp/kết quả đo của 2 đến 3 phương án `/prototype` (nếu có UI).
+
+### Bước 4: `BLUEPRINT` · Đấu Trường Kiến Trúc 5 Pha (`/architect Arena`) & Cổng Duyệt 4 Góc Nhìn
+- **Mục tiêu:** Tránh hai sai lầm chết người khi lập kế hoạch: (1) chấp nhận ngay thiết kế đầu tiên của Agent và (2) review đối kháng quá đà trên bản kế hoạch chữ trừu tượng (khiến Agent tự bịa ra các rủi ro lý thuyết không bao giờ xảy ra để phòng thủ).
+- **Hành động:**
+  1. **Thực thi 5 Pha Kỷ luật của `/architect` (`Architecture Arena`):**
+     - **Pha 1 (`Ground`):** Nạp kết quả `/how` và `/why` để khóa quyền sở hữu dữ liệu (`ownership`) và các ràng buộc bất biến.
+     - **Pha 2 (`Sketch` · Đấu trường Chữ ký Kiểu):** Cho nhiều nhánh (đa model) độc lập phác thảo **`Type Signatures & Caller Usage Sketch`** (chỉ viết khung kiểu dữ liệu, chữ ký hàm và đoạn code minh họa nơi gọi hàm, **tuyệt đối chưa viết thân hàm**).
+     - **Pha 3 (`Cross-judge & Synthesize`):** Dùng một model độc lập làm trọng tài chấm điểm các bản phác thảo theo rubric (độ sâu module Ousterhout, tính dễ ghép nối, an toàn kiểu dữ liệu) và tổng hợp thành bản thiết kế tốt nhất.
+     - **Pha 4 (`Implement against the sketch`):** Chuyển khung chữ ký hàm sang bước thực thi để điền logic thật.
+     - **Pha 5 (`Scrap when wrong`):** Khóa cứng các tín hiệu bắt buộc đập đi làm lại ngay nếu khi vào code thật phát hiện kiến trúc sai.
+  2. **Chạy Cổng Duyệt Kế hoạch 4 Góc nhìn (`4-Lens Plan Gate`):**
+     - **Lăng kính 1 (CEO / Scope):** Kiểm tra giá trị cốt lõi và loại bỏ tính năng thừa.
+     - **Lăng kính 2 (Design / UX):** Kiểm tra trạng thái rỗng (`Empty`), đang tải (`Loading`), lỗi (`Error`) và quá tải (`Overflow`).
+     - **Lăng kính 3 (Engineering / Architecture):** Kiểm tra sơ đồ luồng dữ liệu, **Bảng Ánh xạ Lỗi & Cứu hộ (`Error & Rescue Map`)** và chiến lược kiểm thử.
+     - **Lăng kính 4 (Developer Experience / DX):** Kiểm tra khả năng điều khiển qua `./bin/control-app`, thông báo lỗi chỉ dẫn lệnh tiếp theo và tốc độ khởi chạy của Thợ.
+- **Đầu ra:** Tài liệu [`Blueprint-template.md`](./templates/Blueprint-template.md) đạt trạng thái `NO UNRESOLVED DECISIONS`.
+
+### Bước 5: `TASK GRAPH` · Chia Nhỏ Theo `Sequence-Verifiable-Units` & Phân Luồng `Worktree / Cloud Swarm`
+- **Mục tiêu:** Chỉ xuất kế hoạch thực thi sau khi thiết kế đã được chứng minh qua `/prototype` hoặc `Type Signatures Sketch`, chia thành các đơn vị kiểm chứng độc lập và không làm nghẽn phần cứng máy cá nhân.
+- **Hành động:**
+  1. **Chia gói việc theo đơn vị kiểm chứng tuần tự (`sequence-verifiable-units`):** Mỗi gói giao việc ([`TIP-template.md`](./templates/TIP-template.md)) phải tương ứng với một PR nhỏ độc lập, có danh sách `owned_files` riêng biệt và gắn chặt với một câu lệnh **`Live Verification`** qua `./bin/control-app` ("chỉ pass unit test là chưa đủ, phải chạy code thật").
+  2. **Định tuyến Thực thi Song song (`Local Worktrees <= 10` vs. `Cloud Agents + /swarm > 10`):**
+     - **Khi số nhánh song song `<= 10`:** Sử dụng `git worktree` cục bộ trên máy cá nhân với port và cơ sở dữ liệu kiểm thử tách biệt.
+     - **Khi số nhánh song song `> 10` hoặc cần chạy kiểm chứng quy mô lớn (`/swarm`, `auto-repro`):** Máy cá nhân sẽ chạm trần phần cứng (tốn ổ cứng, đụng độ port/DB, tràn RAM). Chủ thầu đóng vai `Coordinator Bot` (giữ context sạch) và đẩy việc nặng sang **`Cloud Agents`** (mỗi agent chạy trên máy ảo đám mây có snapshot khởi động tức thì và có màn hình ảo thật để quay video/chụp ảnh), kết hợp lệnh `/swarm` để fan-out hàng loạt agent kiểm chứng độ ổn định hoặc tự động tái hiện lỗi (`auto-repro`) ngay khi có báo lỗi từ Slack.
+- **Đầu ra:** Đồ thị phụ thuộc (`DAG`) và bộ hồ sơ giao việc `TIP-01`, `TIP-02`...
+
+### Bước 6: `BUILD` · Thợ Thực Thi TDD, Đòn Bẩy `./bin/control-app` & Kỷ Luật `Scrap When Wrong`
+- **Mục tiêu:** Biến khung chữ ký kiểu (`Type Signatures Sketch`) thành mã nguồn sạch kèm đòn bẩy kiểm chứng tự động.
+- **Hành động của Thợ:**
+  1. Nếu tính năng mới chưa có subcommand tương ứng trong `./bin/control-app`, Thợ phải cập nhật hoặc xây dựng bổ sung đòn bẩy `./bin/control-app` trước theo biểu mẫu [`Control-App-and-Feature-Map.md`](./templates/Control-App-and-Feature-Map.md).
+  2. Viết bài kiểm thử thất bại trước (`Red`) dựa trên tiêu chí chấp nhận trong `TIP`.
+  3. Điền thân hàm vào khung `Type Signatures Sketch` để bài kiểm thử vượt qua (`Green`) và làm sạch mã (`Refactor`).
+  4. **Kỷ luật `Scrap when wrong` (Đập đi làm lại khi kiến trúc sai):** Trong lúc viết code thật, nếu Thợ phát hiện bất kỳ dấu hiệu nào sau đây:
+     - Phải truyền thêm tham số vá víu (`pass-through parameter hacks`) xuyên qua 3 tầng hàm không liên quan;
+     - Phải lặp lại cùng một đoạn code chữa cháy (`workaround`) ở nhiều nơi;
+     - Phải dùng kiểu `any`, `unknown` vô căn cứ hoặc ép kiểu cưỡng bức (`as unknown as T`) để vượt qua trình biên dịch;
+     -> **Đó là bằng chứng thực nghiệm cho thấy kiến trúc ở Bước 4 đã sai.** Thợ **BẮT BUỘC DỪNG CODE NGAY**, phát tín hiệu `SCRAP_TRIGGERED` về Chủ thầu để quay lại Pha 2 của `/architect` thiết kế lại chữ ký hàm, tuyệt đối không cố đấm ăn xôi.
+- **Đầu ra:** Nhánh mã nguồn hoàn chỉnh, test xanh 100%, không có cảnh báo trình biên dịch và đính kèm biên bản [`Completion-Report.md`](./templates/Completion-Report.md).
+
+### Bước 7: `VERIFY` · Khép Kín Vòng Lặp Với `./bin/control-app` & Trọng Tài Độc Lập (`C3`)
+- **Mục tiêu:** Biến Verification thành **Hạ tầng Cốt lõi (`Critical Infrastructure`)**: Agent tự chạy ứng dụng, tự thao tác, tự đọc log/trace và tự chụp bằng chứng (ảnh/video/JSON) để khép kín vòng lặp (`close the loop`) mà không cần con người ngồi canh.
+- **Hành động:**
+  1. **Kiểm chứng Sống bằng Đòn bẩy `./bin/control-app` (`Live Verification`):** Chạy `./bin/control-app` để seed DB chuẩn, giả lập người dùng thử nghiệm, bật/tắt feature flag, chụp cây giao diện (`DOM / accessibility tree`), chụp ảnh màn hình và thu thập kết quả JSON máy đọc được.
+  2. **Kiểm tra Văn phong & Bảo mật (`Constraint Loop`):** Quét khóa bí mật, kiểm tra định dạng đầu ra và xác nhận 0 lỗi lint/typecheck.
+  3. **Trọng tài Độc lập (`Independent Arbiter C3`):** Với các tác vụ cấp `R2` và `R3`, một phiên đánh giá độc lập (không dùng chung bộ nhớ với Thợ) sẽ đối chiếu mã nguồn thực tế với `Blueprint` gốc.
+- **Đầu ra:** Biên bản nghiệm thu đóng dấu mã băm `WTREE_FINGERPRINT` ở trạng thái `DIRTY=false`.
+
+### Bước 8: `REFINE & SHIP` · Phát Hành 2 Giai Đoạn, Vai Trò `The Gardener`, Xóa Plan Tạm & Bảo Trì `Feature Map`
+- **Mục tiêu:** Đưa sản phẩm lên môi trường đích an toàn, giữ kho mã nguồn luôn sạch tinh tươm và cập nhật bộ nhớ tính năng cho các chu kỳ sau.
+- **Hành động:**
+  1. **Phát hành 2 giai đoạn (`Dual-Stage Ship`):** Hợp nhất vào nhánh thử nghiệm (`beta`) -> Chạy kiểm tra hậu triển khai (`Canary`) -> Hợp nhất vào nhánh chính thức (`official`).
+  2. **Tuần tra theo vai trò "Người làm vườn" (`The Gardener`):** Quét phát hiện và nhổ bỏ sớm các mầm mống suy thoái kiến trúc (hàm tiện ích bị viết trùng lặp lần thứ 3 trong tuần, lệnh tắt kiểm tra lint `eslint-disable` / `@ts-ignore`, hoặc cấu hình lệch chuẩn).
+  3. **Vệ sinh Kho mã nguồn (`Temporary Plan Cleanup`):** Ngay sau khi PR đã được merge hoàn tất, xóa bỏ các file kế hoạch thực thi tạm thời trong nhánh làm việc hoặc di chuyển vào thư mục lưu trữ `_Archive/` để không biến kho mã nguồn thành bãi rác gây nhiễu context cho các Agent thế hệ sau.
+  4. **Bảo trì Bộ nhớ Vật chất hóa (`/maintain-verification-skill` & `Post-Ship Sync`):** Chạy quy trình cập nhật `Feature Map` (`references/features/README.md`) để phản ánh chính xác các tính năng, đường dẫn và lệnh `./bin/control-app` mới vừa phát hành; đồng bộ mã băm SHA-256 sang Bộ 02 (`Kernel Registry`) và chấm điểm [`Calibration-Card.md`](./templates/Calibration-Card.md) trên thang 100 điểm.
+
+---
+
+## 4. Ma Trận Ánh Xạ Kỹ Năng (`Vibecode v6.2 × AgentKit × gstack × pstack`)
+
+| Bước trong Vibecode v6.2 | Kỹ năng AgentKit (`ak-*`) | Kỹ năng `gstack` | Đòn bẩy `pstack` (`@poteto`) | Biểu mẫu / Tài liệu đích |
+|---|---|---|---|---|
+| **1. SCAN** | `ak-scout`, `ak-fable-thinking` | `/investigate`, `/context-restore` | `Indirect Prompting Restate`, `/teach = /how + /why + /recall`, đọc `Feature Map` | `Risk-Tier-Classification.md` |
+| **2. RRI** | `ak-brainstorm`, `ak-ask` | `/office-hours`, `/spec` | Khử điểm mù `Under-specified Intent` trước khi thiết kế | `RRI-template.md` |
+| **3. VISION** | `ak-frontend-design`, `ak-ui-ux-pro-max` | `/design-consultation`, `/design-shotgun` | `Working Backwards (4 ô Diátaxis + /unslop)`, `/prototype` (Live Switcher) | `Blueprint-template.md` |
+| **4. BLUEPRINT** | `ak-plan`, `ak-issue-to-plan`, `@kongming` | `/autoplan`, `/plan-ceo-review`, `/plan-eng-review`, `/plan-devex-review` | `5-Phase /architect Arena` (`Ground -> Sketch Type Signatures -> Judge -> Implement -> Scrap`) | `Blueprint-template.md` |
+| **5. TASK GRAPH** | `ak-worktree`, `ak-orchestrate`, `ak-handoff` | `/freeze`, `/guard` | `sequence-verifiable-units`, `Coordinator + Cloud Agents + /swarm (auto-repro)` | `TIP-template.md`, `Handoff-Contract.md` |
+| **6. BUILD** | `ak-cook`, `ak-fix`, `ak-backend-development`, `ak-frontend-development` | `/careful`, `/codex` | Xây `./bin/control-app` (Deep Module), thực thi luật `Scrap when wrong` | `Control-App-and-Feature-Map.md`, `Completion-Report.md` |
+| **7. VERIFY** | `ak-test`, `ak-web-testing`, `ak-code-review`, `ak-security` | `/review`, `/qa`, `/cso`, `/benchmark` | `Live Verification` qua `./bin/control-app --json` (khép kín vòng lặp) | `Audit-Trail-Loop.md` |
+| **8. REFINE & SHIP** | `ak-ship`, `ak-git`, `ak-retro`, `post-ship-notion-sync` | `/ship`, `/land-and-deploy`, `/canary`, `/retro`, `/learn` | `The Gardener` tuần tra PR, xóa file plan tạm, `/maintain-verification-skill` | `Calibration-Card.md`, `references/features/README.md` |

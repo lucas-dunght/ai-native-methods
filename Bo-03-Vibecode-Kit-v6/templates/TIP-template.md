@@ -1,55 +1,69 @@
-# TIP-NNN · [Tên gói công việc ngắn gọn]
+# Gói Giao Việc Cho Thợ (`Task Implementation Package · TIP · v6.2 × pstack`)
 
-**Date.** YYYY-MM-DD
-**Risk tier.** R[0|1|2|3]
-**Priority.** P[0|1|2]
-**Dependencies.** [Không có | Danh sách TIP phải hoàn thành trước]
-**Linked Blueprint.** BP-NNN (Mục hoặc Module liên quan)
-**Assigned Builder.** [Tên phiên Thợ thi công / Runtime / Model]
-**Worktree / Branch.** [main | `.worktrees/tip-NNN` trên nhánh `feat/tip-NNN`]
+- **Mã Gói việc (`TIP ID`):** `[TIP-01]`
+- **Đơn vị Kiểm chứng Tuần tự (`Sequence-Verifiable-Unit`):** `[Unit 1 / PR độc lập #1]`
+- **Thuộc Bản vẽ (`Blueprint Ref`):** `[EPIC-YYYY-MM]`
+- **Nhánh Làm việc (`Worktree / Cloud Agent Branch`):** `[feat/tip-01-...]`
+- **Thư mục Cô lập (`Worktree Path / Cloud VM ID`):** `[.worktrees/tip-01-... hoặc cloud-vm-snap-01]`
+- **Mã Commit Cơ sở (`Base Commit`):** `[a1b2c3d]`
 
-## 1. Intent (Mục đích cốt lõi)
+---
 
-[Mô tả trong 1 đến 3 câu thật cụ thể về kết quả cần tạo ra sau khi hoàn thành gói công việc này. Không viết mơ hồ.]
+## 1. Mục Tiêu Ngắn Gọn & Bối Cảnh (`/how + /why Summary`)
 
-## 2. Why & Context (Ngữ cảnh và Dẫn chiếu)
+- `[Mô tả trong 2 đến 3 câu mục tiêu duy nhất của đơn vị kiểm chứng độc lập này và lý do lịch sử cần lưu ý từ bước /why]`.
 
-- **Lý do nghiệp vụ.** [Tại sao cần thực hiện gói công việc này và nó giải quyết yêu cầu `REQ-ID` nào]
-- **Tài liệu & Kernel Registry tham chiếu.** [Mã ID sự thật L1/L2/L3 từ Bộ 02 hoặc Fact Card từ Bộ 01 nếu có]
-- **Các file mẫu cần đọc trước.** [Danh sách các file có sẵn trong dự án để học quy ước đặt tên và cấu trúc]
+---
 
-## 3. Scope Freeze & Disjoint File Ownership (Khóa phạm vi sửa đổi)
+## 2. Khung Chữ Ký Kiểu Cần Hiện Thực Hóa (`Approved Type Signatures Sketch`)
 
-Thợ thi công chỉ được phép tạo mới hoặc chỉnh sửa các đường dẫn nằm trong mục được phép ghi dưới đây.
+> Thợ điền thân hàm thật vào đúng khung chữ ký đã được duyệt tại Pha 3 của `/architect Arena`:
 
-- **Allowed write paths (Được phép ghi).**
-  - `src/[đường-dẫn-file-1]`
-  - `tests/[đường-dẫn-file-test-1]`
-- **Read-only shared contracts (Hợp đồng dùng chung đã đóng băng, chỉ đọc).**
-  - `src/types/[file-dùng-chung]`
-- **Out of scope (Ngoài phạm vi).**
-  - [Liệt kê rõ những tính năng hoặc thư mục tuyệt đối không chạm vào trong gói này để chống phình phạm vi]
+```typescript
+// Dán khung Type Signatures & Caller Usage Sketch của gói việc này tại đây
+export declare function targetFunction(input: TargetInput): Promise<TargetOutput>;
+```
 
-## 4. Acceptance Criteria & Evidence Floor (Tiêu chí nghiệm thu cơ học)
+---
 
-Mỗi tiêu chí phải kiểm tra được bằng câu lệnh thực thi cụ thể, không đánh giá bằng cảm tính.
+## 3. Ranh Giới Tệp Tin Độc Quyền (`Disjoint File Ownership`)
 
-- **AC1 (Gherkin / Hành vi).** Khi `[điều kiện đầu vào]`, hệ thống thực hiện `[hành động]` và trả về `[kết quả quan sát được]`.
-  - **Verify command.** `[Câu lệnh chạy test hoặc kiểm tra cơ học]`
-- **AC2 (Trường hợp biên / Lỗi).** Khi `[dữ liệu rỗng, sai kiểu hoặc vượt ngưỡng]`, hệ thống trả về thông báo lỗi chuẩn và không làm hỏng trạng thái.
-  - **Verify command.** `[Câu lệnh kiểm tra trường hợp biên]`
-- **AC3 (Ràng buộc chất lượng).** Không lộ khóa bí mật trong mã nguồn, vượt qua kiểm tra kiểu tĩnh và linter.
-  - **Verify command.** `[Câu lệnh kiểm tra kiểu / lint / secret scan]`
+- **Danh sách tệp ĐƯỢC PHÉP tạo mới hoặc chỉnh sửa (`owned_files`):**
+  - `[src/path/to/fileA.ts]`
+  - `[tests/path/to/fileA.test.ts]`
+- **Danh sách tệp CHỈ ĐỌC để tham khảo (`read_only_context`):**
+  - `[references/features/README.md]`
+  - `[src/types/shared.ts]`
+- **Ràng buộc Cứng (`Freeze Rule`):** Tuyệt đối không chỉnh sửa bất kỳ tệp nào nằm ngoài danh sách `owned_files`.
 
-**Yêu cầu cấp độ bằng chứng tối thiểu (Evidence Floor).** `[unit-test | fixture-replay | live-run | production]` kèm dấu vân tay cây thư mục `WTREE_FINGERPRINT` ở trạng thái `FRESH`.
+---
 
-## 5. Reuse Ladder & Constraints (Bậc thang tái sử dụng và Ràng buộc)
+## 4. Luật Đập Đi Làm Lại Khi Kiến Trúc Sai (`Scrap When Wrong Gate`)
 
-- **Tái sử dụng.** [Chỉ rõ các hàm tiện ích, component hoặc thư viện có sẵn trong dự án phải tái sử dụng]
-- **Ràng buộc thư viện ngoài.** [Không cài thêm gói mới | Chỉ được dùng các gói đã duyệt]
-- **Shortcut được phép (nếu có).** [Ghi mã quyết định `D<N>` có `Completeness <= 7/10` đã được Chủ nhà chấp thuận kèm nhãn `vibecode-shortcut(D<N>)` cần gắn vào code]
+> Trong quá trình viết code thật, nếu gặp bất kỳ dấu hiệu nào dưới đây thì **BẮT BUỘC DỪNG CODE NGAY** và gửi báo cáo `SCRAP_TRIGGERED` về Chủ thầu (không được cố đấm ăn xôi):
+- [ ] Phải truyền thêm tham số vá víu (`pass-through parameter hacks`) xuyên qua `>= 3` tầng hàm không liên quan;
+- [ ] Phải lặp lại cùng một đoạn code chữa cháy (`workaround`) ở `>= 2` vị trí;
+- [ ] Phải dùng kiểu `any`, `@ts-ignore` hoặc ép kiểu cưỡng bức (`as unknown as T`) để vượt qua trình biên dịch.
 
-## 6. Failure Protocol & 3-Strike Escalation (Giao thức dừng khi lỗi)
+---
 
-- Nếu bất kỳ lệnh kiểm chứng nào ở Mục 4 thất bại, Thợ phải đọc kỹ đầu ra lỗi để tìm nguyên nhân gốc rễ trước khi sửa.
-- **Quy tắc 3-Strike.** Nếu cùng một lỗi kiểm chứng vẫn thất bại sau 3 lần thử sửa liên tiếp, hoặc phát hiện mâu thuẫn trong Blueprint/Contract dùng chung, Thợ phải **DỪNG NGAY LẬP TỨC**, giữ nguyên hiện trường và gửi nguyên văn câu lệnh cùng toàn bộ log lỗi về cho Chủ thầu / Quân sư Kongming. Tuyệt đối không tự ý sửa đổi bài kiểm thử hoặc hạ tiêu chuẩn nghiệm thu để làm xanh giả tạo.
+## 5. Tiêu Chí Chấp Nhận Cơ Học (`Acceptance Criteria · AC`)
+
+- [ ] **`AC-1 (Happy Path):`** `[Khi đầu vào hợp lệ X, hàm/API trả về kết quả Y với mã 200]`.
+- [ ] **`AC-2 (Edge Case):`** `[Khi dữ liệu rỗng hoặc trùng lặp IdempotencyKey, hệ thống xử lý an toàn không tạo bản ghi trùng]`.
+- [ ] **`AC-3 (Error Rescue):`** `[Khi dịch vụ phụ thuộc lỗi, trả về mã lỗi chuẩn hóa kèm trường next_command và không làm lộ stack trace]`.
+
+---
+
+## 6. Quy Trình Thực Thi Bắt Buộc Của Thợ (`TDD + Live Verification via ./bin/control-app`)
+
+1. **Bước 1 (`Red`):** Viết bài kiểm thử tự động kiểm tra đủ `AC-1`, `AC-2`, `AC-3` và chạy lệnh test để xác nhận bài kiểm thử thất bại đúng lý do.
+2. **Bước 2 (`Green`):** Điền thân hàm vào khung `Type Signatures Sketch` trong `owned_files` để toàn bộ bài kiểm thử chuyển sang màu xanh.
+3. **Bước 3 (`Refactor & Lint`):** Làm sạch mã nguồn, đảm bảo `0` lỗi kiểu dữ liệu (`typecheck`) và `0` cảnh báo `lint`.
+4. **Bước 4 (`Live Verification` · Chỉ pass unit test là chưa đủ, phải chạy code thật):**
+   ```bash
+   ./bin/control-app seed --dry-run --json
+   ./bin/control-app dom --route [target-route] --json
+   ./bin/control-app screenshot --route [target-route] --json
+   ```
+5. **Bước 5 (`Evidence Seal`):** Chụp dấu vân tay `WTREE_FINGERPRINT` và điền đầy đủ vào biểu mẫu [`Completion-Report.md`](../templates/Completion-Report.md).

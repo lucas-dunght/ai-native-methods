@@ -1,6 +1,6 @@
 # Worked Example · Tái cấu trúc Kho Tri thức Doanh nghiệp Fintech (Bộ 02 v2.0 End-to-End)
 
-Tài liệu này minh họa một ví dụ thực chiến hoàn chỉnh chạy qua đủ **5 Phase của Bộ 02 v2.0 (2026.10)** để tổ chức lại kho tài liệu phân tán của một doanh nghiệp dịch vụ thanh toán số, đồng thời nối dữ liệu trực tiếp từ **Bộ 01** sang **Bộ 03 (`Vibecode Kit v6.1`)**.
+Tài liệu này minh họa một ví dụ thực chiến hoàn chỉnh chạy qua đủ **5 Phase của Bộ 02 v2.0 (2026.10)** để tổ chức lại kho tài liệu phân tán của một doanh nghiệp dịch vụ thanh toán số, đồng thời nối dữ liệu trực tiếp từ **Bộ 01** sang **Bộ 03 (`Vibecode Kit v6.2`)**.
 
 ---
 
@@ -122,4 +122,4 @@ notes: "Doanh thu phí dự kiến Quý 4 = 50 tỷ VND GMV * 1.2% = 600 triệu
 
 - **Kiểm chứng bảo toàn thư mục gốc (`[OBSERVED]`).** Mã băm của `company-docs/` sau khi chạy đạt `sha256:6b86b273ff34fce19d6b804eff5a3f57`, khớp `100%` với `ORIGINAL_TREE_FINGERPRINT` (`0` tệp gốc bị xóa hay sửa đổi).
 - **Độ tươi và Tính tất định.** `100%` mục `L1`, `L2`, `L3` đạt trạng thái `FRESH`.
-- **Sẵn sàng bàn giao sang Bộ 03 (`Vibecode Kit v6.1`).** Gói giao việc `TIP-01` của Bộ 03 đã nhúng trực tiếp con trỏ `[L1-merchant-qr-fee-rate-2026-Q4]` và `[OBL-decree-13-001]` vào bảng tiêu chí nghiệm thu của module thanh toán.
+- **Sẵn sàng bàn giao sang Bộ 03 (`Vibecode Kit v6.2`).** Gói giao việc `TIP-01` của Bộ 03 đã nhúng trực tiếp con trỏ `[L1-merchant-qr-fee-rate-2026-Q4]` và `[OBL-decree-13-001]` vào bảng tiêu chí nghiệm thu của module thanh toán.

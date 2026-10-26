@@ -123,6 +123,6 @@ Chỉ thực thi sau khi người dùng đã duyệt Phase 4.
 |---|---|---|
 | Kiểm toán Độ tươi & Bộ tính `L2` | `references/freshness-and-deterministic-l2.md` | Phase 1, Phase 3 & Phase 5 · Kiểm tra SHA-256 và tính công thức L2 |
 | Chỉ mục Phân tầng CSV, Graphify & GBrain | `references/hybrid-indexing-and-gbrain.md` | Phase 4 & Phase 5 · Thiết kế `dependency-index.csv` và mở rộng quy mô lớn |
-| Cầu nối Liên thông Bộ 01 → Bộ 02 → Bộ 03 | `references/bo01-bo02-bo03-bridge.md` | Khi nhập `Fact Cards` từ Bộ 01 hoặc nối `Kernel Registry` vào `Vibecode Kit v6.1` |
+| Cầu nối Liên thông Bộ 01 → Bộ 02 → Bộ 03 | `references/bo01-bo02-bo03-bridge.md` | Khi nhập `Fact Cards` từ Bộ 01 hoặc nối `Kernel Registry` vào `Vibecode Kit v6.2` |
 | Bộ 8 Bản mẫu Chuẩn v2.0 | `templates/*` | Khởi tạo `L1`, `L2`, `L3`, `L4`, `manifest`, `classification`, `dependency-index`, `queues` |
 | Ví dụ Thực chiến End-to-End | `examples/worked-example.md` | Xem luồng chạy mẫu 5 phase từ kiểm kê đến nghiệm thu bảo toàn dữ liệu |

@@ -59,7 +59,7 @@ Chế độ tin cậy của `L4` là **đầu vào định hướng sáng tạo,
 
 ### 2. Skills là gói quy trình chứa con trỏ, không chứa sách luật riêng
 
-Khi viết một `Skill` cho AI Agent (ví dụ kỹ năng lập báo cáo tài chính, kỹ năng soạn hợp đồng, hoặc các gói `TIP` trong **Bộ 03 Vibecode Kit v6.1**), nếu người viết chép trực tiếp các con số đơn giá hoặc nội dung điều khoản pháp lý vào trong tệp `SKILL.md`, tệp `SKILL.md` đó sẽ lập tức bị lỗi thời ngay khi bảng giá hoặc thông tư thay đổi.
+Khi viết một `Skill` cho AI Agent (ví dụ kỹ năng lập báo cáo tài chính, kỹ năng soạn hợp đồng, hoặc các gói `TIP` trong **Bộ 03 Vibecode Kit v6.2**), nếu người viết chép trực tiếp các con số đơn giá hoặc nội dung điều khoản pháp lý vào trong tệp `SKILL.md`, tệp `SKILL.md` đó sẽ lập tức bị lỗi thời ngay khi bảng giá hoặc thông tư thay đổi.
 
 Giải pháp chuẩn của Bộ 02.
 1. Tách toàn bộ số liệu cứng đưa vào `registry/` (`L1`, `L2`) và tách toàn bộ quy tắc bắt buộc đưa vào `obligations/` (`L3`).
