@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "repo_name": "ai-native-methods",
+  "canonical_version": "2026.10",
+  "last_synced_commit": "1dbe9ae",
+  "last_synced_at": "2026-10-26T10:05:27.360585+00:00",
+  "master_hub_page_id": "4054ffbe44fc817b9692d1538c266ab2",
+  "master_hub_page_url": "https://app.notion.com/p/4054ffbe44fc817b9692d1538c266ab2",
+  "repo_hub_page_id": "4054ffbe-44fc-8182-819b-ecdbfe40c672",
+  "repo_hub_page_url": "https://app.notion.com/p/4054ffbe44fc8182819becdbfe40c672",
+  "subpages": {
+    "01_architecture": {
+      "title": "01. Kiến Trúc, Data Model & Guardrails (Architecture & Security)",
+      "page_id": "4054ffbe-44fc-816d-aac1-f6f861b2b129",
+      "page_url": "https://app.notion.com/p/4054ffbe44fc816daac1f6f861b2b129",
+      "sha256": "ffa450f1476e8786b68b49184fbee00da0bda7a479384315662775b0a864460b",
+      "source_files": [
+        "CLAUDE.md",
+        "docs/explanation-multi-signal-router-and-key-pool.md"
+      ]
+    },
+    "02_packages_skills": {
+      "title": "02. Danh Mục Packages, Modules & Skills (Packages & Core Capabilities)",
+      "page_id": "4054ffbe-44fc-8191-9d22-d57b6f9e8319",
+      "page_url": "https://app.notion.com/p/4054ffbe44fc81919d22d57b6f9e8319",
+      "sha256": "0d7e24dc0e1347afce74fd3d2e0342b56798a66998c3ecf621ff0f8ab0d3f940",
+      "source_files": [
+        "README.md"
+      ]
+    },
+    "03_api_mcp_reference": {
+      "title": "03. Tham Chiếu CLI, REST API & MCP Tools (API & MCP Reference)",
+      "page_id": "4054ffbe-44fc-81ff-94f2-fc62743af969",
+      "page_url": "https://app.notion.com/p/4054ffbe44fc81ff94f2fc62743af969",
+      "sha256": "",
+      "source_files": []
+    },
+    "04_howto_operations": {
+      "title": "04. Hướng Dẫn Cấu Hình, Vận Hành & Triển Khai (How-To & Operations)",
+      "page_id": "4054ffbe-44fc-81f9-9f9d-ec041f0bea0a",
+      "page_url": "https://app.notion.com/p/4054ffbe44fc81f99f9dec041f0bea0a",
+      "sha256": "a7fa8443eca74b9062696c158ae657cdc3a2ebdf6e7eca5f9acf834f040e0d74",
+      "source_files": [
+        "docs/tutorial-first-15-minutes-with-tools.md"
+      ]
+    },
+    "05_release_calibration_log": {
+      "title": "05. Nhật Ký Phát Hành, PRs & Calibration Ledger (Release & Calibration Log)",
+      "page_id": "4054ffbe-44fc-8110-b02a-dd1ee4716398",
+      "page_url": "https://app.notion.com/p/4054ffbe44fc8110b02add1ee4716398",
+      "sha256": "82c987332706164f417b41b087be7513605105b54141218a48260c1357fe167a",
+      "source_files": [
+        "CHANGELOG.md",
+        "VERSION",
+        "plans/journals/261026-1655-vibecode-kit-v6-2-pstack.md"
+      ]
+    }
+  }
+}
