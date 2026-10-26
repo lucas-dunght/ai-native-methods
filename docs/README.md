@@ -12,6 +12,7 @@ Thư mục `docs/` cung cấp bộ tài liệu hướng dẫn toàn diện cho h
 | **2. Sổ tay thao tác (`How-To`)** | [how-to-configure-and-extend-api-tools.md](./how-to-configure-and-extend-api-tools.md) | **Kỹ sư & Người vận hành.** Hướng dẫn cách đăng ký và thêm nhiều khóa (`TAVILY_KEY_POOL`, `EXA_KEY_POOL`, `LINKUP_KEY_POOL`) vào `~/.mcp_env`, cách cấu hình `tavily-cli` / `gbrain`, cách kết nối MCP vào 7 AI Client và **cách viết code tích hợp thêm nhà cung cấp API mới vào `search_pool.py`**. |
 | **3. Tham chiếu kỹ thuật (`Reference`)** | [reference-tools-and-api-config.md](./reference-tools-and-api-config.md) | **Lập trình viên tra cứu thông số.** Bảng mô tả chính xác 100% biến môi trường, hằng số `COOLDOWN_*`, chữ ký 3 hàm MCP (`web_search`, `web_extract`, `pool_status`), 21 tiện ích `gstack-bin`, 13 `hooks` và 58 kỹ năng phụ trợ. |
 | **4. Giải thích kiến trúc (`Explanation`)** | [explanation-multi-signal-router-and-key-pool.md](./explanation-multi-signal-router-and-key-pool.md) | **Kiến trúc sư hệ thống & Giảng viên.** Giải thích lý do thiết kế chấm điểm đa tín hiệu chống bắt nhầm (`Anti-Hijacking`), xoay vòng khóa 2 tầng, cơ chế nhảy nhanh `HTTP 204` và băm một chiều `sha256(key)[:16]` để bảo vệ khóa trên ổ cứng. |
+| **5. Cẩm nang Toàn trình A đến Z (`Master Playbook`)** | [cam-nang-lam-san-pham-a-den-z.md](./cam-nang-lam-san-pham-a-den-z.md) | **Toàn bộ kỹ sư, PM, sinh viên & giảng viên.** Cẩm nang toàn trình làm sản phẩm AI-Native từ A đến Z (`v2.2 · Vibecode Kit v6.2 × pstack @poteto`): từ lên ý tưởng, tinh lọc thông tin, chỉ đạo Frontier Models (`Indirect Prompting` + `/teach`), lập kế hoạch bằng code (`Working Backwards Diátaxis`, `/prototype`, `5-Phase /architect Arena`, `Scrap when wrong`), xây đòn bẩy `./bin/control-app` CLI & `Feature Map` đến điều phối `Cloud /swarm`, phát hành, thương mại hóa (GTM) và vận hành định kỳ. |
 
 ---
 
@@ -19,5 +20,5 @@ Thư mục `docs/` cung cấp bộ tài liệu hướng dẫn toàn diện cho h
 
 - **Bộ 01 · Tinh Lọc Thông Tin Internet (v2.0):** [`../Bo-01-Tinh-Loc-Thong-Tin-Internet/README.md`](../Bo-01-Tinh-Loc-Thong-Tin-Internet/README.md)
 - **Bộ 02 · Kernel Registry & Nguồn Sự Thật (v2.0):** [`../Bo-02-Kernel-Registry-SOT/README.md`](../Bo-02-Kernel-Registry-SOT/README.md)
-- **Bộ 03 · Vibecode Kit (v6.1):** [`../Bo-03-Vibecode-Kit-v6/README.md`](../Bo-03-Vibecode-Kit-v6/README.md)
+- **Bộ 03 · Vibecode Kit (v6.2 × `pstack`):** [`../Bo-03-Vibecode-Kit-v6/README.md`](../Bo-03-Vibecode-Kit-v6/README.md)
 - **Tổng quan Thư mục Công cụ (`tools/`):** [`../tools/README.md`](../tools/README.md)

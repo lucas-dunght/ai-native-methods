@@ -30,7 +30,7 @@ Bốn, **Phân loại quyết định 3 tầng và Cổng duyệt `Decision Brie
 
 Năm, **Khóa phạm vi chỉ sao chép (`Copy-Only Scope Freeze`)**. Ở Phase 5, Agent chỉ được phép dựng cấu trúc mới bằng cách sao chép, đồng thời chụp mã băm cây thư mục gốc trước và sau khi chạy để chứng minh cơ học rằng `0` file gốc bị xóa hay ghi đè.
 
-Sáu, **Đường ống liên thông 3 Bộ (`Bộ 01 -> Bộ 02 -> Bộ 03`)**. Nhận trực tiếp các `Fact Cards` hạng `verified` từ Bộ 01 làm đầu vào `L1` và cung cấp các mã định danh con trỏ (`[L1-...]`, `[L2-...]`, `[L3-...]`, `[L4-...]`) cho các `TIP` và `Blueprint` của Bộ 03 (`Vibecode Kit v6.1`).
+Sáu, **Đường ống liên thông 3 Bộ (`Bộ 01 -> Bộ 02 -> Bộ 03`) và Cầu nối `Feature Map` (`pstack`)**. Nhận trực tiếp các `Fact Cards` hạng `verified` từ Bộ 01 làm đầu vào `L1`, cung cấp các mã định danh con trỏ (`[L1-...]`, `[L2-...]`, `[L3-...]`, `[L4-...]`) cho các `TIP` và `Blueprint` của Bộ 03 (`Vibecode Kit v6.2 × pstack`), đồng thời đối chiếu mã băm SHA-256 với bản đồ tính năng `references/features/README.md` (`Feature Map`) thông qua quy trình bảo trì định kỳ `/maintain-verification-skill` để ngăn chặn hiện tượng trôi lệch (`drift`) giữa tài liệu và mã nguồn thực tế.
 
 ## Cấu trúc thư mục
 

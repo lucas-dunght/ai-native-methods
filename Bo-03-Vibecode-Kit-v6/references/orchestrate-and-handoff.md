@@ -1,66 +1,81 @@
-# Giao thức Điều phối Đa Thợ, Cố vấn Kongming, Trọng tài Độc lập và Handoff An toàn
+# Giao Thức Chia Nhỏ Đơn Vị Kiểm Chứng, Điều Phối `Worktree / Cloud Swarm` & Bàn Giao Khử Bí Mật (`Orchestrate & Handoff Protocol`)
 
-Tài liệu này hướng dẫn cách tổ chức thi công khi dự án có nhiều gói công việc (`TIP`), kéo dài qua nhiều phiên làm việc hoặc phối hợp nhiều công cụ AI khác nhau (Claude, Antigravity, Codex, Cursor), được chắt lọc từ **`ak-orchestrate` v2.0**, **`ak-vibe` v1.5** và **`ak-handoff` v2.1**.
+> **Bước 5 & Bước 6 của Vibecode Kit v6.2 (`× pstack`) · Đơn vị `Sequence-Verifiable-Units` · Vượt Trần Phần Cứng Máy Cá Nhân (`~10 Agents`) bằng `Coordinator + Cloud Agents + /swarm`**
 
-## 1. Điều phối Đa Thợ Song song (Multi-Builder Orchestration)
+---
 
-Khi Đồ thị Gói Công việc (`Task Graph` ở Bước 5) có từ hai gói `TIP` trở lên không phụ thuộc lẫn nhau và có thể giao cho nhiều phiên Thợ chạy cùng lúc, Chủ thầu bắt buộc áp dụng ba quy tắc bảo vệ.
+## 1. Chia Nhỏ Kế Hoạch Theo Đơn Vị Kiểm Chứng Độc Lập (`Sequence-Verifiable-Units`)
 
-### Quy tắc 1 · Đóng băng Hợp đồng Chung trước khi Phân luồng (Contracts Up Front)
-Mọi cấu trúc dữ liệu, giao diện hàm (interface), bảng cơ sở dữ liệu hoặc file cấu hình mà nhiều Thợ cùng cần sử dụng phải được hoàn thành và đóng băng ở một gói `TIP` nền tảng chạy trước. Các Thợ chạy song song ở giai đoạn sau chỉ được phép đọc (`Read-only`) các file hợp đồng này.
+Sau khi thiết kế đã được chứng minh bằng code qua `/prototype` hoặc `5-Phase /architect Arena`, Chủ thầu mới xuất bản kế hoạch thực thi nhiều giai đoạn ở Bước 5 (`TASK GRAPH`) theo 3 nguyên tắc cứng:
+1. **Chia thành các PR nhỏ độc lập (`Sequence-Verifiable-Units`):** Mỗi gói giao việc ([`TIP-template.md`](../templates/TIP-template.md)) phải là một đơn vị có thể biên dịch, chạy kiểm thử và merge độc lập mà không làm gãy nhánh chính.
+2. **Gắn chặt với Kiểm chứng Sống (`Live Verification`):** Mọi bước trong kế hoạch đều phải đi kèm câu lệnh thực thi qua `./bin/control-app` ("chỉ vượt qua unit test là chưa đủ, bắt buộc phải chạy code thật và thu bằng chứng thật").
+3. **Không giao nhau về quyền sở hữu tệp (`Disjoint File Ownership`):** Hai gói việc chạy song song (`TIP-A` và `TIP-B`) bắt buộc có tập hợp tệp được phép sửa hoàn toàn tách biệt:
+   $$\text{owned\_files}(A) \cap \text{owned\_files}(B) = \emptyset$$
+   Nếu hai gói việc cần chạm vào cùng một tệp cấu hình hoặc tệp định tuyến chung, phải xếp chúng chạy nối tiếp theo thứ tự trong đồ thị `DAG` hoặc tách phần chỉnh sửa tệp chung thành một bước khởi tạo ngắn trước khi phân nhánh.
 
-### Quy tắc 2 · Sở hữu File Rời nhau Tuyệt đối (Disjoint File Ownership)
-Hai Thợ chạy đồng thời không bao giờ được phép có quyền ghi vào cùng một file. Chủ thầu phải liệt kê tường minh danh sách đường dẫn được phép ghi (`Allowed write paths`) trong từng `TIP` và kiểm tra giao thoa bằng không trước khi phát lệnh thi công.
+---
 
-### Quy tắc 3 · Cô lập bằng Không gian Git Worktree (Worktree Isolation)
-Ngay cả khi hai Thợ sửa hai thư mục khác nhau, việc chạy chung trên một cây thư mục vẫn gây xung đột bộ nhớ đệm biên dịch, file tạm hoặc làm nhiễu lệnh `git status`. Do đó, mỗi Thợ chạy song song phải được cấp một nhánh và một thư mục `git worktree` riêng biệt.
+## 2. Định Tuyến Điều Phối Song Song: `<= 10 Local Worktrees` vs. `> 10 Cloud Agents + /swarm`
 
-```bash
-# Tạo worktree riêng cho từng gói TIP từ commit nền đã đóng băng hợp đồng
-git worktree add -b feat/tip-002 .worktrees/tip-002 HEAD
-git worktree add -b feat/tip-003 .worktrees/tip-003 HEAD
+Một bài học xương máu từ thực tế vận hành `pstack` của `@poteto`: **Việc lạm dụng quá nhiều `git worktree` trên một máy tính cá nhân sẽ nhanh chóng chạm trần phần cứng khi chạy vượt quá `~10` agents đồng thời** (ngốn hàng chục GB ổ cứng cho `node_modules`/build artifacts, đụng độ cổng mạng `port` và cơ sở dữ liệu kiểm thử, tràn bộ nhớ RAM làm treo máy trạm).
+
+Do đó, Vibecode Kit v6.2 áp dụng kiến trúc điều phối hai tầng tự động phân luồng theo số lượng tác vụ song song:
+
+```text
+                       [CHỦ THẦU / COORDINATOR BOT (Giữ Context Sạch)]
+                                              │
+                     ┌────────────────────────┴────────────────────────┐
+                     ▼ (Quy mô <= 10 nhánh song song)                  ▼ (Quy mô > 10 nhánh hoặc cần /swarm)
+   +------------------------------------------------+ +------------------------------------------------+
+   |      TẦNG 1: LOCAL GIT WORKTREES (<= 10)       | |   TẦNG 2: CLOUD AGENTS & /SWARM (> 10 AGENTS)  |
+   | - Tạo nhánh tại .worktrees/tip-<id>            | | - Mỗi Cloud Agent chạy trên VM ảo hóa riêng    |
+   | - Cấp phát APP_PORT = 3100 + <id> riêng biệt   | | - Khởi động tức thì từ VM Snapshot đã cài sẵn  |
+   | - Khóa phạm vi sửa tệp bằng /freeze & /guard   | | - Có màn hình thật (virtual display) để chụp   |
+   | - Chạy ./bin/control-app kiểm chứng cục bộ     | |   ảnh, quay video và chạy trình duyệt thật     |
+   | - Thu hồi worktree ngay sau khi merge          | | - Hỗ trợ /swarm fan-out kiểm tra độ ổn định    |
+   |                                                | |   hoặc auto-repro lỗi tự động từ Slack         |
+   +------------------------------------------------+ +------------------------------------------------+
 ```
 
-Khi một Thợ gặp lỗi thất bại, giữ nguyên worktree đó để Chủ thầu khám nghiệm hiện trường, tuyệt đối không xóa dấu vết lỗi.
+### Quy Trình Khởi Tạo Tầng 1 (`Local Git Worktree` cho `<= 10` nhánh):
+```bash
+TASK_ID="tip-01-order-cancel"
+BRANCH_NAME="feat/${TASK_ID}"
+WORKTREE_DIR=".worktrees/${TASK_ID}"
 
-## 2. Giám sát Cố vấn Kongming (`--advice`) và Giao thức Dừng 3-Strike
+mkdir -p .worktrees
+git worktree add -b "${BRANCH_NAME}" "${WORKTREE_DIR}" main
+```
+Khi hoàn tất và đã merge nhánh vào `main`, bắt buộc dọn dẹp ngay:
+```bash
+git worktree remove "${WORKTREE_DIR}"
+git branch -d "${BRANCH_NAME}"
+```
 
-Trong các dự án mức **R2** và **R3**, hoặc khi sử dụng các mô hình Thợ chuyên tốc độ cao, việc để Thợ tự xoay xở khi gặp lỗi phức tạp thường dẫn đến hiện tượng "xoắn ốc suy thoái" (sửa mò làm hỏng các tính năng khác hoặc xóa bớt bài kiểm thử để vượt qua cổng).
+### Quy Trình Vận Hành Tầng 2 (`Coordinator Bot + Cloud Agents + /swarm` cho `> 10` nhánh):
+1. **Vai trò của `Coordinator Bot`:** Đóng vai Chủ thầu điều phối trung tâm, hoàn toàn không tự chạy tác vụ nặng hay giữ hàng nghìn dòng log trong bộ nhớ ngữ cảnh của mình; chỉ gửi gói lệnh (`TIP` hoặc kịch bản tái hiện lỗi) và nhận về báo cáo JSON gọn nhẹ kèm đường dẫn bằng chứng.
+2. **Môi trường `Cloud Agents`:** Mỗi Agent thực thi chạy trên một máy ảo đám mây độc lập được khởi tạo tức thì từ bản chụp (`VM snapshot` đã nạp sẵn dependencies và DB mẫu), có màn hình hiển thị thật (`virtual framebuffer / display`) để chạy `./bin/control-app screenshot` và quay video thao tác giao diện mà không bị giới hạn tài nguyên máy cá nhân.
+3. **Kịch bản `/swarm` & Tự động tái hiện lỗi (`auto-repro`):**
+   - **Kiểm chứng độ ổn định (`Stability Swarm`):** Khi cần săn lỗi chập chờn (`flaky test` / `race condition`) hoặc kiểm thử một tính năng trên 20 cấu hình dữ liệu khác nhau, `Coordinator` phát lệnh `/swarm` để tung đồng loạt hàng chục `Cloud Agents` chạy `./bin/control-app` song song và gom kết quả thống kê.
+   - **Tự động tái hiện lỗi từ kênh chat (`Slack Auto-Repro`):** Ngay khi có người dùng hoặc tester báo lỗi trên Slack, `Coordinator Bot` đọc thông báo lỗi, thực hiện `Indirect Prompting Restate`, rồi điều động một đội `Cloud Agents` qua `/swarm` thử các tổ hợp trạng thái qua `./bin/control-app repro` cho đến khi dựng lại được kịch bản lỗi có thể tái hiện 100% kèm video bằng chứng và đề xuất PR sửa lỗi.
 
-Lớp **Cố vấn Kongming (Quân sư độc lập chạy trên mô hình có năng lực suy luận cao nhất)** tham gia tại 5 điểm chốt.
-1. **Sau khi hoàn thành khảo sát và chẩn đoán (Bước 1 & 2).** Xác nhận nguyên nhân gốc rễ và phạm vi trước khi lập kế hoạch.
-2. **Sau khi hoàn thành dự thảo Blueprint (Bước 4).** Đánh giá tính khả thi, điểm mù kiến trúc và rủi ro lớn nhất cần canh chừng.
-3. **Khi Thợ chạm ngưỡng dừng 3-Strike hoặc gặp lỗi kiểm chứng (Bước 6).** Khi bất kỳ lệnh kiểm chứng nào thất bại mà nguyên nhân không hiển nhiên, hoặc sau 3 lần thử sửa liên tiếp vẫn đỏ, Thợ phải dừng ngay lập tức. Chủ thầu chuyển nguyên văn câu lệnh, log lỗi và các phương án đã thử sang Quân sư Kongming để lấy phán xét trước khi cho phép chạm lại vào code.
-4. **Trước các quyết định cửa một chiều.** Thay đổi cấu trúc cơ sở dữ liệu, chính sách bảo mật hoặc hợp nhất nhánh lớn.
-5. **Sau khi qua cổng Verify và trước khi nâng lên nhánh Stable (Bước 7 & 8).** Đánh giá tổng thể lần cuối và đề xuất các bước theo dõi sau phát hành.
+---
 
-Nguyên tắc cốt lõi là Quân sư Kongming chỉ đưa ra phán xét chiến lược và chỉ dẫn gỡ rối, tuyệt đối không trực tiếp sửa code thay Thợ.
+## 3. Cổng Chặn An Toàn Khi Thực Thi (`Safety Gates: /freeze, /guard, /careful`)
 
-## 3. Trọng tài Độc lập Chấm chéo (Independent Arbiter Pass · C3 Route)
+Để ngăn chặn việc Thợ vô tình phá hỏng các tệp ngoài phạm vi hoặc chạy các lệnh nguy hiểm:
+1. **Khóa biên giới thư mục (`/freeze`):** Giới hạn quyền ghi tệp của Thợ chỉ nằm trong thư mục hoặc danh sách `owned_files` được chỉ định trong `TIP`.
+2. **Bảo vệ toàn diện (`/guard` & `/careful`):** Chặn tự động các câu lệnh có nguy cơ hủy hoại dữ liệu (`git reset --hard`, `git push --force`, `rm -rf`, `DROP TABLE`) và bắt buộc mọi lệnh tác động trạng thái trong `./bin/control-app` phải kiểm tra cờ `--dry-run` trước khi chạy thật.
+3. **Cơ chế Cứu hộ khi Thợ Bị Kẹt (`2-Strike Escalation & Scrap When Wrong`):**
+   - Nếu Thợ gặp dấu hiệu kiến trúc sai (phải truyền tham số vá víu, lặp lại workaround hoặc dùng `any`), kích hoạt ngay **`Scrap when wrong`** để báo Chủ thầu thiết kế lại chữ ký hàm.
+   - Nếu Thợ chạy kiểm thử thất bại quá **2 vòng liên tiếp** trên cùng một lỗi mà chưa tìm ra nguyên nhân gốc, bắt buộc dừng việc thử mò mẫm và chuyển hồ sơ cho Chủ thầu hoặc Quân sư (`@kongming`) phân tích.
 
-Một phiên AI vừa bỏ công viết 500 dòng code sẽ luôn có xu hướng nhìn nhận sản phẩm của mình một cách lạc quan khi tự kiểm tra. Vì vậy, ở Bước 7 (`VERIFY`) của các tác vụ quan trọng, Chủ thầu khởi tạo một phiên **Trọng tài Độc lập (Arbiter)** theo các tiêu chuẩn sau.
+---
 
-- **Ngữ cảnh mới tinh (Fresh Context).** Phiên Trọng tài chỉ nhận vào bản vẽ `Blueprint`, gói yêu cầu `TIP`, báo cáo `Completion Report` và quyền truy cập kho mã nguồn hiện tại. Không nạp lịch sử hội thoại nháp của Thợ để tránh lây nhiễm định kiến.
-- **Độc lập Họ Mô hình khi có thể (Cross-Model Independence).** Nếu Thợ thi công là họ mô hình A (ví dụ Claude), ưu tiên chọn Trọng tài hoặc công cụ phản biện từ họ mô hình B (ví dụ GPT/Codex) hoặc một phiên độc lập hoàn toàn.
-- **Bảng kiểm của Trọng tài (Arbiter Checklist).**
-  1. Mã `WTREE_FINGERPRINT` trong báo cáo có khớp tuyệt đối với trạng thái thực tế của cây thư mục hiện tại không?
-  2. Các file bị thay đổi có nằm gọn trong `Scope Freeze` của TIP không?
-  3. Chạy lại các lệnh `Verify command` trong TIP có thực sự trả về mã thoát `0` với cấp độ bằng chứng đạt chuẩn không?
-  4. Có bài kiểm thử nào bị làm yếu đi, bị bỏ qua (`skip`) hoặc chỉ kiểm tra giả tạo không?
-  5. Mọi yêu cầu `REQ-ID` được giao cho TIP này đã được giải quyết trọn vẹn chưa?
+## 4. Hợp Đồng Bàn Giao Đã Khử Bí Mật (`Redacted Handoff Contract`)
 
-Chỉ khi Trọng tài kết luận **`PASS`** trên cả 5 câu hỏi, nhánh của Thợ mới được phép hợp nhất vào nhánh chính.
+Khi phiên làm việc kéo dài chạm ngưỡng `70%` dung lượng vùng nhớ ngữ cảnh hoặc khi chuyển giao công việc giữa hai Agent khác nhau, bắt buộc kết hợp lệnh `/recall` (rút trích trạng thái từ transcript) và xuất tệp bàn giao theo mẫu [`templates/Handoff-Contract.md`](../templates/Handoff-Contract.md) với 3 yêu cầu bắt buộc:
 
-## 4. Hợp đồng Bàn giao Chuyển tiếp có Che mật khẩu (Redacted Handoff Contract)
-
-Khi cần chuyển giao công việc giữa hai phiên làm việc (do hết giới hạn ngữ cảnh, hết ca làm việc hoặc chuyển từ môi trường lập kế hoạch sang môi trường thi công), tuyệt đối không dán toàn bộ lịch sử trò chuyện dài dòng. Hãy xuất một file **Handoff Contract** theo đúng bản mẫu `templates/Handoff-Contract.md`.
-
-### Quy tắc Che mật khẩu Bắt buộc (Mandatory Redaction)
-Trước khi ghi file Handoff hoặc chia sẻ nhật ký kiểm thử, phải quét và thay thế mọi chuỗi nhạy cảm bằng nhãn `[REDACTED:loại-khóa]`.
-- Các khóa API, chuỗi Bearer Token, JWT, cookie phiên đăng nhập → `[REDACTED:token]`
-- Khóa riêng tư PEM, SSH private key → `[REDACTED:private-key]`
-- Giá trị biến môi trường nhạy cảm trong `.env` (`PASSWORD`, `SECRET`, `KEY`, `DATABASE_URL`) → `[REDACTED:env-secret]`
-- Đường dẫn máy chủ nội bộ hoặc URL có gắn chữ ký truy cập tạm thời → `[REDACTED:signed-url]`
-
-### Nguyên tắc Bước An toàn Đầu tiên (`First safe step`)
-Mục số 8 (`Exact next actions`) của mọi bản Handoff phải mở đầu bằng một bước kiểm tra an toàn, chỉ đọc (`**First safe step.**`), giúp phiên AI tiếp nhận tự đối chiếu trạng thái nhánh, mã commit và kết quả chạy test hiện tại trước khi viết dòng code tiếp theo.
+1. **Đóng dấu `WTREE_FINGERPRINT`:** Ghi rõ mã commit và trạng thái cây làm việc tại thời điểm bàn giao.
+2. **Liệt kê Bằng chứng Kiểm chứng Sống (`Live Verification Status`):** Ghi rõ những đơn vị `sequence-verifiable-units` nào đã chạy pass qua `./bin/control-app` và những đơn vị nào đang chờ.
+3. **Quét Khử Bí mật Tự động (`Mandatory Secret Redaction`):** Chạy bộ lọc biểu thức chính quy để thay thế mọi chuỗi khóa nhạy cảm (`sk-...`, `tvly-...`, `ghp_...`, `AIza...`, `Bearer ...`) thành `<REDACTED_SECRET>` trước khi lưu tệp bàn giao xuống đĩa.

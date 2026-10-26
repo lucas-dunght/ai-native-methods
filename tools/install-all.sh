@@ -23,7 +23,7 @@ echo "==========================================================================
 mkdir -p "${GEMINI_SKILLS_DIR}" "${GEMINI_SKILLS_DIR}/bin" "${CLAUDE_SKILLS_DIR}" "${CLAUDE_HOOKS_LIB}" "${GSTACK_HOOKS_DIR}"
 
 # 1. Cài đặt 3 Bộ Phương Pháp Cốt Lõi (Core Suites)
-echo "📦 [1/5] Cài đặt 3 Bộ Phương Pháp Cốt Lõi (v2.0 & v6.1)..."
+echo "📦 [1/5] Cài đặt 3 Bộ Phương Pháp Cốt Lõi (v2.0 & v6.2)..."
 rm -rf "${GEMINI_SKILLS_DIR}/internet-info-refinement" "${GEMINI_SKILLS_DIR}/kernel-registry-sot" "${GEMINI_SKILLS_DIR}/vibecode-kit-v6"
 cp -R "${REPO_ROOT}/Bo-01-Tinh-Loc-Thong-Tin-Internet" "${GEMINI_SKILLS_DIR}/internet-info-refinement"
 cp -R "${REPO_ROOT}/Bo-02-Kernel-Registry-SOT" "${GEMINI_SKILLS_DIR}/kernel-registry-sot"

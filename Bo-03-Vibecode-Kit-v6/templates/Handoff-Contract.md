@@ -1,81 +1,46 @@
-# HO-NNN · Hợp đồng Bàn giao Chuyển tiếp Phiên làm việc (Redacted Handoff Contract)
+# Hợp Đồng Bàn Giao Đã Khử Bí Mật (`Redacted Handoff Contract · v6.2 × pstack`)
 
-**Handoff-version.** 1
-**Date captured.** YYYY-MM-DD HH:mm
-**Linked TIP / Blueprint.** TIP-NNN / BP-NNN
-**From Agent / Session.** [Phiên bàn giao · Vai trò · Model]
-**To Agent / Session.** [Phiên tiếp nhận · Vai trò · Model]
+- **Phiên Bàn giao (`From Session / Role`):** `[Session A · Chủ thầu / Thợ]`
+- **Phiên Tiếp nhận (`To Session / Role`):** `[Session B · Chủ thầu / Thợ / Trọng tài C3]`
+- **Thời điểm Bàn giao:** `[YYYY-MM-DDTHH:MM:SSZ]`
+- **Trạng thái Khử Bí mật (`Secret Redaction`):** `VERIFIED (0 secrets present)`
 
-> **Hướng dẫn cho Agent tiếp nhận.** Đọc toàn bộ 9 mục dưới đây và đối chiếu mục `## 3. Current state` với kho mã nguồn thực tế trước khi thực hiện bất kỳ thao tác ghi nào. Bắt đầu chính xác từ dòng được đánh dấu `**First safe step.**` ở mục 8.
+---
 
-## 1. Mission and current status
+## 1. Dấu Vân Tay Cây Làm Việc Tại Thời Điểm Bàn Giao (`WTREE_FINGERPRINT`)
 
-- **Mục tiêu cuối cùng của tác vụ.** [Mô tả rõ kết quả cần đạt của gói công việc]
-- **Phần việc đã hoàn thành.** [Những hạng mục đã làm xong và đã kiểm chứng]
-- **Phần việc còn lại.** [Những hạng mục cần phiên tiếp nhận hoàn thành nốt]
-- **Mức độ ưu tiên / Hạn chót.** [P0 / P1 / P2]
-
-## 2. Scope and guardrails
-
-- **Thư mục gốc làm việc (Workspace root).** `[Đường dẫn tuyệt đối hoặc tương đối trong repo]`
-- **Các đường dẫn được phép sửa (Scope Freeze).**
-  - `src/...`
-  - `tests/...`
-- **Các đường dẫn và hành động bị cấm.**
-  - Không sửa các file hợp đồng dùng chung ngoài danh sách trên.
-  - Không tự ý chạy lệnh triển khai (`deploy`) hoặc đẩy cưỡng bức (`git push --force`).
-  - Không đưa khóa bí mật hoặc dữ liệu nhạy cảm vào mã nguồn và nhật ký.
-
-## 3. Current state
-
-Kết quả thu thập trực tiếp từ kho mã nguồn tại thời điểm tạo bản bàn giao (`OBSERVED`).
-
-- **Git repository root.** `[Kết quả từ git rev-parse --show-toplevel]`
-- **Current branch.** `[Kết quả từ git rev-parse --abbrev-ref HEAD]`
-- **HEAD commit.** `[Kết quả từ git rev-parse HEAD]`
-- **Working-tree fingerprint (`WTREE_FINGERPRINT`).** `[Mã băm 16 ký tự hiện tại]`
-- **Trạng thái các file đang thay đổi (`git status --short`).**
 ```text
-[Danh sách file đang sửa đổi hoặc chưa theo dõi, đã qua bộ lọc che mật khẩu]
+WTREE_FINGERPRINT: HEAD=[commit_hash] TREE=[tree_hash] WTREE=[wtree_sig] DIRTY_FILES=[count]
 ```
-- **Các thay đổi cục bộ trên đĩa có chủ đích hay không?** `[Có, đang làm dở phần X | Không, cây thư mục sạch]`
 
-## 4. Decisions and rationale
+---
 
-- **Quyết định 1.** [Nội dung quyết định và lý do chọn, dẫn chiếu mã `D<N>` hoặc `BP-NNN`]
-- **Phương án đã loại bỏ.** [Phương án nào đã thử hoặc đã cân nhắc nhưng loại bỏ để phiên sau không đi lại vào ngõ cụt]
+## 2. Tóm Tắt Ngữ Cảnh Hai Chiều (`/recall` + `/how` + `/why` Summary)
 
-## 5. Work performed
+- **Bản diễn đạt lại bài toán (`Indirect Prompting Restate`):** `[Tóm tắt 2 câu bản chất bài toán đã được Chủ nhà duyệt]`.
+- **Các quyết định lịch sử & kiến trúc đã khóa (`/why` & `D<N>`):**
+  - `D1`: `[Đã chọn Phương án A (10/10) · Không được thay đổi quyết định này]`.
+  - `Architecture Sketch`: `[Đang thực thi theo khung chữ ký kiểu tại Blueprint mục 4.1]`.
 
-Tóm tắt các bước thực thi và câu lệnh quan trọng đã chạy (mọi thông tin nhạy cảm đã được thay bằng nhãn `[REDACTED:loại-khóa]`).
+---
 
-- Đã tạo/sửa `[tên file]` để xử lý `[mô tả ngắn]`.
-- Đã chạy lệnh `[câu lệnh]` và thu được kết quả `[tóm tắt kết quả đã che secret]`.
+## 3. Tiến Độ Đơn Vị Kiểm Chứng Độc Lập (`Sequence-Verifiable-Units Progress`)
 
-## 6. Verification
+### A. Đã Hoàn Thành & Đã Kiểm Chứng Sống (`Completed & Live Verified` `[OBSERVED]`):
+- [x] `TIP-01` (`Unit 1`): Đã hoàn thiện tại `[src/fileA.ts:1-80]`, pass `4/4` tests và pass `./bin/control-app dom --route /api/orders --json`.
 
-- **Các bài kiểm tra đã chạy và đạt (`PASS`).**
-  - `[Lệnh 1]` → Đạt (cấp bằng chứng `unit-test`).
-- **Các bài kiểm tra đang lỗi hoặc chưa chạy (`FAIL` / `NOT RUN`).**
-  - `[Lệnh 2]` → Chưa chạy vì `[lý do cụ thể]`.
+### B. Đang Dang Dở hoặc Cần Làm Tiếp (`Next Actionable Steps`):
+- [ ] `TIP-02` (`Unit 2`): Cần hoàn thiện `[src/fileB.tsx]` theo đúng tiêu chí `AC-1`, `AC-2` trong `TIP-02.md` và chạy `./bin/control-app screenshot --route /orders/ORD-01 --json`.
+- [ ] Sau khi merge: Xóa file kế hoạch tạm và chạy `/maintain-verification-skill` cập nhật `references/features/README.md`.
 
-## 7. Open risks and blockers
+---
 
-- **Rủi ro / Câu hỏi mở.** [Mô tả điểm nghẽn kỹ thuật hoặc câu hỏi cần Chủ thầu/Chủ nhà xác nhận nếu có, hoặc ghi `Not captured in this session`]
+## 4. Cạm Bẫy Cần Tránh & Môi Trường Giả Lập (`Dead Ends & Redacted Environment`)
 
-## 8. Exact next actions
-
-Danh sách các bước hành động cụ thể theo đúng thứ tự thực hiện cho phiên tiếp nhận.
-
-1. **First safe step.** Chạy lệnh `git status --short` và `[lệnh kiểm tra hiện trạng]` để xác nhận môi trường khớp với Mục 3 trước khi viết thêm code.
-2. Hoàn thiện hàm/module `[tên cụ thể]` tại file `[đường dẫn:dòng]`.
-3. Chạy lệnh kiểm chứng `[verify command]` cho tới khi toàn bộ tiêu chí AC trong `TIP-NNN` chuyển sang xanh.
-4. Chụp lại mã `WTREE_FINGERPRINT` mới và xuất file `vibecode-artifacts/completion-reports/CR-NNN.md`.
-
-## 9. Source pointers
-
-- **Gói công việc hiện tại.** `vibecode-artifacts/TIP/TIP-NNN.md`
-- **Bản vẽ kiến trúc.** `vibecode-artifacts/blueprints/BP-NNN.md`
-- **Các file mã nguồn trọng tâm.**
-  - `src/[file-1]`
-  - `tests/[file-test-1]`
+- **Hướng tiếp cận đã thử nhưng thất bại (`Do Not Repeat`):**
+  - `[Không dùng thư viện X vì xung đột với phiên bản Node hiện tại]`.
+- **Biến môi trường cần thiết (Đã khử khóa thật):**
+  ```env
+  API_BASE_URL="https://api.example.com"
+  PROVIDER_API_KEY="<REDACTED_SECRET>"
+  ```

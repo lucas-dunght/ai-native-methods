@@ -7,10 +7,10 @@ Kho lưu trữ này chứa **3 Bộ Phương Pháp Làm Việc Cùng AI** cùng 
 ## 1. Cấu Trúc Kho Lưu Trữ & Khởi Tạo Nhanh
 
 - `Bo-01-Tinh-Loc-Thong-Tin-Internet/` (`internet-info-refinement` v2.0): Phương pháp tinh lọc và làm giàu thông tin từ internet qua 7 giai đoạn.
-- `Bo-02-Kernel-Registry-SOT/` (`kernel-registry-sot` v2.0): Phương pháp quản trị Nguồn Sự Thật Đa Xuất Xứ (`L1 / L2 / L3 / L4`).
-- `Bo-03-Vibecode-Kit-v6/` (`vibecode-kit-v6` v6.1): Phương pháp xây dựng và phát hành phần mềm điều phối đa tác tử theo 8 bước co giãn theo tầng rủi ro `R0..R3`.
+- `Bo-02-Kernel-Registry-SOT/` (`kernel-registry-sot` v2.0): Phương pháp quản trị Nguồn Sự Thật Đa Xuất Xứ (`L1 / L2 / L3 / L4`) kết nối mã băm SHA-256 với `Feature Map`.
+- `Bo-03-Vibecode-Kit-v6/` (`vibecode-kit-v6` v6.2 × `pstack`): Phương pháp xây dựng và phát hành phần mềm điều phối đa tác tử theo 8 bước co giãn theo tầng rủi ro `R0..R3`, tích hợp Đòn bẩy `./bin/control-app` CLI (Deep Module), `Feature Map` (`references/features/README.md` + `/maintain-verification-skill`), `Indirect Prompting Restate`, bộ tứ `/teach = /how + /why + /recall`, `Working Backwards (4 ô Diátaxis + /unslop)`, `/prototype` Switcher, `5-Phase /architect Arena (Type Signatures Sketch + Scrap when wrong)` và định tuyến `<= 10 Local Worktrees` vs `> 10 Coordinator + Cloud Agents + /swarm`.
 - `tools/`: Chứa trình cài đặt 1 lệnh `./tools/install-all.sh`, máy chủ MCP `unified-search` (`tools/unified-search-mcp/`), 58 kỹ năng phụ trợ (`tools/skills/{tavily,akkit,gstack}/`), 21 tiện ích dòng lệnh (`tools/gstack-bin/`) và 13 mô-đun kiểm định (`tools/hooks/`).
-- `docs/`: Bộ tài liệu hướng dẫn công cụ và cấu hình API theo chuẩn Diataxis 4 góc nhìn (`Tutorial`, `How-To`, `Reference`, `Explanation`).
+- `docs/`: Bộ tài liệu hướng dẫn công cụ và cấu hình API theo chuẩn Diataxis 4 góc nhìn (`Tutorial`, `How-To`, `Reference`, `Explanation`) cùng Cẩm nang Toàn trình làm sản phẩm AI-Native từ A đến Z ([`docs/cam-nang-lam-san-pham-a-den-z.md`](./docs/cam-nang-lam-san-pham-a-den-z.md)).
 
 ---
 
@@ -31,7 +31,7 @@ Khi yêu cầu của người dùng khớp với một trong các tác vụ dư�
 ### 3.1. Định tuyến 3 Bộ Phương Pháp Cốt Lõi
 - Thu thập, kiểm chứng chéo thông tin từ internet, lập thẻ `Fact Card`, khử phòng vang trích dẫn (`Echo-Chamber Check`) -> Kích hoạt **`/internet-info-refinement`** (`Bo-01-Tinh-Loc-Thong-Tin-Internet/SKILL.md`).
 - Tổ chức kho tri thức nội bộ theo 4 xuất xứ (`L1/L2/L3/L4`), kiểm toán mã băm SHA-256 (`FRESH/STALE/EXPIRED`), tính toán dẫn xuất `L2` tất định -> Kích hoạt **`/kernel-registry-sot`** (`Bo-02-Kernel-Registry-SOT/SKILL.md`).
-- Điều phối dự án phần mềm từ khảo sát (`SCAN`), phỏng vấn ngược (`RRI`), thiết kế kiến trúc (`BLUEPRINT`), chia gói `TIP`, thi công đa `worktree` đến phát hành -> Kích hoạt **`/vibecode-kit-v6`** (`Bo-03-Vibecode-Kit-v6/SKILL.md`).
+- Điều phối dự án phần mềm từ khảo sát (`SCAN` + `Indirect Prompting` + `/teach`), phỏng vấn ngược (`RRI`), thiết kế ngược `Working Backwards` & đấu trường `5-Phase /architect Arena` (`BLUEPRINT`), chia đơn vị kiểm chứng độc lập (`sequence-verifiable-units` · `TIP`), thi công `Local Worktrees (<= 10)` hoặc `Cloud /swarm (> 10)`, kiểm chứng sống qua `./bin/control-app` đến phát hành (`The Gardener` + xóa plan tạm + `/maintain-verification-skill`) -> Kích hoạt **`/vibecode-kit-v6`** (`Bo-03-Vibecode-Kit-v6/SKILL.md`).
 
 ### 3.2. Định tuyến Hệ Sinh Thái Công Cụ Phụ Trợ (`tools/skills/`)
 - **Tìm kiếm đa tín hiệu & lọc ngữ cảnh PTC:** Ưu tiên gọi MCP `unified-search` (`web_search`, `web_extract`, `pool_status`) kết hợp `/tavily-dynamic-search`, `/tavily-map`, `/tavily-crawl`, `/tavily-research`.
@@ -41,3 +41,23 @@ Khi yêu cầu của người dùng khớp với một trong các tác vụ dư�
 - **Thi công, gỡ lỗi, kiểm thử & kiểm toán bảo mật:** Kích hoạt `/ak-cook`, `/ak-fix`, `/ak-debug`, `/investigate`, `/qa`, `/qa-only`, `/test-audit`, `/ak-security` hoặc `/cso`.
 - **Điều phối song song, bàn giao phiên & phát hành:** Kích hoạt `/ak-worktree`, `/ak-orchestrate`, `/ak-handoff`, `/context-save`, `/context-restore`, `/review`, `/ak-review-pr`, `/ak-ship`, `/ship` hoặc `/land-and-deploy`.
 - **Viết mới hoặc đồng bộ tài liệu kỹ thuật:** Kích hoạt `/document-generate` hoặc `/document-release`.
+
+## Skill routing
+
+When the user's request matches an available skill, ALWAYS invoke it using the Skill
+tool as your FIRST action. Do NOT answer directly, do NOT use other tools first.
+The skill has specialized workflows that produce better results than ad-hoc answers.
+
+Key routing rules:
+- Product ideas, "is this worth building", brainstorming -> invoke office-hours
+- Bugs, errors, "why is this broken", 500 errors -> invoke investigate
+- Ship, deploy, push, create PR -> invoke ship
+- QA, test the site, find bugs -> invoke qa
+- Code review, check my diff -> invoke review
+- Update docs after shipping -> invoke document-release
+- Weekly retro -> invoke retro
+- Design system, brand -> invoke design-consultation
+- Visual audit, design polish -> invoke design-review
+- Architecture review -> invoke plan-eng-review
+- Save progress, checkpoint, resume -> invoke context-save
+- Code quality, health check -> invoke health

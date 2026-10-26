@@ -28,15 +28,18 @@ Dùng cho quản trị tri thức doanh nghiệp, xây dựng trợ lý AI nội
 
 📂 [`Bo-02-Kernel-Registry-SOT/`](./Bo-02-Kernel-Registry-SOT/)
 
-### Bộ 03 · Vibecode Kit (v6.1)
+### Bộ 03 · Vibecode Kit (v6.2 × `pstack`)
 
-Khung làm việc để xây sản phẩm phần mềm bằng cách điều phối đội ngũ AI agent. Ba vai trò chính (Chủ thầu, Thợ thi công, Chủ nhà) kết hợp cùng lớp Cố vấn và Trọng tài độc lập (Kongming / Arbiter). Quy trình 8 bước tự co giãn theo phân tầng rủi ro R0 đến R3.
+Khung làm việc để xây sản phẩm phần mềm bằng cách điều phối đội ngũ AI agent. Ba vai trò chính (Chủ thầu, Thợ thi công, Chủ nhà / Người làm vườn `The Gardener`) kết hợp cùng lớp Cố vấn và Trọng tài độc lập (Kongming / Arbiter). Quy trình 8 bước tự co giãn theo phân tầng rủi ro R0 đến R3.
 
-Bản nâng cấp **v6.1 (2026.10)** tích hợp tinh hoa từ hai bộ công cụ `gstack` và `AgentKit (akkit)` gồm kỷ luật nhận định Fable 5.1 (`OBSERVED` / `DERIVED` / `PRIOR` / `ASSUMED`), sổ cái bằng chứng gắn dấu vân tay cây thư mục (`WTREE_FINGERPRINT`), phỏng vấn quyết định `D<N>` chấm điểm độ hoàn thiện (`Completeness X/10`) kèm sổ nợ làm tắt (`Shortcut Debt`), cổng duyệt kế hoạch 4 lăng kính (`CEO -> Design -> DX -> Eng`) và phản biện Red-Team, điều phối đa Thợ cô lập trên `git worktree` với quyền sở hữu file rời nhau (`Disjoint Ownership`), bàn giao chuyển phiên 9 mục có che mật khẩu (`Redacted Handoff`), phát hành hai chặng (`Beta -> Stable`) và thẻ hiệu chỉnh 100 điểm (`Calibration Card`).
+Bản nâng cấp **v6.2 (2026.10 · `Vibecode × pstack @poteto`)** hợp nhất toàn bộ nền tảng của v6.1 (`gstack` + `AgentKit` + `Fable 5.1`) với hai trụ cột cốt lõi từ hệ thống `pstack` của Lauren Tan (`@poteto`) gồm:
+- **Đòn bẩy Hạ tầng Tự Kiểm Chứng (`Build the Lever` · `./bin/control-app` CLI) & Bộ nhớ Vật chất hóa (`Feature Map`):** Đóng gói CLI `./bin/control-app` theo 6 tiêu chuẩn *Deep Modules* của John Ousterhout (`subcommands`, `--dry-run`, báo lỗi chỉ rõ lệnh tiếp theo `next_command`, `--json`, bao phủ trọn DX: `seed`, `auth`, `flag`, `dom`, `screenshot`, `perf`) kết hợp bản đồ `references/features/README.md` (`Feature Map`) được đồng bộ hàng ngày qua `/maintain-verification-skill`.
+- **Chỉ đạo Mô hình Tiên tiến & Lập kế hoạch bằng Code (`Supervising Smarter Models`):** Nhúng kỹ thuật `Indirect Prompting` (*"Restate in your own words"*), bộ tứ nhận thức hai chiều `/teach = /how + /why + /recall`, thiết kế ngược `Working Backwards` (`Caller README` theo 4 ô `Diátaxis` + `/unslop`), thực nghiệm giao diện `/prototype` (`Live UI Switcher`) và đấu trường kiến trúc 5 pha `/architect Arena` (`Ground -> Sketch Type Signatures & Caller Usage -> Cross-judge & Synthesize -> Implement -> Scrap when wrong`).
+- **Định tuyến `Local Worktrees (<= 10)` vs. `Cloud Agents + /swarm (> 10)` & Vai trò "Người làm vườn" (`The Gardener`):** Chia kế hoạch thành các đơn vị kiểm chứng độc lập (`sequence-verifiable-units`), vượt trần phần cứng máy cá nhân bằng `Coordinator Bot + Cloud VM Snapshots + /swarm` (tự động tái hiện lỗi Slack `auto-repro`), xóa file plan tạm sau khi merge và tuần tra dòng chảy PR để nhổ cỏ dại kiến trúc từ sớm.
 
 Dùng cho đồ án xây ứng dụng, luận văn có deliverable phần mềm, dự án incubator, MVP và đội ngũ kỹ thuật AI-Native.
 
-📂 [`Bo-03-Vibecode-Kit-v6/`](./Bo-03-Vibecode-Kit-v6/)
+📂 [`Bo-03-Vibecode-Kit-v6/`](./Bo-03-Vibecode-Kit-v6/) · 📘 [Cẩm nang Toàn trình làm sản phẩm từ A đến Z (`docs/cam-nang-lam-san-pham-a-den-z.md`)](./docs/cam-nang-lam-san-pham-a-den-z.md)
 
 ### Bộ Công Cụ & Kỹ Năng Đi Kèm (`tools/` · All-in-One Bootstrap)
 
@@ -45,7 +48,7 @@ Dùng cho đồ án xây ứng dụng, luận văn có deliverable phần mềm,
 - **`tools/skills/`** chứa **58 kỹ năng phụ trợ (`Companion Skills`)** gồm 8 kỹ năng `tavily-*`, 19 kỹ năng `akkit` (`ak-fable-thinking`, `ak-graphify`, `ak-orchestrate`, `ak-ship`...) và 31 kỹ năng `gstack` (`scrape`, `skillify`, `setup-gbrain`, `sync-gbrain`, `autoplan`, `qa`, `cso`...).
 - **`tools/gstack-bin/`** và **`tools/hooks/`** chứa 21 tiện ích dòng lệnh (`gstack-wtree`, `gstack-evidence`, `gstack-verify-gate`...) và 13 mô-đun kiểm định hợp đồng PR (`pr-body-contract.cjs`, `writing-language.cjs`...).
 
-📂 [`tools/`](./tools/) · 📖 [`docs/`](./docs/) (Tài liệu hướng dẫn cấu hình API Key Pool & mở rộng công cụ theo chuẩn Diataxis: [Tutorial 15 phút](./docs/tutorial-first-15-minutes-with-tools.md) · [How-To thêm API Key & thêm Provider mới](./docs/how-to-configure-and-extend-api-tools.md) · [Reference kỹ thuật](./docs/reference-tools-and-api-config.md) · [Giải thích kiến trúc](./docs/explanation-multi-signal-router-and-key-pool.md))
+📂 [`tools/`](./tools/) · 📖 [`docs/`](./docs/) (Tài liệu hướng dẫn cấu hình API Key Pool, mở rộng công cụ theo chuẩn Diataxis và **Cẩm nang Toàn trình A đến Z**: [Cẩm nang làm sản phẩm A đến Z](./docs/cam-nang-lam-san-pham-a-den-z.md) · [Tutorial 15 phút](./docs/tutorial-first-15-minutes-with-tools.md) · [How-To thêm API Key & thêm Provider mới](./docs/how-to-configure-and-extend-api-tools.md) · [Reference kỹ thuật](./docs/reference-tools-and-api-config.md) · [Giải thích kiến trúc](./docs/explanation-multi-signal-router-and-key-pool.md))
 
 ---
 
@@ -107,7 +110,7 @@ Ba bộ chia sẻ bốn nguyên tắc nền tảng.
 
 **Một, AI không thay thế phán xét cuối cùng của con người.** Mọi quyết định có hậu quả nghiêm trọng hoặc đi qua cánh cửa một chiều phải được trình qua thẻ quyết định `Decision Brief D<N>` để một con người ký nhận trách nhiệm. AI hỗ trợ khảo sát, tổng hợp, đề xuất, phản biện và thi công. Con người chọn hướng và chịu trách nhiệm.
 
-**Hai, mọi khẳng định và báo cáo hoàn thành đều phải có bằng chứng cơ học truy ngược được.** Không chấp nhận nguồn thông tin mồ côi hoặc hiệu ứng phòng vang (Bộ 01 v2.0), không trộn lẫn sự thật cứng với phong cách cá nhân hoặc để dữ liệu trôi mã băm (Bộ 02 v2.0) và không nghiệm thu phần mềm khi thiếu bằng chứng chạy kiểm thử tươi mới gắn với dấu vân tay mã nguồn (Bộ 03 v6.1).
+**Hai, mọi khẳng định và báo cáo hoàn thành đều phải có bằng chứng cơ học truy ngược được.** Không chấp nhận nguồn thông tin mồ côi hoặc hiệu ứng phòng vang (Bộ 01 v2.0), không trộn lẫn sự thật cứng với phong cách cá nhân hoặc để dữ liệu trôi mã băm (Bộ 02 v2.0) và không nghiệm thu phần mềm khi thiếu đòn bẩy kiểm chứng sống `./bin/control-app` gắn với dấu vân tay mã nguồn (Bộ 03 v6.2).
 
 **Ba, không tự xây cái thị trường hoặc kho mã nguồn đã có sẵn.** Trước khi tự dựng quy trình hay viết hàm mới, luôn rà soát bậc thang tái sử dụng từ công cụ sẵn có trong dự án, thư viện chuẩn cho tới các mô hình ngôn ngữ lớn.
 
@@ -124,11 +127,11 @@ Bộ 01 v2.0 (Tinh lọc thông tin từ internet · PTC + Echo-Chamber Check)
    │
    │  Fact Cards hạng verified (exact_quote + content_hash)
    ▼
-Bộ 02 v2.0 (Kernel Registry SOT · SHA-256 Freshness + L2 Tất định)
+Bộ 02 v2.0 (Kernel Registry SOT · SHA-256 Freshness + L2 Tất định + Feature Map Bridge)
    │
-   │  Con trỏ [L1-*], [L2-*], [OBL-*], [L4-*] trạng thái FRESH
+   │  Con trỏ [L1-*], [L2-*], [OBL-*], [L4-*] trạng thái FRESH + references/features/README.md
    ▼
-Bộ 03 v6.1 (Vibecode Kit · Worktree Isolation + Arbiter C3 + Dual-Stage Ship)
+Bộ 03 v6.2 × pstack (./bin/control-app + /teach + 5-Phase /architect Arena + Cloud /swarm)
    │
    │  Sản phẩm phần mềm + WTREE_FINGERPRINT + Calibration Card 100 điểm
    ▼
@@ -150,7 +153,7 @@ Không bắt buộc dùng cả ba cùng lúc. Mỗi bộ đều có thể vận 
 
 ## Phiên bản
 
-Phiên bản hiện hành của toàn bộ kho tài liệu là **2026.10** (Bộ 01 v2.0, Bộ 02 v2.0 và Bộ 03 v6.1). Khi áp dụng vào dự án, vui lòng ghi rõ phiên bản đã sử dụng trong báo cáo để thuận tiện đối chiếu.
+Phiên bản hiện hành của toàn bộ kho tài liệu là **2026.10** (Bộ 01 v2.0, Bộ 02 v2.0 và Bộ 03 v6.2 × `pstack`). Khi áp dụng vào dự án, vui lòng ghi rõ phiên bản đã sử dụng trong báo cáo để thuận tiện đối chiếu.
 
 ---
 
@@ -189,6 +192,6 @@ Khi sử dụng trong báo cáo học thuật hoặc dự án, vui lòng trích 
 
 ```
 Nguyễn, C. L. (2026). AI-Native Methods · Ba phương pháp làm việc với AI
-(Version 2026.10 · Bộ 01 v2.0, Bộ 02 v2.0, Bộ 03 v6.1) [Computer software]. GitHub.
+(Version 2026.10 · Bộ 01 v2.0, Bộ 02 v2.0, Bộ 03 v6.2 × pstack) [Computer software]. GitHub.
 https://github.com/lucas-dunght/ai-native-methods
 ```

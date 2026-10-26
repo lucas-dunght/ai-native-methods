@@ -1,58 +1,84 @@
-# Giao thức Kiểm thử Bề mặt Thật (Surface-Aware QA) và Gỡ lỗi Nguyên nhân Gốc (Root-Cause Debug)
+# Giao Thức Đòn Bẩy Tự Kiểm Chứng (`./bin/control-app`), Bản Đồ `Feature Map`, Chẩn Đoán Đa Giả Thuyết & Trọng Tài Độc Lập (`VERIFY Protocol`)
 
-Tài liệu này định nghĩa quy trình kiểm soát chất lượng ở **Bước 6 (BUILD)**, **Bước 7 (VERIFY)** và quy trình xử lý khi gặp lỗi phức tạp trong Vibecode Kit v6.1, kết hợp từ **`gstack /qa`**, **`gstack /test-audit`**, **`gstack /investigate`** và **`ak-debug` v4.2**.
+> **Bước 6 & Bước 7 của Vibecode Kit v6.2 (`× pstack`) · "Verification is all you need" · Xây Đòn Bẩy Bằng CLI Thay Vì Chỉ Viết Markdown**
 
-## 1. Giao thức Gỡ lỗi Nguyên nhân Gốc rễ (Systematic Root-Cause Debugging)
+---
 
-### Luật Sắt (The Iron Law of Debugging)
-**KHÔNG BAO GIỜ SỬA CODE KHI CHƯA CHỨNG MINH ĐƯỢC NGUYÊN NHÂN GỐC RỄ.**
+## 1. Tại Sao Verification Là Hạ Tầng Cốt Lõi (`Verification as Critical Infrastructure`)?
 
-Khi gặp một bài kiểm thử thất bại, một lỗi biên dịch hoặc hành vi sai lệch, việc đoán mò và sửa thử từng dòng ("thử đổi chỗ này xem có chạy không") là con đường nhanh nhất làm nát kho mã nguồn. Thợ thi công bắt buộc đi qua 4 pha theo đúng thứ tự.
+Bài học nền tảng số 1 từ hệ thống `pstack` của `@poteto`:
+> **Nếu AI Agent không thể tự kiểm chứng công việc của chính nó, mọi thứ khác đều trở nên vô nghĩa vì con người vẫn là nút thắt cổ chai (`bottleneck`).**
 
-### Pha 1 · Tái hiện lỗi và Thu thập Bằng chứng (Reproduce & Evidence Capture)
-- Chạy một câu lệnh cụ thể để tái hiện lỗi một cách nhất quán.
-- Đọc toàn bộ thông báo lỗi và ngăn xếp lời gọi hàm (stack trace) từ đầu đến cuối, không đoán qua dòng cuối cùng.
-- Khóa phạm vi chỉnh sửa (`Scope Freeze`) vào đúng module đang điều tra để không làm ảnh hưởng các vùng mã nguồn khác.
+- **Verification thực chất là gì?** Không phải là chỉ chạy một bài unit test trên dữ liệu giả (`mock`), mà là Agent **tự chạy ứng dụng thật, tự thao tác trên giao diện/API, tự đọc log/trace và tự chụp bằng chứng (ảnh màn hình, video, cây DOM, phản hồi JSON)** để khép kín vòng lặp (`close the loop`) cho đến khi đạt kết quả đúng mà không cần con người ngồi canh (`babysitting`).
+- Khi một nền tảng có rào chắn (`guardrails`) và công cụ tự kiểm chứng đủ mạnh, cả kỹ sư lẫn người không chuyên (`non-engineers`) đều có thể đóng góp tính năng an toàn, nhân **100 đến 1000 lần** năng suất của toàn đội.
 
-### Pha 2 · Truy ngược Dòng dữ liệu về Nguồn phát sinh (Backward Root-Cause Tracing)
-- Bắt đầu từ nơi chương trình phát nổ hoặc trả về kết quả sai, lần ngược từng bước gọi hàm lên phía trên để tìm chính xác nơi dữ liệu hợp lệ bắt đầu biến thành dữ liệu hỏng.
-- Nguyên tắc sửa lỗi ở đúng cao độ nguyên nhân là sửa tại nơi sinh ra dữ liệu sai hoặc tại hàm dùng chung mà các nhánh cùng đi qua, không đắp vá triệu chứng ở hàng chục nơi gọi hàm.
+---
 
-### Pha 3 · Kiểm định Giả thuyết Đơn biến (Single-Variable Hypothesis Testing)
-- Đặt ra giả thuyết cụ thể theo cấu trúc "Lỗi xảy ra vì tại file X dòng Y, khi điều kiện Z xuất hiện thì giá trị trả về bị lệch".
-- Kiểm chứng giả thuyết bằng cách in nhật ký chẩn đoán tạm thời hoặc viết một bài kiểm thử nhỏ chỉ nhắm vào đúng điều kiện đó. Mỗi lần chỉ thay đổi đúng một biến số.
+## 2. Nguyên Lý "Build the Lever": Xây Đòn Bẩy `./bin/control-app` CLI (`Deep Modules`)
 
-### Pha 4 · Quy tắc Dừng 3-Strike và Sửa lỗi Có Phòng thủ Chiều sâu (3-Strike Stop & Fix)
-- **Cổng chặn 3-Strike.** Nếu đã thử 3 giả thuyết hoặc 3 lần sửa liên tiếp mà lỗi vẫn còn hoặc làm phát sinh lỗi mới, Thợ phải **DỪNG NGAY LẬP TỨC**. Khôi phục lại trạng thái sạch trước khi sửa mò, ghi rõ 3 phương án đã thử cùng toàn bộ đầu ra lỗi và báo cáo lên Chủ thầu / Quân sư Kongming để xem xét lại kiến trúc.
-- Khi đã chứng minh được nguyên nhân gốc rễ, viết một bài kiểm thử tái hiện lỗi chạy đỏ trước, áp dụng bản sửa lỗi gọn sạch để bài kiểm thử chuyển sang xanh, rồi xóa bỏ mọi đoạn mã chẩn đoán tạm thời.
+Sai lầm phổ biến nhất của các bộ kỹ năng AI truyền thống là chỉ viết hướng dẫn kiểm thử bằng chữ trong `SKILL.md` (ví dụ: *"Hãy mở trình duyệt, đăng nhập rồi kiểm tra trang thanh toán"*). Cách làm này khiến Agent phải tốn hàng nghìn token để tự viết các đoạn script dùng một lần (`one-off scripts`) mỗi khi cần test, vừa chậm vừa dễ gãy.
 
-## 2. Giao thức Kiểm thử Nhận diện Bề mặt (Surface-Aware QA · 3 Tiers)
+**Giải pháp của Vibecode Kit v6.2:** Đóng gói một công cụ dòng lệnh thân thiện với Agent mang tên **`./bin/control-app`** theo triết lý **Deep Modules** của John Ousterhout (xem biểu mẫu chi tiết tại [`templates/Control-App-and-Feature-Map.md`](../templates/Control-App-and-Feature-Map.md)).
 
-Ở Bước 7 (`VERIFY`), hoạt động kiểm thử không dừng ở việc chạy lại bộ unit test sẵn có mà phải kiểm tra trực tiếp trên bề mặt hoạt động thực tế của sản phẩm theo 3 tầng.
+### Sáu Tiêu Chuẩn Bắt Buộc Khi Thiết Kế `./bin/control-app` Cho Agent:
+1. **Dễ ghép nối & Hé lộ chức năng tăng dần (`Composable Subcommands & Progressive Disclosure`):**
+   - Chia thành các lệnh con rõ nghĩa: `./bin/control-app <seed|auth|flag|dom|screenshot|perf|repro|doctor>`.
+2. **Bắt buộc có cờ `--dry-run` cho mọi lệnh gây tác dụng phụ:**
+   - Bất kỳ lệnh nào làm thay đổi cơ sở dữ liệu, trạng thái phiên hoặc cấu hình đều phải hỗ trợ `--dry-run` để Agent kiểm tra trước tác động mà không làm hỏng môi trường.
+3. **Thông báo lỗi chỉ dẫn hành động (`Actionable Error Messages`):**
+   - Khi lệnh thất bại, thông báo lỗi phải mô tả rõ **nguyên nhân gốc (`root_cause`)** và **chỉ dẫn trực tiếp câu lệnh tiếp theo Agent cần chạy (`next_command`)** để tự phục hồi.
+4. **Hỗ trợ `--help` chi tiết và trả đầu ra máy đọc được (`--json`):**
+   - Mọi lệnh con đều có `--help` kèm ví dụ thực tế và trả về cấu trúc JSON thống nhất để Agent đọc kết quả chính xác 100%.
+5. **Bao phủ trọn vẹn Trải nghiệm Phát triển (`Full DX Coverage`):**
+   - `seed`: Nạp dữ liệu mẫu chuẩn xác vào DB kiểm thử.
+   - `auth`: Giả lập đăng nhập người dùng thử nghiệm (`mock auth / test user`) không cần qua bước nhập mật khẩu thủ công hay OTP.
+   - `flag`: Bật hoặc tắt `feature flag` ngay trong phiên làm việc (kể cả chuyển đổi giữa các phương án `/prototype`).
+   - `dom`: Lấy bản chụp cây giao diện (`DOM / Accessibility Tree snapshot`) đã lọc nhiễu để tiết kiệm token.
+   - `screenshot`: Chụp ảnh màn hình hoặc quay video tại đúng đường dẫn cần nghiệm thu.
+   - `perf`: Đo thời gian phản hồi API, số lượng câu truy vấn SQL (`N+1 check`) và chỉ số hiển thị.
+6. **Khép kín vòng lặp tự trị (`Autonomous Loop Closure`):**
+   - Cho phép Thợ chạy chu trình `Sửa code -> Chạy ./bin/control-app -> Đọc JSON/Log -> Tự sửa tiếp` cho tới khi `ok: true`.
 
-### Tầng 1 · Kiểm chứng Tĩnh và Bảo mật Cơ bản (Static & Gate G0)
-- Quét phát hiện lộ khóa bí mật, mật khẩu hoặc token trong toàn bộ các file mới và file thay đổi (Gate G0 · nếu phát hiện lộ khóa thì chặn đứng ngay lập tức).
-- Chạy trình kiểm tra kiểu tĩnh (TypeScript/Mypy...), linter và kiểm tra định dạng.
+---
 
-### Tầng 2 · Kiểm thử Đơn vị, Biên và Tích hợp (Unit, Boundary & Integration)
-- Kiểm tra toàn bộ các tiêu chí nghiệm thu `AC` trong `TIP`.
-- Thử thách các trường hợp biên gồm đầu vào rỗng (`null`, `undefined`, chuỗi trống `""`, mảng rỗng `[]`), dữ liệu cực lớn, ký tự tiếng Việt có dấu / Unicode đặc biệt, gọi lặp hai lần liên tiếp và quyền truy cập không hợp lệ.
+## 3. Bộ Nhớ Vật Chất Hóa (`Materialized Memory · Feature Map` & `/maintain-verification-skill`)
 
-### Tầng 3 · Thăm dò Bề mặt Thật (Live Surface Exploration)
-Tùy theo loại sản phẩm, chọn đúng công cụ kiểm chứng bề mặt thật thay vì chỉ nhìn mã nguồn.
-- **Bề mặt Web / Giao diện (Browser Surface).** Mở ứng dụng trên trình duyệt thật, thực hiện thao tác bấm, điền biểu mẫu, kiểm tra bố cục trên màn hình máy tính và điện thoại, chụp ảnh màn hình bằng chứng và kiểm tra cửa sổ Console đảm bảo không có lỗi JavaScript ngầm.
-- **Bề mặt API / Dịch vụ (API Surface).** Khởi chạy máy chủ cục bộ, gửi các yêu cầu HTTP/gRPC thật với đầy đủ trường hợp hợp lệ và không hợp lệ, kiểm tra mã trạng thái trả về, cấu trúc dữ liệu và độ trễ.
-- **Bề mặt Công cụ Dòng lệnh (CLI Surface).** Chạy trực tiếp câu lệnh với các cờ tham số đúng, tham số sai, đường dẫn không tồn tại và kiểm tra cả `stdout`, `stderr` lẫn mã thoát (`exit code`).
-- **Bề mặt Tiến trình Ngầm / Webhook (Worker & Webhook Surface).** Phát sự kiện mẫu vào hàng đợi hoặc endpoint, kiểm tra khả năng xử lý trùng lặp (idempotency) và khả năng phục hồi khi lỗi giữa chừng.
+Khi ứng dụng phình to lên hàng trăm màn hình và API, Agent sẽ đốt sạch vùng nhớ ngữ cảnh (`context window`) chỉ để mò xem tính năng nằm ở đâu và làm sao để đi tới màn hình đó.
 
-### Luật Bắt buộc Regression Đỏ trước Xanh sau (Red-Before-Green Rule)
-Mọi lỗi phát hiện được trong quá trình thăm dò QA ở Bước 7 phải được chuyển hóa thành một bài kiểm thử tự động mới. Bài kiểm thử này bắt buộc phải **chạy đỏ (thất bại)** trên mã nguồn đang lỗi để chứng minh nó bắt đúng bệnh, sau đó mới sửa mã nguồn để bài kiểm thử **chuyển sang xanh (thành công)**.
+### Cấu trúc Bản đồ Tính năng (`Feature Map` tại `references/features/README.md`):
+- Là bản đồ tra cứu nhanh từ góc nhìn người dùng: liệt kê danh mục mọi tính năng của sản phẩm, mục đích nghiệp vụ, đường dẫn URL/Route, tệp mã nguồn chính và **câu lệnh `./bin/control-app` cụ thể để chạm tới và kiểm chứng tính năng đó**.
+- **Nguyên lý cốt lõi:** **Codebase là nguồn chân lý tối thượng (`Ultimate Source of Truth`)**, còn `Feature Map` là bản nén tiết kiệm token của codebase.
 
-## 3. Kiểm toán Bộ Kiểm thử (Test Audit · Chống Test Giả tạo)
+### Tác vụ Bảo trì Hàng ngày (`/maintain-verification-skill`):
+- Để `Feature Map` và `./bin/control-app` không bị trôi (`drift`) so với code thật khi sản phẩm thay đổi liên tục, phải chạy quy trình bảo trì `/maintain-verification-skill` định kỳ hàng ngày hoặc ngay ở Bước 8 (`SHIP`):
+  1. Quét danh sách các tệp định tuyến (`routes`), `controllers` và `components` đã thay đổi qua `git diff` hoặc đối chiếu mã băm SHA-256 trong Bộ 02 (`Kernel Registry`).
+  2. Tự động phát hiện các đường dẫn mới chưa có trong `references/features/README.md` hoặc các lệnh `./bin/control-app` bị gãy.
+  3. Cập nhật lại `references/features/README.md` và chạy `./bin/control-app doctor --json` để xác nhận toàn bộ các mục trong bản đồ đều hoạt động sống.
 
-Để ngăn chặn tình trạng AI viết các bài kiểm thử vô giá trị nhằm lấy số lượng ("test theatre"), Chủ thầu hoặc Trọng tài thực hiện rà soát nhanh bộ kiểm thử theo 4 tiêu chí.
+---
 
-1. **Cấm bài kiểm thử không có khẳng định (Assertion-free tests).** Mọi bài kiểm thử phải kiểm tra kết quả đầu ra hoặc trạng thái thay đổi cụ thể, không chấp nhận bài test chỉ gọi hàm rồi kết thúc hoặc chỉ kiểm tra `expect(true).toBe(true)`.
-2. **Cấm bài kiểm thử tự chứng minh (Tautological mocks).** Không chấp nhận bài test giả lập (mock) chính hàm đang cần kiểm tra rồi khẳng định hàm giả lập trả về đúng giá trị vừa gán.
-3. **Cấm kiểm thử hành vi bằng cách đếm chữ trong file mã nguồn (Source-grep tests).** Trừ khi đang kiểm tra quy tắc văn phong hoặc cấu trúc tài liệu, các bài kiểm thử phần mềm phải gọi và chạy hàm thật chứ không đọc file `.ts`/`.py` như văn bản để tìm chuỗi ký tự.
-4. **Cấm làm yếu bài kiểm thử cũ để qua cổng (No Gate Weakening).** Thợ tuyệt đối không được tự ý xóa bài kiểm thử cũ, tăng thời gian chờ vô lý hoặc thêm cờ bỏ qua (`skip` / `todo`) để làm xanh báo cáo. Mọi thay đổi đối với bài kiểm thử hiện có phải được giải trình rõ trong mục `DEVIATIONS` của `Completion Report`.
+## 4. Chẩn Đoán Đa Giả Thuyết Khi Gặp Lỗi (`Multi-Hypothesis Root Cause Debugging`)
+
+Khi một bài kiểm thử hoặc lệnh `./bin/control-app` báo lỗi, nghiêm cấm việc đoán mò và sửa bừa. Bắt buộc tuân thủ quy trình 4 bước:
+1. **Dựng lại lỗi bằng `./bin/control-app repro` (`Reproduce First`):** Chạy lệnh tái hiện lỗi ổn định (hoặc dùng `/swarm` trên `Cloud Agents` nếu là lỗi chập chờn).
+2. **Liệt kê tối thiểu 3 Giả thuyết Độc lập (`H1`, `H2`, `H3`):**
+   - Đặt câu hỏi: *"Thí nghiệm nhỏ nhất nào (đọc log, in biến, kiểm tra git blame qua `/why`) sẽ bác bỏ `H1` và xác nhận `H2`?"*
+3. **Chứng minh Nguyên nhân Gốc trước khi sửa (`Prove Root Cause Before Fix`):** Chỉ được sửa code sau khi đã chỉ ra đúng dòng code gây lỗi (`[OBSERVED: file:line]`).
+4. **Khóa lỗi bằng Kiểm thử Hồi quy (`Regression Lock`):** Biến kịch bản tái hiện lỗi thành bài test tự động để lỗi đó không bao giờ quay lại.
+
+---
+
+## 5. Kiểm Thử Theo Bề Mặt (`Surface-Aware Live Verification`) & Vòng Lặp Ràng Buộc (`Constraint Loop`)
+
+Mọi tính năng trước khi báo cáo hoàn thành ở Bước 7 (`VERIFY`) phải đi qua kiểm chứng sống theo đúng bề mặt bị tác động:
+- **Bề mặt Giao diện Web/App (`UI Surface`):** Chạy `./bin/control-app dom` và `./bin/control-app screenshot` kiểm tra cả trạng thái chuẩn, trạng thái rỗng (`Empty`) và trạng thái lỗi (`Error`), xác nhận `0` lỗi Console/Uncaught Exception.
+- **Bề mặt API / Backend (`API Surface`):** Gửi request thật qua `./bin/control-app` với cả dữ liệu hợp lệ (`2xx`), dữ liệu thiếu trường (`400`) và thiếu quyền (`401/403`).
+- **Bề mặt CLI / Script / Tài liệu (`CLI & Docs Surface`):** Chạy kiểm tra cờ `--help`, `--dry-run`, `--json` và chạy **Vòng lặp Ràng buộc (`Constraint Loop`)** quét tự động toàn bộ các quy tắc định dạng/bảo mật cho tới khi đạt `0` vi phạm.
+
+---
+
+## 6. Trọng Tài Độc Lập (`Independent Arbiter C3`)
+
+Đối với các tác vụ cấp `R2` và `R3`, người viết code (Thợ) không được tự chấm bài của chính mình ở cổng cuối:
+- Chủ thầu khởi tạo một phiên đánh giá độc lập (**Trọng tài `C3`**) chỉ nhận vào: (1) Bản vẽ `Blueprint` gốc, (2) Thay đổi thực tế (`git diff`), (3) Kết quả chạy `./bin/control-app --json` và (4) Dấu vân tay `WTREE_FINGERPRINT`.
+- Trọng tài `C3` kiểm tra độc lập từng tiêu chí chấp nhận (`AC-1..AC-N`). Chỉ khi Trọng tài đóng dấu `ARBITER_VERDICT: APPROVED`, gói việc mới được chuyển sang Bước 8 (`SHIP`).

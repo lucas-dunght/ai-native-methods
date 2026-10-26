@@ -2,7 +2,7 @@
 
 **Phiên bản 2026.10 (v2.0)**
 
-Khung làm việc đa giai đoạn biến thông tin thô thu thập từ internet thành tri thức có chất lượng kiểm chứng cơ học. Đầu vào là kết quả tìm kiếm đa tín hiệu (`unified-search` / `tavily-*`), trích xuất ngữ cảnh cô lập kiểu PTC (`Programmatic Tool Calling`), cào dữ liệu qua trình duyệt phiên thật chỉ đọc (`gstack /scrape`) và báo cáo nghiên cứu sâu (`tavily-research`). Đầu ra là một tập sự thật nguyên tử (`Fact Cards`) có nguồn gốc độc lập, có nhãn nhận định (`Fable 5.1 Claim Discipline`), có phân hạng tin cậy ba mức, đã khử phòng vang (`Echo-Chamber Check`), sẵn sàng chuyển giao trực tiếp sang Bộ 02 (`Kernel Registry SOT`) và Bộ 03 (`Vibecode Kit v6.1`).
+Khung làm việc đa giai đoạn biến thông tin thô thu thập từ internet thành tri thức có chất lượng kiểm chứng cơ học. Đầu vào là kết quả tìm kiếm đa tín hiệu (`unified-search` / `tavily-*`), trích xuất ngữ cảnh cô lập kiểu PTC (`Programmatic Tool Calling`), cào dữ liệu qua trình duyệt phiên thật chỉ đọc (`gstack /scrape`) và báo cáo nghiên cứu sâu (`tavily-research`). Đầu ra là một tập sự thật nguyên tử (`Fact Cards`) có nguồn gốc độc lập, có nhãn nhận định (`Fable 5.1 Claim Discipline`), có phân hạng tin cậy ba mức, đã khử phòng vang (`Echo-Chamber Check`), sẵn sàng chuyển giao trực tiếp sang Bộ 02 (`Kernel Registry SOT`) và Bộ 03 (`Vibecode Kit v6.2`).
 
 ## Khi nào dùng
 
