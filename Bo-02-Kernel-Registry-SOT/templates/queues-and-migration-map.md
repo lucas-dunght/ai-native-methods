@@ -1,6 +1,18 @@
-# Queues and Migration Map Template · Hàng đợi Quyết định D<N> & Bản đồ Di trú (v2.0)
+# Queues and Migration Map Template · Hàng đợi Quyết định D<N> & Bản đồ Di trú (`v2.1 · Full-Stack 4 Lớp`)
 
-Tài liệu này gom ba bản mẫu điều phối giữa AI Agent và con người ở Phase 2, Phase 3, Phase 4 và Phase 5 của Bộ 02 v2.0.
+Tài liệu này gom khung xác nhận **Phân tầng `R0–R3` & `Indirect Prompting Restate`** (Phase 1) cùng ba bản mẫu điều phối giữa AI Agent và con người ở Phase 2, Phase 3, Phase 4 và Phase 5 của Bộ 02 v2.1.
+
+---
+
+## 0. Khung Xác Nhận Đầu Phiên (`R0–R3 Fast-Track` & `Indirect Prompting Restate`)
+
+```markdown
+- **Phân tầng quy mô chọn chạy (`R0` | `R1` | `R2` | `R3`):** [Ví dụ: R1 · Kho dự án nhỏ 10-30 mục, dựng nhanh trong 15 phút]
+- **Diễn giải lại bằng lời của Agent (`Indirect Prompting Restate`):**
+  1. Cụm dữ liệu ưu tiên số 1 cần đưa vào `registry/` (`Selectivity`): [...]
+  2. Thư mục tài liệu gốc cần khóa bảo vệ (`Copy-Only Scope Freeze`): [`raw-docs/`]
+  3. Lệnh chụp dấu vân tay trước khi chạy: `python3 scripts/bo02_registry_tool.py fingerprint --dir raw-docs --json`
+```
 
 ---
 

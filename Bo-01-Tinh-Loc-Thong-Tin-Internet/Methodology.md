@@ -1,13 +1,14 @@
-# Methodology · Tinh lọc và làm giàu thông tin từ internet (v2.0 · 2026.10)
+# Methodology · Tinh lọc và làm giàu thông tin từ internet (`v2.1 · Full-Stack 4 Lớp`)
 
 ## Triết lý nền
 
 Internet là kho thông tin khổng lồ nhưng độ tin cậy phân hóa mạnh, độ nhiễu định dạng (HTML rác, thanh điều hướng, quảng cáo) rất lớn và hiệu ứng phòng vang (hàng chục trang báo chép lại cùng một nguồn) diễn ra phổ biến. Khi đổ thẳng kết quả tìm kiếm thô vào cửa sổ ngữ cảnh của AI để nhờ tóm tắt, hai thảm họa xảy ra cùng lúc. Một là ngữ cảnh của AI bị ngập bởi hàng trăm nghìn ký tự rác làm suy giảm năng lực suy luận. Hai là AI khuếch đại cả tín hiệu lẫn tin đồn, tạo ra một văn bản trôi chảy nhưng trộn lẫn sự thật, ý kiến chủ quan và số liệu sai lệch.
 
-Phương pháp Tinh lọc và Làm giàu Thông tin v2.0 tiếp cận theo hướng cơ học và minh bạch.
-- Không đổ rác vào ngữ cảnh suy luận. Dữ liệu thô được xử lý qua lớp đệm cô lập kiểu **PTC (`Programmatic Tool Calling`)** để chỉ đưa tín hiệu tinh khiết vào mô hình.
-- Không yêu cầu AI làm thẩm phán cuối cùng khi các nguồn mâu thuẫn. AI thực thi các quy tắc tất định gồm phân loại nguồn, trích xuất sự thật nguyên tử kèm trích dẫn nguyên văn (`exact_quote`), kiểm tra đồ thị nguồn gốc (`Citation Graph`) để khử phòng vang và đóng gói mọi xung đột thành thẻ **Decision Brief `D<N>`** cho con người phán xử.
-- Sản phẩm chính của phương pháp là **tập thẻ sự thật (`Fact Cards`) có thể truy vết và nạp thẳng vào hệ thống khác (như Bộ 02 Kernel Registry và Bộ 03 Vibecode Kit)**. Báo cáo tổng hợp cuối cùng chỉ là một góc nhìn xuất ra từ tập thẻ sự thật đó.
+Phương pháp Tinh lọc và Làm giàu Thông tin v2.1 tiếp cận theo hướng cơ học, co giãn theo quy mô (`R0–R3`) và thực thi bằng công cụ CLI tất định (`scripts/bo01_refine_tool.py`).
+- **Co giãn quy mô (`R0–R3`) và Giám sát Nhận thức (`Indirect Prompting Restate`).** Bài toán nhỏ dưới 5-12 nguồn (`R0/R1`) có đường chạy nhanh 10 phút; bài toán lớn (`R2/R3`) mở đầy đủ 7 giai đoạn. Trước khi tìm kiếm, Agent luôn tự diễn giải lại mục tiêu và ranh giới loại trừ bằng lời của mình (`Indirect Prompting Restate`).
+- **Không đổ rác vào ngữ cảnh suy luận.** Dữ liệu thô được xử lý qua công cụ CLI `python3 scripts/bo01_refine_tool.py ptc-filter` để chỉ đưa tín hiệu tinh khiết vào mô hình.
+- **Không yêu cầu AI làm thẩm phán cuối cùng khi các nguồn mâu thuẫn.** AI thực thi các quy tắc tất định gồm phân loại nguồn, trích xuất sự thật nguyên tử kèm trích dẫn nguyên văn (`exact_quote`), chạy `bo01_refine_tool.py audit-echo` để kiểm tra đồ thị nguồn gốc (`Citation Graph`) khử phòng vang và đóng gói mọi xung đột thành thẻ **Decision Brief `D<N>`** cho con người phán xử.
+- **Sản phẩm chính của phương pháp là tập thẻ sự thật (`Fact Cards`)** có thể truy vết và xuất thẳng sang **Bộ 02 Kernel Registry SOT** (`bo01_refine_tool.py export-bo02`) và **Bộ 03 Vibecode Kit v6.2**. Báo cáo tổng hợp cuối cùng chỉ là một góc nhìn xuất ra từ tập thẻ sự thật đó.
 
 ## Sáu nguyên tắc cốt lõi (v2.0)
 

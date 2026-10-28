@@ -1,67 +1,54 @@
-# Bộ 02 · Kernel Registry và Nguồn Sự Thật Đa Xuất Xứ
+# Bộ 02 · Phương Pháp Kernel Registry & Nguồn Sự Thật Duy Nhất Bốn Xuất Xứ (`v2.1 · Full-Stack 4 Lớp`)
 
-**Phiên bản 2026.10 (v2.0)**
+> **Tên kỹ năng:** `kernel-registry-sot`
+> **Phiên bản:** `2.1` (Chuẩn Tier-1 Full-Stack 4 Lớp · Tích hợp Deep Module CLI `scripts/bo02_registry_tool.py` + `scripts/eval_l2.py`, Trình thông dịch Toán học An toàn `AST Safe Evaluator`, Phân tầng co giãn `R0–R3`, `Indirect Prompting Restate` và Cầu nối Mã băm Liên thông 3 Bộ)
+> **Vai trò trong hệ sinh thái 3 Bộ:** Lớp Quản trị Tri thức & Nguồn Sự Thật Trung tâm (nhận `Fact Cards` đã xác minh từ **Bộ 01 · Internet Info Refinement** và cấp phát con trỏ sự thật `L1/L2`, nghĩa vụ `L3`, phong cách `L4` cùng trạng thái độ tươi cho **Bộ 03 · Vibecode Kit v6.2 × pstack**).
 
-Khung tổ chức tri thức của một tổ chức hoặc dự án theo bốn xuất xứ độc lập gồm Sự thật lưu sẵn (`L1`), Sự thật dẫn xuất (`L2`), Nghĩa vụ rút từ văn bản pháp quy (`L3`) và Phán xét phong cách tự do (`L4`). Mỗi xuất xứ có chế độ kiểm chứng riêng và lưu trong kho riêng, ngăn chặn triệt để tình trạng một sổ cái duy nhất chồng lấn mọi loại tri thức và gây sai lệch khi AI Agent truy vấn.
+## Điểm Mới Cốt Lõi Của Phiên Bản `v2.1` (`Full-Stack 4 Lớp`)
 
-Phiên bản **v2.0 (2026.10)** tích hợp cơ chế kiểm toán độ tươi bằng mã băm (`FRESH / STALE / EXPIRED`), bộ tính công thức `L2` tất định bằng mã thực thi (`Deterministic L2 Evaluator`), phân tầng chỉ mục từ `dependency-index.csv` lên đồ thị tri thức (`ak-graphify`) và bộ nhớ đồng bộ (`gstack /sync-gbrain` kèm kiểm toán rò rỉ dữ liệu `--audit`), cổng duyệt di trú qua thẻ quyết định `Decision Brief D<N>`, khóa phạm vi chỉ sao chép (`Copy-Only Scope Freeze`) và cầu nối liên thông tự động giữa Bộ 01, Bộ 02 và Bộ 03.
+| Hạng mục | Trước đây (`v2.0` thuần văn bản) | Phiên bản `v2.1` (Full-Stack 4 Lớp) |
+|---|---|---|
+| **Lớp Công cụ CLI Thực thi Tất định (`scripts/`)** | Tài liệu tham chiếu `python3 scripts/eval_l2.py` nhưng thư mục `scripts/` chưa tồn tại trên đĩa | Trang bị đầy đủ `scripts/bo02_registry_tool.py` (`fingerprint`, `audit-freshness`, `eval-l2`, `sync-feature-map`, `--self-test --json`) và wrapper tương thích ngược `scripts/eval_l2.py` |
+| **Tính toán `L2` An toàn Tuyệt đối (`AST Safe Evaluator`)** | Mô tả khái niệm tính công thức bằng script nhưng chưa khóa cơ chế chống thực thi mã tùy ý | Sử dụng `ast.parse(..., mode='eval')` với danh sách nút AST toán học trắng (`0%` dùng hàm `eval()` mở), được kiểm chứng tự động trong `--self-test` |
+| **Co giãn theo quy mô (`R0–R3`) & `Indirect Prompting`** | Mọi kho tài liệu đều phải đi qua đủ 5 Phase nặng nề | Phân tầng `R0..R3` (cập nhật nhanh 2 phút ở `R0`, dựng kho nhỏ 15 phút ở `R1`) và bắt buộc bước `Indirect Prompting Restate` ở đầu Phase 1 |
+| **Ma trận 4 Nhãn Fable 5.1 & Cầu nối CLI 3 Bộ** | Nhãn đồ thị (`EXTRACTED / INFERRED / AMBIGUOUS`) chưa có bảng ánh xạ cơ học với 4 nhãn Fable 5.1 của Bộ 01 & Bộ 03 | Khóa chặt Ma trận Ánh xạ 4 Nhãn Fable 5.1 và lệnh `sync-feature-map` trong `references/bo01-bo02-bo03-bridge.md` |
 
-## Khi nào dùng
+## Cấu Trúc Thư Mục Chuẩn 4 Lớp (`SKILL.md` + `scripts/` + `references/` + `templates/`)
 
-Sinh viên, kỹ sư hoặc tổ chức cần thiết lập một hệ thống tri thức nội bộ chuẩn hóa cho AI Agent và con người cùng truy cập trong các tình huống điển hình.
-
-Thiết lập hệ thống quản trị tri thức cho một phòng ban, doanh nghiệp hoặc dự án khởi nghiệp. Xây dựng trợ lý AI nội bộ truy cập đúng nguồn sự thật mà không bịa số liệu. Tổ chức lại các bảng giá, định mức nguyên vật liệu (`BOM`), ma trận năng lực, văn bản pháp quy và sổ tay thương hiệu đang nằm phân tán. Đồ án tốt nghiệp hoặc luận văn về kiến trúc dữ liệu và hệ thống AI doanh nghiệp (`Enterprise AI Architecture`).
-
-## Khi nào không dùng
-
-Khi dữ liệu thuần túy là bảng nhật ký sự kiện thô (`raw event logs`) phục vụ phân tích thống kê mà chưa cần lớp ngữ nghĩa nghiệp vụ. Khi nhóm làm việc quá nhỏ và không có tri thức lặp lại cần tái sử dụng. Khi tổ chức đã có sẵn một hệ thống quản trị nguồn sự thật tách lớp đang vận hành ổn định với bằng chứng kiểm toán rõ ràng.
-
-## Đặc điểm cốt lõi của bản v2.0 (2026.10)
-
-Khác biệt hoàn toàn với cách tiếp cận "nhồi mọi tài liệu vào một Vector DB hoặc một Wiki duy nhất" ở sáu điểm cốt lõi.
-
-Một, **Phân tách bốn xuất xứ (`L1`, `L2`, `L3`, `L4`) vào ba kho độc lập**. Không bao giờ trộn dữ liệu định lượng cứng (`L1`, `L2`) với nghĩa vụ pháp quy (`L3`) và phong cách diễn đạt (`L4`).
-
-Hai, **Kiểm toán độ tươi bằng mã băm (`Staleness & Content-Hash Audit`) và Bộ tính `L2` tất định**. Mỗi mục `L1` và `L3` lưu mã băm `source_hash` của tài liệu gốc và trạng thái `verification_status: FRESH | STALE | EXPIRED`. Khi tài liệu gốc thay đổi hoặc hết hạn, mọi công thức `L2` và `Skill` phụ thuộc tự động chuyển sang `STALE`. Giá trị `L2` luôn được tính bằng script cơ học kèm dấu vết `audit_trace`, tuyệt đối không để AI tính nhẩm.
-
-Ba, **Chỉ cấu trúc hóa phần có giá trị cao và Mở rộng chỉ mục phân tầng (`Tiered Hybrid Indexing`)**. Không nguyên tử hóa máy móc mọi văn bản. Với kho dưới 500 thành phần, chỉ dùng một bảng `dependency-index.csv` gọn nhẹ. Khi quy mô vượt 500 thành phần hoặc cần truy vấn liên kết sâu giữa mã nguồn và tài liệu, nâng cấp mượt mà lên đồ thị `ak-graphify` (gắn nhãn cạnh `EXTRACTED`, `INFERRED`, `AMBIGUOUS`) và đồng bộ qua `gstack /sync-gbrain` có kiểm soát quyền riêng tư (`brain_trust_policy`).
-
-Bốn, **Phân loại quyết định 3 tầng và Cổng duyệt `Decision Brief D<N>`**. Mọi xung đột số liệu ở Phase 3 hoặc đề xuất cây thư mục di trú ở Phase 4 đều được trình cho con người qua thẻ `D<N>` (gồm giải thích `ELI10`, rủi ro `Stakes`, điểm `Completeness X/10` và phương án khuyến nghị).
-
-Năm, **Khóa phạm vi chỉ sao chép (`Copy-Only Scope Freeze`)**. Ở Phase 5, Agent chỉ được phép dựng cấu trúc mới bằng cách sao chép, đồng thời chụp mã băm cây thư mục gốc trước và sau khi chạy để chứng minh cơ học rằng `0` file gốc bị xóa hay ghi đè.
-
-Sáu, **Đường ống liên thông 3 Bộ (`Bộ 01 -> Bộ 02 -> Bộ 03`) và Cầu nối `Feature Map` (`pstack`)**. Nhận trực tiếp các `Fact Cards` hạng `verified` từ Bộ 01 làm đầu vào `L1`, cung cấp các mã định danh con trỏ (`[L1-...]`, `[L2-...]`, `[L3-...]`, `[L4-...]`) cho các `TIP` và `Blueprint` của Bộ 03 (`Vibecode Kit v6.2 × pstack`), đồng thời đối chiếu mã băm SHA-256 với bản đồ tính năng `references/features/README.md` (`Feature Map`) thông qua quy trình bảo trì định kỳ `/maintain-verification-skill` để ngăn chặn hiện tượng trôi lệch (`drift`) giữa tài liệu và mã nguồn thực tế.
-
-## Cấu trúc thư mục
-
-```
+```text
 Bo-02-Kernel-Registry-SOT/
-├── README.md                                  (file này)
-├── Methodology.md                             Triết lý 4 xuất xứ, 5 phase v2.0 và kiểm toán độ tươi
-├── Architecture.md                            Kiến trúc 3 kho, bộ tính L2, phân tầng Graphify/GBrain và cầu nối 3 Bộ
-├── SKILL.md                                   Đặc tả skill v2.0.0 cài đặt cho AI Agent
-├── Quick-Start.md                             Thiết lập Kernel Registry v2.0 đầu tiên trong 15 phút
-├── templates/
-│   ├── L1-stored-fact.yaml                    Mẫu sự thật lưu sẵn kèm source_hash và verification_status
-│   ├── L2-derived-fact.yaml                   Mẫu sự thật dẫn xuất kèm deterministic_eval_cmd và audit_trace
-│   ├── L3-obligation.yaml                     Mẫu nghĩa vụ pháp quy kèm source_hash và compliance_check
-│   ├── L4-style.yaml                          Mẫu hồ sơ phong cách đứng ngoài đường kiểm cơ học
-│   ├── dependency-index.csv                   Bảng chỉ mục phụ thuộc kèm provenance_tag (EXTRACTED/INFERRED)
-│   ├── manifest.csv                           Bảng kiểm kê toàn bộ thành phần kèm trạng thái độ tươi
-│   ├── classification-table.csv               Bảng phân loại Phase 2 kèm tầng quyết định 3 mức
-│   └── queues-and-migration-map.md            Mẫu hàng đợi xung đột D<N>, hàng đợi chưa phân loại và bản đồ di trú
-├── references/
-│   ├── freshness-and-deterministic-l2.md      Giao thức kiểm toán độ tươi SHA-256 và bộ tính L2 tất định
-│   ├── hybrid-indexing-and-gbrain.md          Giao thức phân tầng CSV, Graphify và đồng bộ GBrain an toàn
-│   └── bo01-bo02-bo03-bridge.md               Giao thức liên thông tự động Bộ 01 -> Bộ 02 -> Bộ 03
+├── README.md                                        ← Tổng quan & điểm mới v2.1 (file này)
+├── SKILL.md                                         ← Lớp 1: Chỉ dẫn cốt lõi cho AI Agent (~95 dòng)
+├── Methodology.md                                   ← Triết lý 4 xuất xứ (L1-L4), R0-R3 & quy trình 5 Phase
+├── Architecture.md                                  ← Kiến trúc 3 kho, CLI Lever, con trỏ Skill & cổng kiểm soát
+├── Quick-Start.md                                   ← Hướng dẫn thực hành 15 phút với CLI bo02_registry_tool.py
+├── scripts/
+│   ├── bo02_registry_tool.py                        ← Lớp 2: Deep Module CLI (fingerprint, audit-freshness, eval-l2, sync-feature-map, --self-test)
+│   └── eval_l2.py                                   ← Wrapper tương thích ngược cho lệnh deterministic_eval_cmd trong L2 YAML
+├── references/                                      ← Lớp 3: Giao thức chuyên sâu (Progressive Disclosure)
+│   ├── freshness-and-deterministic-l2.md            ← Kiểm toán độ tươi SHA-256 & AST Safe Evaluator cho L2
+│   ├── hybrid-indexing-and-gbrain.md                ← Chỉ mục phụ thuộc 2 tầng (CSV + ak-graphify + /sync-gbrain)
+│   └── bo01-bo02-bo03-bridge.md                     ← Ma trận 4 Nhãn Fable 5.1 & chuỗi lệnh CLI liên thông 3 Bộ
+├── templates/                                       ← Lớp 4: Biểu mẫu chuẩn hóa
+│   ├── L1-stored-fact.yaml                          ← Bản mẫu sự thật lưu sẵn L1 có source_hash & verification_status
+│   ├── L2-derived-fact.yaml                         ← Bản mẫu sự thật dẫn xuất L2 có formula & audit_trace
+│   ├── L3-obligation.yaml                           ← Bản mẫu nghĩa vụ L3 có điều khoản gốc & superseded_by
+│   ├── L4-style.yaml                                ← Bản mẫu hồ sơ phong cách L4
+│   ├── manifest.csv                                 ← Bảng kiểm kê thành phần toàn kho
+│   ├── dependency-index.csv                         ← Bảng chỉ mục phụ thuộc kèm provenance_tag
+│   ├── classification-table.csv                     ← Bảng phân loại tài liệu nguồn ở Phase 2
+│   └── queues-and-migration-map.md                  ← Hàng đợi quyết định D<N>, R0-R3 Restate & Biên bản Copy-Only
 └── examples/
-    └── worked-example.md                      Ví dụ thực chiến end-to-end tái cấu trúc tri thức doanh nghiệp
+    └── worked-example.md                            ← Ví dụ thực chiến chuyển đổi kho tài liệu hỗn hợp sang SOT
 ```
 
-## Bắt đầu nhanh
+## Cách Bắt Đầu Nhanh
 
-Đọc `Quick-Start.md` để dựng ngay một `Kernel Registry` v2.0 trong 15 phút trên tập tài liệu mẫu. Tiếp theo đọc `Methodology.md` để nắm rõ lý do tách 4 xuất xứ và quy trình 5 phase. Cuối cùng đọc `Architecture.md` và thư mục `references/` khi cần triển khai kiểm toán tự động hoặc tích hợp với Bộ 01 và Bộ 03.
-
-## Đóng góp
-
-Phương pháp được đúc kết từ thực tiễn thiết kế kiến trúc tri thức cho AI Agent trong môi trường nhiều nguồn sự thật đan xen. Mọi đề xuất cải tiến từ quá trình áp dụng thực tế đều được ghi nhận để hoàn thiện các phiên bản tiếp theo.
+1. **Chạy tự kiểm thử công cụ CLI (`< 200ms`):**
+   ```bash
+   python3 Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py --self-test --json
+   python3 Bo-02-Kernel-Registry-SOT/scripts/eval_l2.py --id L2-domain-key-NNN --json
+   ```
+2. **Nếu bạn muốn thực hành ngay trong 15 phút:** Đọc `Quick-Start.md` rồi xem `examples/worked-example.md`.
+3. **Nếu bạn muốn hiểu sâu nguyên lý 4 xuất xứ và cơ chế lan truyền `STALE`:** Đọc `Methodology.md` và `Architecture.md`.
+4. **Nếu bạn cài đặt cho AI Agent (`Claude Code` / `Antigravity`):** Chạy `bash tools/install-all.sh` ở thư mục gốc của kho lưu trữ.

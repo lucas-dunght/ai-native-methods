@@ -4,15 +4,16 @@
 
 ---
 
-## 1. Phân Loại Ba Cấp Độ Khẳng Định (`Three-Tier Claim Taxonomy`)
+## 1. Phân Loại Bốn Cấp Độ Khẳng Định Fable 5.1 (`Unified Four-Tier Claim Taxonomy`)
 
-Mọi câu khẳng định kỹ thuật mà Chủ thầu hoặc Thợ đưa ra trong báo cáo khảo sát (`SCAN`), giải thích hai chiều (`/teach`), bản vẽ (`BLUEPRINT`) hay biên bản hoàn thành (`Completion Report`) đều phải được gắn nhãn nguồn gốc rõ ràng:
+Mọi câu khẳng định kỹ thuật mà Chủ thầu hoặc Thợ đưa ra trong báo cáo khảo sát (`SCAN`), giải thích hai chiều (`/teach`), bản vẽ (`BLUEPRINT`) hay biên bản hoàn thành (`Completion Report`) đều phải gắn nhãn nguồn gốc theo **Ma trận 4 Nhãn Fable 5.1** (đồng bộ 100% với Bộ 01 và Bộ 02):
 
-| Nhãn khẳng định | Định nghĩa | Yêu cầu bằng chứng bắt buộc |
-|---|---|---|
-| **`[OBSERVED]`** | Sự thật đã được kiểm chứng trực tiếp bằng công cụ đọc tệp, tìm kiếm mã, truy vấn lịch sử (`/why`) hoặc chạy lệnh thực thi (`./bin/control-app`, `test`). | Phải kèm theo địa chỉ chính xác `[OBSERVED: path/to/file:line]` hoặc trích xuất đầu ra JSON/log từ câu lệnh vừa chạy. |
-| **`[INFERRED]`** | Suy luận logic hợp lý được rút ra từ một hoặc nhiều bằng chứng `[OBSERVED]`, nhưng chưa chạy kiểm chứng trực tiếp trên luồng đó. | Phải nêu rõ suy luận này dựa trên bằng chứng `[OBSERVED]` nào và cần bước kiểm tra nào để chuyển thành `[OBSERVED]`. |
-| **`[UNVERIFIED]`** | Giả thuyết ban đầu, thông tin do bên thứ ba cung cấp chưa kiểm tra hoặc hành vi của hệ thống ngoài chưa có môi trường thử nghiệm. | Phải liệt kê rõ rủi ro nếu giả thuyết này sai và tuyệt đối không được trình bày như một sự thật hiển nhiên. |
+| Nhãn chuẩn Fable 5.1 | Nhãn tương thích ngược | Ánh xạ sang Bộ 02 (`dependency-index.csv`) | Định nghĩa & Yêu cầu bằng chứng bắt buộc |
+|---|---|---|---|
+| **`[OBSERVED]`** | `[OBSERVED]` | `EXTRACTED` | Sự thật đã được kiểm chứng trực tiếp bằng công cụ đọc tệp, tìm kiếm mã, truy vấn lịch sử (`/why`) hoặc chạy lệnh thực thi (`./bin/control-app`, `bo03_vibecode_tool.py`, `test`). Phải kèm địa chỉ `[OBSERVED: path/to/file:line]` hoặc biên nhận JSON. |
+| **`[DERIVED]`** | `[INFERRED]` | `INFERRED` | Suy luận logic hoặc phép tính tất định rút ra từ một hoặc nhiều bằng chứng `[OBSERVED]`. Phải nêu rõ dựa trên `[OBSERVED]` nào và công thức/cơ chế suy diễn. |
+| **`[PRIOR]`** | `[UNVERIFIED]` | `AMBIGUOUS` | Tri thức nền có sẵn của mô hình về thư viện, giao thức hoặc hệ thống ngoài nhưng chưa chạy lệnh xác minh trực tiếp trong kho mã hiện tại. Không được dùng làm bằng chứng nghiệm thu. |
+| **`[ASSUMED]`** | `[UNVERIFIED]` | `AMBIGUOUS` | Giả định làm việc tạm thời khi chưa có môi trường thử nghiệm hoặc chờ quyết định. Bắt buộc liệt kê rủi ro nếu sai và đưa vào thẻ quyết định `Decision Brief D<N>`. |
 
 ---
 

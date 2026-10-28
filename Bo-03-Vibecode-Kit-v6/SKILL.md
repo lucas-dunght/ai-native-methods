@@ -26,15 +26,21 @@ Trước khi thực hiện bất kỳ thay đổi mã nguồn nào, hãy xác đ
 
 ## 2. Sáu Luật Thép Bất Biến (`Iron Laws of v6.2 × pstack`)
 
-### Luật 1: Kỷ luật Khẳng định & Đạo đức Bằng chứng (`Claim Discipline`)
-- Mọi nhận định về mã nguồn phải gắn nhãn:
-  - `[OBSERVED: path/to/file:line]` cho những gì bạn đã trực tiếp đọc hoặc chạy lệnh kiểm chứng.
-  - `[INFERRED]` cho suy luận hợp lý từ các bằng chứng đã quan sát.
-  - `[UNVERIFIED]` cho giả thuyết chưa được kiểm tra.
+### Luật 1: Kỷ luật 4 Nhãn Khẳng định Fable 5.1 & Đạo đức Bằng chứng (`Unified 4-Label Claim Discipline`)
+- Mọi nhận định về mã nguồn và dữ liệu phải gắn đúng 1 trong **4 nhãn chuẩn Fable 5.1** (đồng bộ xuyên suốt Bộ 01, Bộ 02 và Bộ 03):
+  - `[OBSERVED: path/to/file:line]` (`-> EXTRACTED` ở Bộ 02): Sự thật đã trực tiếp đọc từ mã nguồn hoặc chạy lệnh kiểm chứng thực tế.
+  - `[DERIVED]` (tương đương `[INFERRED]` · `-> INFERRED` ở Bộ 02): Suy luận logic hoặc phép tính tất định rút ra trực tiếp từ các bằng chứng `[OBSERVED]`.
+  - `[PRIOR]` (`-> AMBIGUOUS` ở Bộ 02): Kiến thức nền của mô hình về thư viện/hệ thống ngoài nhưng chưa chạy kiểm chứng trong phiên hiện tại.
+  - `[ASSUMED]` (tương đương `[UNVERIFIED]` · `-> AMBIGUOUS` ở Bộ 02): Giả định làm việc tạm thời, bắt buộc nêu rõ rủi ro nếu sai và bước kiểm chứng cần chạy.
 - **Cấm tuyệt đối:** Bịa đặt đầu ra câu lệnh, bịa đường dẫn tệp, tự nhận đã chạy test khi chưa chạy hoặc che giấu lỗi thất bại.
 
-### Luật 2: Dấu vân tay Cây làm việc (`WTREE_FINGERPRINT`)
-- Mọi kết luận `PASS`, `CLEAR` hoặc `READY TO SHIP` đều phải đính kèm kết quả thực thi thực tế của lệnh chụp dấu vân tay:
+### Luật 2: Dấu vân tay Cây làm việc (`WTREE_FINGERPRINT`) & Công cụ CLI `scripts/bo03_vibecode_tool.py`
+- Sử dụng trực tiếp công cụ CLI chuẩn 4 lớp `python3 scripts/bo03_vibecode_tool.py` đi kèm Bộ 03 cho 4 tác vụ cơ học:
+  1. `wtree-fingerprint --dir . --json`: Chụp và đối chiếu dấu vân tay SHA-256 toàn cây làm việc chống ghi đè chéo.
+  2. `init-control-app --output bin/control-app --json`: Khởi tạo khung `./bin/control-app` đạt 6 tiêu chí Deep Module.
+  3. `maintain-features --features-dir references/features --update --json`: Quét mã băm SHA-256 của `source_files` và cập nhật bảng `Feature Map`.
+  4. `constraint-check --paths . --json`: Kiểm toán tự động `0` dấu `em-dash`, `0` cụm `dấu phẩy trước chữ và` và `0` rò rỉ khóa bí mật (`Zero-Secret Policy`).
+- Mọi kết luận `PASS`, `CLEAR` hoặc `READY TO SHIP` đều phải đính kèm kết quả thực thi thực tế của lệnh chụp dấu vân tay (`python3 scripts/bo03_vibecode_tool.py wtree-fingerprint --dir . --json` hoặc lệnh Git):
   ```bash
   COMMIT_HASH="$(git rev-parse --short HEAD 2>/dev/null || echo 'no-git')"
   TREE_HASH="$(git rev-parse HEAD^{tree} 2>/dev/null || echo 'no-tree')"

@@ -1,8 +1,18 @@
-# Source Log Template · Nhật ký Nguồn Thu thập (v2.0)
+# Source Log Template · Nhật ký Nguồn Thu thập (`v2.1 · Full-Stack 4 Lớp`)
 
-Nhật ký ghi lại toàn bộ các nguồn thu thập ở Giai đoạn 2, bao gồm cả đường dẫn nguồn gốc đầu tiên (`primary_origin_url`) để phục vụ kiểm tra chống phòng vang (`Echo-Chamber Check`).
+Nhật ký ghi lại toàn bộ các nguồn thu thập ở Giai đoạn 2, bao gồm khung xác nhận **Phân tầng `R0–R3` & `Indirect Prompting Restate`** ở đầu phiên cùng đường dẫn nguồn gốc đầu tiên (`primary_origin_url`) để kiểm tra chống phòng vang bằng CLI `scripts/bo01_refine_tool.py audit-echo`.
 
-## Cấu trúc CSV Chuẩn
+## 0. Khung Xác Nhận Đầu Phiên (`R0–R3 Fast-Track` & `Indirect Prompting Restate`)
+
+```markdown
+- **Phân tầng quy mô chọn chạy (`R0` | `R1` | `R2` | `R3`):** [Ví dụ: R1 · Nghiên cứu nhanh 5-12 nguồn trong 10 phút]
+- **Diễn giải lại mục tiêu bằng lời của Agent (`Indirect Prompting Restate`):**
+  1. Quyết định thực tế phụ thuộc vào nghiên cứu này: [...]
+  2. Ranh giới loại trừ (`Out-of-scope`): [...]
+  3. Ngưỡng nguồn gốc độc lập tối thiểu (`min_origins`): [>= 2]
+```
+
+## 1. Cấu trúc CSV Chuẩn (`source-log.csv`)
 
 ```csv
 source_id,url,primary_origin_url,title,date_published,date_collected,query_used,search_mode,extraction_method,source_type,language,authority_tier,raw_snapshot_path,collection_reason

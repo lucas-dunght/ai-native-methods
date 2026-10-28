@@ -1,4 +1,4 @@
-# Methodology · Kernel Registry và Bốn Xuất Xứ Tri Thức (v2.0 · 2026.10)
+# Methodology · Kernel Registry và Bốn Xuất Xứ Tri Thức (`v2.1 · Full-Stack 4 Lớp`)
 
 ## Triết lý nền
 
@@ -12,7 +12,7 @@ Trong thực tế, tri thức tổ chức có bốn bản chất hoàn toàn kh�
 
 Trộn lẫn cả bốn loại này vào chung một kho lưu trữ sẽ tạo ra hai hậu quả nghiêm trọng. Một là AI Agent dùng giọng văn quảng cáo (`L4`) để tự suy diễn lại bảng giá (`L1`) hoặc tự nhẩm tính sai tổng dự toán (`L2`). Hai là khi một thông tư pháp lý (`L3`) hoặc một đơn giá gốc (`L1`) thay đổi, tổ chức không có cách nào biết được những báo cáo, công thức hay kỹ năng AI (`Skills`) nào đang bị lệch chuẩn (`STALE`).
 
-Phương pháp **Kernel Registry v2.0** giải quyết tận gốc bài toán này bằng cách phân lập tri thức theo bốn xuất xứ vào ba kho chuyên biệt, gắn mã băm kiểm chứng độ tươi (`SHA-256 Content-Hash`), dùng script tính toán tất định cho `L2`, quản lý dây chuyền phụ thuộc qua bảng chỉ mục phân tầng và bảo vệ dữ liệu gốc bằng kỷ luật sao chép khóa phạm vi (`Copy-Only Scope Freeze`).
+Phương pháp **Kernel Registry v2.1** giải quyết tận gốc bài toán này bằng cách phân lập tri thức theo bốn xuất xứ vào ba kho chuyên biệt, phân tầng quy mô co giãn `R0–R3`, áp dụng bước giám sát nhận thức `Indirect Prompting Restate`, gắn mã băm kiểm chứng độ tươi (`SHA-256 Content-Hash`), dùng công cụ CLI `scripts/bo02_registry_tool.py` (kèm `AST Safe Evaluator` trong `eval-l2` / `scripts/eval_l2.py`) để tính toán tất định cho `L2`, quản lý dây chuyền phụ thuộc qua bảng chỉ mục phân tầng và bảo vệ dữ liệu gốc bằng kỷ luật sao chép khóa phạm vi (`Copy-Only Scope Freeze`).
 
 ## Bốn xuất xứ và Chế độ tin cậy (v2.0)
 

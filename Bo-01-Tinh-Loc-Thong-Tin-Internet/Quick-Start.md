@@ -1,12 +1,12 @@
-# Quick Start · Bộ 01 v2.0 trong 10 phút
+# Quick Start · Bộ 01 v2.1 trong 10 phút (`R1 Fast-Track` + CLI `bo01_refine_tool.py`)
 
-Hướng dẫn này giúp bạn chạy trọn vẹn một vòng lặp tinh lọc thông tin v2.0 (tích hợp tìm kiếm đa tín hiệu, cô lập ngữ cảnh PTC, kiểm tra phòng vang và cổng định lượng) trên một bài toán nhỏ chỉ trong 10 phút.
+Hướng dẫn này giúp bạn chạy trọn vẹn một vòng lặp tinh lọc thông tin v2.1 ở chế độ **`R1 Fast-Track`** (tích hợp bước `Indirect Prompting Restate`, lọc ngữ cảnh bằng CLI `bo01_refine_tool.py ptc-filter`, kiểm tra phòng vang bằng `audit-echo` và cổng định lượng `gate-check`) chỉ trong 10 phút.
 
 ## Bài toán mẫu
 
 Bạn cần nghiên cứu nhanh quy mô và tốc độ tăng trưởng của thị trường giáo dục trực tuyến (`EdTech`) tại Đông Nam Á giai đoạn 2023 đến 2025 để làm dữ liệu đầu vào cho buổi thuyết trình dự án khởi nghiệp.
 
-## Phút 0 đến 2 · Khởi tạo thư mục và viết Brief (`Giai đoạn 1`)
+## Phút 0 đến 2 · Khởi tạo thư mục, Phân tầng `R1` & `Indirect Prompting Restate` (`Giai đoạn 1`)
 
 Tạo cấu trúc thư mục cho chu kỳ nghiên cứu và mở file `brief.md`.
 
@@ -14,10 +14,14 @@ Tạo cấu trúc thư mục cho chu kỳ nghiên cứu và mở file `brief.md`
 mkdir -p research-cycle-edtech/{raw-sources,fact-cards}
 ```
 
-Điền bốn phần bắt buộc vào `research-cycle-edtech/brief.md`.
+Điền mục `0. Phân tầng R0-R3 & Indirect Prompting Restate` cùng bốn phần bắt buộc vào `research-cycle-edtech/brief.md`.
 
 ```markdown
 # Brief nghiên cứu · EdTech Đông Nam Á 2023-2025
+
+## 0. Phân tầng Quy mô (`R0–R3`) & Diễn giải lại (`Indirect Prompting Restate`)
+- Phân tầng quy mô: R1 (Nghiên cứu nhanh 5-12 nguồn trong 10 phút).
+- Diễn giải lại bằng lời của Agent (Restate): Mục tiêu của phiên này là xác định quy mô thị trường và động lực tăng trưởng của mảng K-12 cùng upskilling tại 6 nước ASEAN giai đoạn 2023-2025 để chốt phân khúc khách hàng MVP; loại trừ hoàn toàn các bài viết quảng cáo khóa học không nêu nguồn khảo sát gốc.
 
 ## 1. Câu hỏi nghiên cứu và Quyết định phụ thuộc
 Quy mô thị trường và động lực tăng trưởng chính của EdTech Đông Nam Á giai đoạn 2023-2025 là gì? Kết quả dùng để chốt phân khúc khách hàng mục tiêu cho dự án MVP.
@@ -35,44 +39,16 @@ Quy mô thị trường và động lực tăng trưởng chính của EdTech Đ
 - Tối thiểu 3 thẻ sự thật nguyên tử, kiểm tra rõ nguồn gốc độc lập (`primary_origin_url`).
 ```
 
-## Phút 2 đến 5 · Thu thập Đa tín hiệu và Lọc Cô lập PTC (`Giai đoạn 2`)
+## Phút 2 đến 5 · Thu thập Đa tín hiệu và Lọc Cô lập bằng CLI `bo01_refine_tool.py` (`Giai đoạn 2`)
 
-Thay vì đổ toàn bộ trang web thô vào khung chat, dùng `unified-search` hoặc `tavily` kết hợp bộ lọc Python để lưu bản thô vào `/tmp/` và chỉ in ra các dòng chứa số liệu.
+Thay vì đổ toàn bộ trang web thô vào khung chat hoặc tự viết lại script lọc mỗi lần, sử dụng trực tiếp công cụ CLI `scripts/bo01_refine_tool.py ptc-filter` để cắt cửa sổ ngữ cảnh quanh từ khóa và loại bỏ rác HTML:
 
 ```bash
-python3 << 'PYEOF'
-# Ví dụ minh họa lọc dữ liệu theo chuẩn PTC (Programmatic Tool Calling)
-sample_results = [
-    {
-        "source_id": "S001",
-        "url": "https://sea-research.example.org/edtech-2024",
-        "primary_origin_url": "https://sea-research.example.org/edtech-2024",
-        "title": "ASEAN EdTech Market Report 2024",
-        "authority_tier": "tier-1",
-        "snippet": "ASEAN EdTech market reached USD 6.7 billion in 2023 and is projected to grow 16% annually."
-    },
-    {
-        "source_id": "S002",
-        "url": "https://vn-technews.example.com/edtech-boom",
-        "primary_origin_url": "https://sea-research.example.org/edtech-2024",
-        "title": "EdTech Đông Nam Á chạm mốc 6.7 tỷ USD",
-        "authority_tier": "tier-2",
-        "snippet": "Theo báo cáo ASEAN EdTech Market Report 2024, quy mô thị trường đạt 6.7 tỷ USD năm 2023."
-    },
-    {
-        "source_id": "S003",
-        "url": "https://moe-sg.example.gov.sg/ai-in-schools-2024",
-        "primary_origin_url": "https://moe-sg.example.gov.sg/ai-in-schools-2024",
-        "title": "AI Adaptive Learning in Public Schools",
-        "authority_tier": "tier-1",
-        "snippet": "Singapore deployed AI adaptive grading across 28 public secondary schools in 2024."
-    }
-]
-for r in sample_results:
-    print(f"[{r['source_id']}] ({r['authority_tier']}) {r['title']}")
-    print(f"  URL: {r['url']} | Gốc: {r['primary_origin_url']}")
-    print(f"  Trích đoạn: {r['snippet']}\n")
-PYEOF
+python3 Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py ptc-filter \
+  --input raw-search.json \
+  --keywords "EdTech,USD,billion,schools" \
+  --output research-cycle-edtech/raw-sources/filtered.json \
+  --json
 ```
 
 Ghi 3 nguồn này vào `research-cycle-edtech/source-log.csv`. Chú ý rằng `S002` dẫn lại báo cáo của `S001`, nên cả hai có chung `primary_origin_url`.
@@ -128,7 +104,7 @@ trust_tier: verified
 notes: "Nguồn công bố trực tiếp từ cơ quan chính phủ (tier-1 chính thức) nên đạt chuẩn verified."
 ```
 
-Nhờ quy tắc kiểm tra phòng vang (`Echo-Chamber Check`), bạn tránh được cái bẫy ngộ nhận rằng con số `6.7 tỷ USD` đã được hai nguồn độc lập xác nhận!
+Nhờ chạy lệnh kiểm tra phòng vang tự động (`python3 Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py audit-echo -i research-cycle-edtech/source-log.csv --json`), bạn tránh được cái bẫy ngộ nhận rằng con số `6.7 tỷ USD` đã được hai nguồn độc lập xác nhận!
 
 ## Phút 7 đến 8 · Ghi nhận Lỗ hổng (`Giai đoạn 5 & 6`)
 
@@ -144,7 +120,17 @@ Tạo file `research-cycle-edtech/gap-checklist.md` để ghi lại những gì 
 - Độ ưu tiên. high
 ```
 
-## Phút 8 đến 10 · Kiểm tra Constraint Loop và Xuất Báo cáo (`Giai đoạn 7`)
+## Phút 8 đến 10 · Kiểm tra `gate-check`, Xuất Báo cáo và Liên thông Bộ 02 (`Giai đoạn 7`)
+
+Chạy lệnh kiểm tra cổng định lượng và xuất sang Bộ 02:
+
+```bash
+python3 Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py gate-check \
+  --independent-origins 2 --unresolved-conflicts 0 --citation-coverage 100 --expired-ttl 0 --json
+
+python3 Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py export-bo02 \
+  --input research-cycle-edtech/fact-cards/F-2026-002.yaml --dry-run --json
+```
 
 Tạo file `research-cycle-edtech/report-final.md` theo đúng cấu trúc 3 phần.
 
@@ -164,7 +150,7 @@ Quy mô thị trường EdTech Đông Nam Á ước đạt 6.7 tỷ USD trong n�
 
 ## Hoàn tất Cycle 1 và Bước tiếp theo
 
-Chỉ trong 10 phút, bạn đã nắm được toàn bộ tinh thần của Bộ 01 v2.0.
+Chỉ trong 10 phút, bạn đã nắm được toàn bộ tinh thần của Bộ 01 v2.1.
 - Tách bạch rõ tín hiệu với nhiễu qua lọc PTC.
 - Phát hiện được bài báo chép lại nguồn gốc nhờ `primary_origin_url`.
 - Tách biệt rạch ròi sự thật đã xác minh (`verified`) với giả thuyết (`probable`) và lỗ hổng (`gaps`).

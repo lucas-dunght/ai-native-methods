@@ -25,7 +25,20 @@ Quy tắc vận hành.
 
 Một lần tìm kiếm 8 kết quả kèm toàn văn trang web (`raw_content`) trả về trung bình từ 250.000 đến 400.000 ký tự (chứa đầy thanh điều hướng, chân trang, quảng cáo và mã kịch bản). Nếu nạp thẳng khối dữ liệu này vào ngữ cảnh của Agent, chất lượng trích xuất `Fact Card` sẽ suy giảm nghiêm trọng do nhiễu.
 
-### Quy trình 3 bước `Save -> Triage -> Targeted Extract`
+### Quy trình 3 bước `Save -> Triage -> Targeted Extract` (Qua CLI `scripts/bo01_refine_tool.py`)
+
+**Bước 0 · Thực thi 1 Lệnh qua Công cụ CLI Chuẩn (`Recommended Deep Module Lever`).**
+Thay vì tự viết lại script lọc văn bản ở mỗi lượt tìm kiếm, lưu kết quả tìm kiếm thô vào `/tmp/bo01_search_raw.json` rồi chạy trực tiếp lệnh `ptc-filter`:
+
+```bash
+python3 Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py ptc-filter \
+  --input /tmp/bo01_search_raw.json \
+  --keywords "tăng trưởng,2025,2026,tỷ USD,%" \
+  --window-chars 600 \
+  --max-snippets 3 \
+  --output /tmp/bo01_search_filtered.json \
+  --json
+```
 
 **Bước 1 · Tìm kiếm và Lưu xuống Đĩa (`Turn 1 · Search & Triage`).**
 Lưu toàn bộ kết quả thô vào `/tmp/bo01_search_raw.json` hoặc `raw-sources/`. Chỉ in ra màn hình tiêu đề, URL, điểm số (`score`) và 150 ký tự tóm tắt để đánh giá.
