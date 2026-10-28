@@ -2,9 +2,10 @@
 set -euo pipefail
 
 # ==============================================================================
-# AI-Native Methods (2026.10) - All-in-One Bootstrap Installer
-# Cài đặt trọn bộ 3 Bộ Phương Pháp cốt lõi + 58 Companion Skills (Tavily, AKKIT,
-# GStack) + GStack CLI Binaries + Governance Hooks + Unified Search MCP v2.0.
+# AI-Native Methods (2026.10 · Full-Stack 4-Layer) - All-in-One Bootstrap Installer
+# Cài đặt trọn bộ 3 Bộ Phương Pháp cốt lõi (kèm Deep Module CLI scripts/*.py)
+# vào cả ~/.gemini/config/skills/ và ~/.claude/skills/ + 58 Companion Skills
+# + GStack CLI Binaries + Governance Hooks + Unified Search MCP v2.0.
 # Cam kết bảo mật: KHÔNG ghi đè file key ~/.mcp_env nếu đã tồn tại.
 # ==============================================================================
 
@@ -17,17 +18,37 @@ CLAUDE_HOOKS_LIB="${HOME}/.claude/hooks/lib"
 GSTACK_HOOKS_DIR="${HOME}/.gstack/hooks"
 
 echo "=============================================================================="
-echo "🚀 [AI-Native Methods 2026.10] Bắt đầu cài đặt trọn bộ Công cụ & Kỹ năng"
+echo "🚀 [AI-Native Methods 2026.10] Bắt đầu kiểm thử & cài đặt trọn bộ Công cụ & Kỹ năng"
 echo "=============================================================================="
 
 mkdir -p "${GEMINI_SKILLS_DIR}" "${GEMINI_SKILLS_DIR}/bin" "${CLAUDE_SKILLS_DIR}" "${CLAUDE_HOOKS_LIB}" "${GSTACK_HOOKS_DIR}"
 
-# 1. Cài đặt 3 Bộ Phương Pháp Cốt Lõi (Core Suites)
-echo "📦 [1/5] Cài đặt 3 Bộ Phương Pháp Cốt Lõi (v2.0 & v6.2)..."
-rm -rf "${GEMINI_SKILLS_DIR}/internet-info-refinement" "${GEMINI_SKILLS_DIR}/kernel-registry-sot" "${GEMINI_SKILLS_DIR}/vibecode-kit-v6"
-cp -R "${REPO_ROOT}/Bo-01-Tinh-Loc-Thong-Tin-Internet" "${GEMINI_SKILLS_DIR}/internet-info-refinement"
-cp -R "${REPO_ROOT}/Bo-02-Kernel-Registry-SOT" "${GEMINI_SKILLS_DIR}/kernel-registry-sot"
-cp -R "${REPO_ROOT}/Bo-03-Vibecode-Kit-v6" "${GEMINI_SKILLS_DIR}/vibecode-kit-v6"
+# 0. Cổng Kiểm thử Sống (Live Self-Test & Constraint Loop Gate)
+echo "🧪 [0/5] Chạy cổng kiểm thử tự thân (--self-test) cho cả 3 Bộ Kỹ năng..."
+chmod +x "${REPO_ROOT}/Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py"
+chmod +x "${REPO_ROOT}/Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py"
+chmod +x "${REPO_ROOT}/Bo-02-Kernel-Registry-SOT/scripts/eval_l2.py"
+chmod +x "${REPO_ROOT}/Bo-03-Vibecode-Kit-v6/scripts/bo03_vibecode_tool.py"
+
+python3 "${REPO_ROOT}/Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py" --self-test --json >/dev/null
+python3 "${REPO_ROOT}/Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py" --self-test --json >/dev/null
+python3 "${REPO_ROOT}/Bo-02-Kernel-Registry-SOT/scripts/eval_l2.py" --self-test --json >/dev/null
+python3 "${REPO_ROOT}/Bo-03-Vibecode-Kit-v6/scripts/bo03_vibecode_tool.py" --self-test --json >/dev/null
+python3 "${REPO_ROOT}/Bo-03-Vibecode-Kit-v6/scripts/bo03_vibecode_tool.py" constraint-check \
+  --paths "${REPO_ROOT}/Bo-01-Tinh-Loc-Thong-Tin-Internet" "${REPO_ROOT}/Bo-02-Kernel-Registry-SOT" "${REPO_ROOT}/Bo-03-Vibecode-Kit-v6" --json >/dev/null
+echo "   ✓ Cả 3 CLI Tools (bo01, bo02/eval_l2, bo03) & Constraint Loop đều đạt PASS 100%."
+
+# 1. Cài đặt 3 Bộ Phương Pháp Cốt Lõi (Core Suites) vào cả Gemini và Claude Code
+echo "📦 [1/5] Đồng bộ 3 Bộ Phương Pháp Cốt Lõi (Full-Stack 4 Lớp) vào Gemini & Claude Code..."
+for host_dir in "${GEMINI_SKILLS_DIR}" "${CLAUDE_SKILLS_DIR}"; do
+  rm -rf "${host_dir}/internet-info-refinement" "${host_dir}/kernel-registry-sot" "${host_dir}/vibecode-kit-v6"
+  cp -R "${REPO_ROOT}/Bo-01-Tinh-Loc-Thong-Tin-Internet" "${host_dir}/internet-info-refinement"
+  cp -R "${REPO_ROOT}/Bo-02-Kernel-Registry-SOT" "${host_dir}/kernel-registry-sot"
+  cp -R "${REPO_ROOT}/Bo-03-Vibecode-Kit-v6" "${host_dir}/vibecode-kit-v6"
+  chmod +x "${host_dir}/internet-info-refinement/scripts/"*.py
+  chmod +x "${host_dir}/kernel-registry-sot/scripts/"*.py
+  chmod +x "${host_dir}/vibecode-kit-v6/scripts/"*.py
+done
 
 # 2. Cài đặt 58 Companion Skills (Tavily + AgentKit + GStack)
 echo "🧰 [2/5] Cài đặt 58 Companion Skills (Tavily, AgentKit, GStack) vào ${GEMINI_SKILLS_DIR}..."
@@ -80,6 +101,6 @@ chmod +x "${TOOLS_DIR}/unified-search-mcp/scripts/search_pool.py"
 
 echo ""
 echo "=============================================================================="
-echo "✅ HOÀN TẤT! Toàn bộ 3 Bộ Phương Pháp + 58 Skills + MCP + Hooks đã sẵn sàng."
+echo "✅ HOÀN TẤT! Toàn bộ 3 Bộ Phương Pháp (4 Lớp) + 58 Skills + MCP + Hooks đã sẵn sàng."
 echo "👉 Bước tiếp theo: Mở file ~/.mcp_env để điền API Key của bạn (nếu chưa điền)."
 echo "=============================================================================="

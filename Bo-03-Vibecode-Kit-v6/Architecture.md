@@ -31,15 +31,15 @@
                                                   v
 +---------------------------------------------------------------------------------------------------+
 |             TẦNG 4: ĐÒN BẨY TỰ KIỂM CHỨNG & SỔ CÁI MÃ BĂM (VERIFICATION LEVER & LEDGER)           |
-|  [./bin/control-app CLI (Deep Module: --dry-run, --json, Actionable Error, Seed/Auth/DOM/Perf)]   |
-|  [Claim Discipline (OBSERVED/INFERRED/UNVERIFIED)] + [WTREE_FINGERPRINT] + [Independent Arbiter]  |
+|  [./bin/control-app & scripts/bo03_vibecode_tool.py (init-control-app, wtree-fingerprint, ...)]   |
+|  [4-Label Claim Discipline (OBSERVED/DERIVED/PRIOR/ASSUMED)] + [WTREE_FINGERPRINT] + [Arbiter]    |
 +-------------------------------------------------+-------------------------------------------------+
                                                   |
                                                   v
 +---------------------------------------------------------------------------------------------------+
 |             TẦNG 5: PHÁT HÀNH, NGƯỜI LÀM VƯỜN & BẢO TRÌ BỘ NHỚ (GARDENER & SYNC LAYER)            |
 |  [Dual-Stage Ship (beta -> official)] ---> [The Gardener PR Patrol & Xóa File Plan Tạm]           |
-|  [/maintain-verification-skill (Cập nhật Feature Map & SHA-256 Kernel Registry)] + [100-Pt Card]  |
+|  [bo03_vibecode_tool.py maintain-features & constraint-check (SHA-256 Sync)] + [100-Pt Card]      |
 +---------------------------------------------------------------------------------------------------+
 ```
 

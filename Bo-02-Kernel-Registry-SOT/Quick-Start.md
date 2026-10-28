@@ -1,6 +1,6 @@
-# Quick Start · Bộ 02 v2.0 trong 15 phút
+# Quick Start · Bộ 02 v2.1 trong 15 phút (`R1 Fast-Track` + CLI `bo02_registry_tool.py`)
 
-Hướng dẫn này giúp bạn thiết lập một **Kernel Registry v2.0** đầu tiên (có kiểm toán độ tươi bằng mã băm, tính công thức `L2` tất định và kiểm chứng bảo toàn bản gốc `Copy-Only Scope Freeze`) trên một tập tài liệu mẫu chỉ trong 15 phút.
+Hướng dẫn này giúp bạn thiết lập một **Kernel Registry v2.1** đầu tiên ở chế độ **`R1 Fast-Track`** (có bước `Indirect Prompting Restate`, chụp dấu vân tay `fingerprint`, kiểm toán độ tươi `audit-freshness` và tính công thức `L2` tất định qua `eval-l2` / `eval_l2.py`) trên một tập tài liệu mẫu chỉ trong 15 phút.
 
 ## Bài toán mẫu
 
@@ -12,12 +12,16 @@ Một Câu lạc bộ Khởi nghiệp Công nghệ có 4 tài liệu đang nằm
 
 Mục tiêu là dựng `kernel-registry/` theo 4 xuất xứ `L1`, `L2`, `L3`, `L4` để AI Agent nội bộ trả lời chính xác câu hỏi tài chính và quy chế mà không làm hỏng thư mục gốc.
 
-## Phút 0 đến 3 · Khởi tạo Cấu trúc và Chụp Dấu vân tay Gốc (`Phase 1`)
+## Phút 0 đến 3 · Phân tầng `R1`, `Indirect Prompting Restate` & Chụp Dấu vân tay Gốc (`Phase 1`)
 
-Tạo cây thư mục `kernel-registry/` và ghi nhận mã băm của thư mục tài liệu gốc để đảm bảo kỷ luật `Copy-Only Scope Freeze`.
+1. **Diễn giải lại bằng lời của Agent (`Indirect Prompting Restate`):**
+   - *Phân tầng quy mô:* `R1` (Kho dự án nhỏ `< 30` mục, thiết lập nhanh trong 15 phút).
+   - *Diễn giải lại:* Ưu tiên chuẩn hóa 2 bảng số liệu thu phí và tài trợ vào `L1`, lập công thức tổng ngân sách Quý 4 ở `L2`, trích điều khoản đóng phí vào `L3` và tách riêng văn phong Chủ nhiệm sang `L4`; giữ nguyên vẹn 100% thư mục gốc `raw-club-docs/`.
+2. Tạo cây thư mục `kernel-registry/` và chạy lệnh `fingerprint` của `bo02_registry_tool.py` để ghi nhận mã băm `ORIGINAL_TREE_FINGERPRINT`:
 
 ```bash
 mkdir -p kernel-registry/{registry/{stored-facts,derived-facts},obligations/club-charter-2026,style,skills,queues}
+python3 Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py fingerprint --dir raw-club-docs --json
 ```
 
 Khởi tạo `kernel-registry/manifest.csv` và `kernel-registry/dependency-index.csv`.
@@ -117,9 +121,17 @@ obligations:
 
 Sao chép `leader-voice.md` vào `kernel-registry/style/voice-guide.md` và tạo tệp định danh `kernel-registry/style/L4-style.yaml` với `verification_mode: non-mechanically-verifiable`.
 
-## Phút 10 đến 13 · Tạo Công thức `L2` và Tính toán Tất định (`Phase 5 · Bước 2`)
+## Phút 10 đến 13 · Tạo Công thức `L2` và Tính toán Tất định bằng CLI `eval-l2` (`Phase 5 · Bước 2`)
 
-Tạo tệp `kernel-registry/registry/derived-facts/L2-total-budget-2026-Q4.yaml`. Thay vì nhẩm tính, lưu rõ công thức cộng hai đầu vào `L1` và ghi dấu vết kiểm toán `audit_trace`.
+Tạo tệp `kernel-registry/registry/derived-facts/L2-total-budget-2026-Q4.yaml`, sau đó chạy lệnh `eval-l2` (hoặc `scripts/eval_l2.py`) để trình thông dịch `AST Safe Evaluator` tính giá trị và ghi dấu vết kiểm toán `audit_trace`:
+
+```bash
+python3 Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py eval-l2 \
+  --id L2-total-budget-2026-Q4 \
+  --l2-file kernel-registry/registry/derived-facts/L2-total-budget-2026-Q4.yaml \
+  --l1-file kernel-registry/registry/stored-facts \
+  --json
+```
 
 ```yaml
 fact_id: L2-total-budget-2026-Q4
@@ -169,7 +181,7 @@ OBL-club-charter-001,club-charter-2026,extracted-from,EXTRACTED,review-obligatio
 
 ## Hoàn tất Cycle 1 và Bước tiếp theo
 
-Chỉ trong 15 phút, bạn đã dựng xong một `Kernel Registry v2.0` chuẩn mực.
+Chỉ trong 15 phút, bạn đã dựng xong một `Kernel Registry v2.1` chuẩn mực.
 - Bốn loại tri thức (`L1`, `L2`, `L3`, `L4`) nằm đúng kho chuyên biệt.
 - Khi tệp `membership-fee-2026-Q4.csv` thay đổi, mã băm `source_hash` sẽ báo hiệu ngay cho `L1-membership-fee-2026-Q4` và `L2-total-budget-2026-Q4` biết cần cập nhật lại.
 - Thư mục tài liệu gốc `raw-club-docs/` được bảo toàn nguyên vẹn 100%.

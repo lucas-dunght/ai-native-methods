@@ -1,25 +1,30 @@
-# Architecture · Kiến trúc Kỹ thuật của Bộ 02 (v2.0 · 2026.10)
+# Architecture · Kiến trúc Kỹ thuật của Bộ 02 (`v2.1 · Full-Stack 4 Lớp`)
 
 ## Tổng quan
 
-Hệ thống **Kernel Registry v2.0** được thiết kế theo kiến trúc tệp văn bản chuẩn hóa trên Git (`Filesystem-First Git SOT`) gồm bảy thành phần cốt lõi kết hợp với bộ kiểm toán độ tươi bằng mã băm (`SHA-256 Freshness Engine`), bộ tính công thức `L2` tất định (`Deterministic L2 Evaluator`), lớp mở rộng chỉ mục phân tầng (`CSV -> ak-graphify -> gstack /sync-gbrain`) và cầu nối liên thông trực tiếp với **Bộ 01** và **Bộ 03**.
+Hệ thống **Kernel Registry v2.1** được thiết kế theo kiến trúc tệp văn bản chuẩn hóa trên Git (`Filesystem-First Git SOT`) kết hợp với công cụ CLI tất định `scripts/bo02_registry_tool.py` (kèm wrapper `scripts/eval_l2.py`), phân tầng quy mô co giãn `R0–R3`, bước giám sát nhận thức `Indirect Prompting Restate`, bộ kiểm toán độ tươi bằng mã băm (`SHA-256 Freshness Engine`), trình thông dịch công thức `L2` an toàn (`AST Safe Evaluator`, `0%` dùng `eval()` mở), lớp mở rộng chỉ mục phân tầng (`CSV -> ak-graphify -> gstack /sync-gbrain`) và cầu nối liên thông trực tiếp với **Bộ 01** và **Bộ 03**.
 
 Mọi thành phần đều sử dụng định dạng `YAML`, `CSV` và `Markdown` thuần túy để con người có thể kiểm tra bằng mắt thường, quản lý lịch sử thay đổi từng dòng qua `git diff` và kiểm chứng tự động qua CI/CD.
 
-## Sơ đồ kiến trúc tổng thể (v2.0)
+## Sơ đồ kiến trúc tổng thể (`v2.1 · Full-Stack 4 Lớp`)
 
-```
-[Bộ 01 · Fact Cards Verified] ──(Cầu nối ETL)──┐
-[Tài liệu nội bộ gốc (Read-Only)] ────────────┼──► Phase 1-4 (Manifest, Phân loại, Thẻ D<N>)
-                                               │
-                                               ▼
-Kernel Registry v2.0 (Copy-Only Scope Freeze · Bảo toàn 100% bản gốc)
+```text
+[Bộ 01 · Fact Cards Verified] ──(bo01_refine_tool.py export-bo02)──┐
+[Tài liệu nội bộ gốc (Read-Only)] ─────────────────────────────────┼──► Phase 1: R0-R3 + Indirect Prompting Restate
+                                                                   │    + bo02_registry_tool.py fingerprint (SHA-256)
+                                                                   │    + Phase 2-4 (Phân loại L1-L4, Thẻ D<N>, Migration Map)
+                                                                   ▼
+Kernel Registry v2.1 (Copy-Only Scope Freeze · Bảo toàn 100% bản gốc · Thực thi qua scripts/bo02_registry_tool.py)
+│
+├── scripts/                               Lớp Công cụ CLI Tất định (Deep Module Levers)
+│   ├── bo02_registry_tool.py              fingerprint | audit-freshness | eval-l2 | sync-feature-map | --self-test
+│   └── eval_l2.py                         Wrapper tương thích ngược cho deterministic_eval_cmd
 │
 ├── registry/                              Kho L1 + L2 (Kiểm chứng cơ học)
-│   ├── stored-facts/                      Mục L1 (kèm source_hash & verification_status)
+│   ├── stored-facts/                      Mục L1 (kèm source_hash & verification_status: FRESH/STALE/EXPIRED)
 │   │   ├── L1-product-price-001.yaml
 │   │   └── L1-sea-digital-payments-gtv-2024.yaml
-│   └── derived-facts/                     Mục L2 (kèm formula, deterministic_eval_cmd & audit_trace)
+│   └── derived-facts/                     Mục L2 (kèm formula, AST Safe eval-l2 & audit_trace)
 │       └── L2-total-revenue-Q1-2026.yaml
 │
 ├── obligations/                           Kho L3 (Truy vết điều khoản pháp quy gốc)
@@ -44,7 +49,7 @@ Kernel Registry v2.0 (Copy-Only Scope Freeze · Bảo toàn 100% bản gốc)
 │   ├── unclassified-queue.md
 │   └── migration-map.md
 │
-└── .graph-and-brain/                      Tầng mở rộng khi quy mô >= 500 entries (Tầng 2)
+└── .graph-and-brain/                      Tầng mở rộng khi quy mô >= 500 entries (Tầng 2 · R3)
     ├── graphify-out/graph.json            Đồ thị AST + Tài liệu (EXTRACTED/INFERRED/AMBIGUOUS)
     └── gbrain-sync-config.json            Cấu hình đồng bộ GBrain & brain_trust_policy
 ```

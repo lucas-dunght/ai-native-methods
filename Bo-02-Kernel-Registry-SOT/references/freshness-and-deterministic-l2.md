@@ -8,11 +8,36 @@ Tài liệu này định nghĩa hai cơ chế kỹ thuật bảo vệ độ chí
 
 Khi một tệp bảng giá PDF hoặc một văn bản quy chế gốc được cập nhật bản mới trên đĩa nhưng người vận hành quên cập nhật tệp YAML trong `registry/`, AI Agent sẽ tiếp tục đọc con số cũ mà không hề hay biết.
 
+### Thực thi Tất định qua Công cụ CLI `scripts/bo02_registry_tool.py` (`& scripts/eval_l2.py`)
+
+Thay vì viết tay các đoạn mã kiểm toán ở mỗi phiên, sử dụng trực tiếp công cụ CLI chuẩn Deep Module đi kèm Bộ 02:
+
+```bash
+# 1. Chụp dấu vân tay ORIGINAL_TREE_FINGERPRINT (SHA-256 luồng 64KB) bảo chứng Copy-Only Scope Freeze
+python3 Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py fingerprint --dir raw-docs --json
+
+# 2. Kiểm toán độ tươi L1 và tự động lan truyền STALE qua dependency-index.csv
+python3 Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py audit-freshness \
+  --l1-file kernel-registry/registry/stored-facts \
+  --base-dir . \
+  --dependency-index kernel-registry/dependency-index.csv \
+  --json
+
+# 3. Tính công thức L2 qua trình thông dịch AST Safe Evaluator (0% dùng hàm eval() mở)
+python3 Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py eval-l2 \
+  --id L2-domain-key-NNN \
+  --l2-file Bo-02-Kernel-Registry-SOT/templates/L2-derived-fact.yaml \
+  --json
+
+# Hoặc gọi qua wrapper tương thích ngược được khai báo trong deterministic_eval_cmd:
+python3 Bo-02-Kernel-Registry-SOT/scripts/eval_l2.py --id L2-domain-key-NNN --json
+```
+
 ### Cơ chế 3 Trạng thái Độ tươi (`FRESH | STALE | EXPIRED`)
 
-Mỗi tệp `L1-stored-fact.yaml` và `L3-obligation.yaml` bắt buộc lưu trường `source_hash` (16 ký tự đầu của mã băm SHA-256 tính trên tệp tài liệu gốc tại thời điểm trích xuất) và trường `date_expires`.
+Mỗi tệp `L1-stored-fact.yaml` và `L3-obligation.yaml` bắt buộc lưu trường `source_hash` (16 ký tự đầu hoặc toàn bộ mã băm SHA-256 tính trên tệp tài liệu gốc tại thời điểm trích xuất) và trường `date_expires`.
 
-Trước mỗi đợt xuất báo cáo hoặc chạy `Skill` quan trọng, Agent chạy hàm kiểm toán độ tươi dưới đây.
+Trước mỗi đợt xuất báo cáo hoặc chạy `Skill` quan trọng, `bo02_registry_tool.py audit-freshness` thực thi thuật toán kiểm toán độ tươi dưới đây.
 
 ```python
 import datetime, hashlib, os, yaml

@@ -10,19 +10,19 @@ Bộ tài liệu chuyển giao ba phương pháp làm việc với AI cho sinh v
 
 ## Tổng quan ba bộ (Phiên bản đồng bộ 2026.10)
 
-### Bộ 01 · Phương pháp tinh lọc và làm giàu thông tin từ internet (v2.0)
+### Bộ 01 · Phương pháp tinh lọc và làm giàu thông tin từ internet (`v2.1 · Full-Stack 4 Lớp`)
 
-Khung làm việc 7 giai đoạn biến thông tin thô thu thập từ internet thành tri thức nguyên tử có chất lượng kiểm chứng cơ học. Đầu vào là kết quả tìm kiếm đa tín hiệu (`unified-search` / `tavily-*`), lọc cô lập ngữ cảnh kiểu PTC (`Programmatic Tool Calling`), cào trình duyệt phiên thật chỉ đọc (`gstack /scrape` + `/skillify`) và nghiên cứu tổng hợp (`tavily-research`). Đầu ra là tập thẻ sự thật (`Fact Cards`) có nguồn gốc độc lập, có nhãn nhận định Fable 5.1 (`OBSERVED` / `DERIVED` / `PRIOR` / `ASSUMED`), đã khử phòng vang (`Echo-Chamber Check`), giải quyết xung đột qua thẻ quyết định `Decision Brief D<N>` và vượt qua cổng kiểm tra định lượng (`Constraint Loop Gate`).
+Khung làm việc 7 giai đoạn (co giãn theo phân tầng `R0–R3`) biến thông tin thô thu thập từ internet thành tri thức nguyên tử có chất lượng kiểm chứng cơ học. Đầu vào là kết quả tìm kiếm đa tín hiệu (`unified-search` / `tavily-*`), bước giám sát nhận thức `Indirect Prompting Restate`, lọc cô lập ngữ cảnh qua công cụ CLI `scripts/bo01_refine_tool.py ptc-filter`, cào trình duyệt phiên thật chỉ đọc (`gstack /scrape` + `/skillify`) và nghiên cứu tổng hợp (`tavily-research`). Đầu ra là tập thẻ sự thật (`Fact Cards`) có nguồn gốc độc lập, có 4 nhãn nhận định Fable 5.1 (`OBSERVED` / `DERIVED` / `PRIOR` / `ASSUMED`), đã khử phòng vang bằng `bo01_refine_tool.py audit-echo`, giải quyết xung đột qua thẻ quyết định `Decision Brief D<N>`, vượt qua cổng kiểm tra định lượng `bo01_refine_tool.py gate-check` và xuất tự động sang Bộ 02 qua `export-bo02`.
 
 Dùng cho nghiên cứu thị trường, phân tích đối thủ cạnh tranh, tổng quan tài liệu khoa học, thẩm định dự án (`due diligence`) và tạo dữ liệu đầu vào `L1` cho Bộ 02.
 
 📂 [`Bo-01-Tinh-Loc-Thong-Tin-Internet/`](./Bo-01-Tinh-Loc-Thong-Tin-Internet/)
 
-### Bộ 02 · Kernel Registry và nguồn sự thật đa xuất xứ (v2.0)
+### Bộ 02 · Kernel Registry và nguồn sự thật đa xuất xứ (`v2.1 · Full-Stack 4 Lớp`)
 
 Khung tổ chức tri thức theo bốn xuất xứ độc lập gồm Sự thật lưu sẵn (`L1`), Sự thật dẫn xuất (`L2`), Nghĩa vụ rút từ văn bản pháp quy (`L3`) và Phán xét phong cách tự do (`L4`). Mỗi xuất xứ có chế độ kiểm chứng riêng và lưu trong kho riêng.
 
-Bản nâng cấp **v2.0 (2026.10)** bổ sung kiểm toán độ tươi bằng mã băm SHA-256 (`FRESH / STALE / EXPIRED`), bộ tính công thức `L2` tất định bằng script kèm dấu vết `audit_trace`, phân tầng chỉ mục phụ thuộc từ `dependency-index.csv` lên đồ thị tri thức `ak-graphify` và bộ nhớ đồng bộ `gstack /sync-gbrain` (có kiểm soát `brain_trust_policy` và kiểm toán rò rỉ `--audit`), khóa phạm vi chỉ sao chép (`Copy-Only Scope Freeze`) và cầu nối liên thông tự động giữa Bộ 01, Bộ 02 và Bộ 03.
+Bản nâng cấp **v2.1 (`Full-Stack 4 Lớp`)** trang bị công cụ CLI tất định `scripts/bo02_registry_tool.py` (kèm wrapper `scripts/eval_l2.py`), phân tầng quy mô co giãn `R0–R3`, bước `Indirect Prompting Restate`, chụp dấu vân tay `fingerprint` (`ORIGINAL_TREE_FINGERPRINT`), kiểm toán độ tươi bằng mã băm SHA-256 (`audit-freshness`: `FRESH / STALE / EXPIRED`), bộ tính công thức `L2` tất định bằng trình thông dịch toán học an toàn `AST Safe Evaluator` (`eval-l2`, `0%` dùng `eval()` mở), phân tầng chỉ mục phụ thuộc từ `dependency-index.csv` lên đồ thị tri thức `ak-graphify` và bộ nhớ đồng bộ `gstack /sync-gbrain` (có kiểm soát `brain_trust_policy` và kiểm toán rò rỉ `--audit`), khóa phạm vi chỉ sao chép (`Copy-Only Scope Freeze`) và cầu nối liên thông tự động `sync-feature-map` giữa Bộ 01, Bộ 02 và Bộ 03.
 
 Dùng cho quản trị tri thức doanh nghiệp, xây dựng trợ lý AI nội bộ chống bịa số liệu và làm nền tảng dữ liệu chuẩn cho Bộ 03.
 
@@ -63,6 +63,7 @@ Bo-XX-Ten-Phuong-Phap/
 ├── Architecture.md      Kiến trúc kỹ thuật và thành phần
 ├── SKILL.md             Đặc tả skill để cài vào Claude, Antigravity hoặc agent khác
 ├── Quick-Start.md       Hướng dẫn bắt đầu trong 10 đến 20 phút
+├── scripts/             Đòn bẩy CLI thực thi tất định (Python 3 stdlib, --self-test --json)
 ├── templates/           Bản mẫu sẵn dùng
 ├── references/          Tài liệu giao thức chuyên sâu (nạp theo ngữ cảnh)
 └── examples/            Ví dụ thực chiến từ đầu đến cuối
@@ -71,7 +72,7 @@ Bo-XX-Ten-Phuong-Phap/
 Ngoài các file markdown, mỗi bộ còn có hai dạng deliverable ở thư mục gốc.
 
 - **File `.docx`** ở root repo. Bản tài liệu cho người đọc, mở được trên Word, Pages, Google Docs.
-- **File `.skill`** ở root repo. Bản đóng gói zip của `SKILL.md` cùng các thư mục `templates/`, `references/` và `examples/`. Cài vào Claude hoặc hệ thống AI agent bằng cách nạp file vào mục Skills.
+- **File `.skill`** ở root repo. Bản đóng gói zip của `SKILL.md` cùng các thư mục `scripts/`, `templates/`, `references/` và `examples/`. Cài vào Claude hoặc hệ thống AI agent bằng cách nạp file vào mục Skills.
 
 ---
 
@@ -110,7 +111,7 @@ Ba bộ chia sẻ bốn nguyên tắc nền tảng.
 
 **Một, AI không thay thế phán xét cuối cùng của con người.** Mọi quyết định có hậu quả nghiêm trọng hoặc đi qua cánh cửa một chiều phải được trình qua thẻ quyết định `Decision Brief D<N>` để một con người ký nhận trách nhiệm. AI hỗ trợ khảo sát, tổng hợp, đề xuất, phản biện và thi công. Con người chọn hướng và chịu trách nhiệm.
 
-**Hai, mọi khẳng định và báo cáo hoàn thành đều phải có bằng chứng cơ học truy ngược được.** Không chấp nhận nguồn thông tin mồ côi hoặc hiệu ứng phòng vang (Bộ 01 v2.0), không trộn lẫn sự thật cứng với phong cách cá nhân hoặc để dữ liệu trôi mã băm (Bộ 02 v2.0) và không nghiệm thu phần mềm khi thiếu đòn bẩy kiểm chứng sống `./bin/control-app` gắn với dấu vân tay mã nguồn (Bộ 03 v6.2).
+**Hai, mọi khẳng định và báo cáo hoàn thành đều phải có bằng chứng cơ học truy ngược được.** Không chấp nhận nguồn thông tin mồ côi hoặc hiệu ứng phòng vang (Bộ 01 v2.1), không trộn lẫn sự thật cứng với phong cách cá nhân hoặc để dữ liệu trôi mã băm (Bộ 02 v2.1) và không nghiệm thu phần mềm khi thiếu đòn bẩy kiểm chứng sống `./bin/control-app` gắn với dấu vân tay mã nguồn (Bộ 03 v6.2).
 
 **Ba, không tự xây cái thị trường hoặc kho mã nguồn đã có sẵn.** Trước khi tự dựng quy trình hay viết hàm mới, luôn rà soát bậc thang tái sử dụng từ công cụ sẵn có trong dự án, thư viện chuẩn cho tới các mô hình ngôn ngữ lớn.
 
@@ -123,15 +124,15 @@ Ba bộ chia sẻ bốn nguyên tắc nền tảng.
 Khi thực hiện một dự án nghiên cứu và phát triển sản phẩm hoàn chỉnh, cả ba bộ kết nối tự động qua cầu nối dữ liệu chuẩn.
 
 ```
-Bộ 01 v2.0 (Tinh lọc thông tin từ internet · PTC + Echo-Chamber Check)
+Bộ 01 v2.1 (Tinh lọc thông tin từ internet · PTC + Echo-Chamber Check · bo01_refine_tool.py)
    │
-   │  Fact Cards hạng verified (exact_quote + content_hash)
+   │  Fact Cards hạng verified (exact_quote + content_hash) · export-bo02
    ▼
-Bộ 02 v2.0 (Kernel Registry SOT · SHA-256 Freshness + L2 Tất định + Feature Map Bridge)
+Bộ 02 v2.1 (Kernel Registry SOT · SHA-256 Freshness + AST L2 Tất định · bo02_registry_tool.py)
    │
    │  Con trỏ [L1-*], [L2-*], [OBL-*], [L4-*] trạng thái FRESH + references/features/README.md
    ▼
-Bộ 03 v6.2 × pstack (./bin/control-app + /teach + 5-Phase /architect Arena + Cloud /swarm)
+Bộ 03 v6.2 × pstack (./bin/control-app + /teach + 5-Phase /architect Arena + bo03_vibecode_tool.py)
    │
    │  Sản phẩm phần mềm + WTREE_FINGERPRINT + Calibration Card 100 điểm
    ▼
@@ -153,7 +154,7 @@ Không bắt buộc dùng cả ba cùng lúc. Mỗi bộ đều có thể vận 
 
 ## Phiên bản
 
-Phiên bản hiện hành của toàn bộ kho tài liệu là **2026.10** (Bộ 01 v2.0, Bộ 02 v2.0 và Bộ 03 v6.2 × `pstack`). Khi áp dụng vào dự án, vui lòng ghi rõ phiên bản đã sử dụng trong báo cáo để thuận tiện đối chiếu.
+Phiên bản hiện hành của toàn bộ kho tài liệu là **2026.10** (Bộ 01 v2.1, Bộ 02 v2.1 và Bộ 03 v6.2 × `pstack`). Khi áp dụng vào dự án, vui lòng ghi rõ phiên bản đã sử dụng trong báo cáo để thuận tiện đối chiếu.
 
 ---
 
@@ -192,6 +193,6 @@ Khi sử dụng trong báo cáo học thuật hoặc dự án, vui lòng trích 
 
 ```
 Nguyễn, C. L. (2026). AI-Native Methods · Ba phương pháp làm việc với AI
-(Version 2026.10 · Bộ 01 v2.0, Bộ 02 v2.0, Bộ 03 v6.2 × pstack) [Computer software]. GitHub.
+(Version 2026.10 · Bộ 01 v2.1, Bộ 02 v2.1, Bộ 03 v6.2 × pstack) [Computer software]. GitHub.
 https://github.com/lucas-dunght/ai-native-methods
 ```

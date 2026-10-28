@@ -28,9 +28,25 @@ Cấu trúc bắt buộc của mỗi thẻ `D<N>` trong `conflict-queue.md`.
 - **Rủi ro nếu chọn sai (`Stakes`).** Nêu rõ kết luận nghiên cứu hoặc bài toán kinh doanh sẽ bị lệch như thế nào nếu chọn nhầm nguồn.
 - **Khuyến nghị (`Recommendation`) và Điểm độ phủ (`Completeness X/10`).** Đề xuất phương án tối ưu kèm nhãn `(recommended)` dựa trên thứ bậc uy tín `authority_tier`, độ minh bạch của phương pháp đo (`methodology`) và độ khớp với `brief.md`.
 
-## 3. Cổng Kiểm tra Định lượng (`Constraint Loop Gate` ở Giai đoạn 7)
+## 3. Cổng Kiểm tra Định lượng & Liên thông Bộ 02 (`Constraint Loop Gate` ở Giai đoạn 4 & 7)
 
-Trước khi xuất bản `report-final.md`, Agent chạy đoạn mã kiểm chứng cơ học dưới đây trên thư mục chu kỳ nghiên cứu để đảm bảo 100% tiêu chuẩn định lượng.
+Trước khi xuất bản `report-final.md`, Agent ưu tiên gọi trực tiếp 3 lệnh CLI tất định trong `scripts/bo01_refine_tool.py` để kiểm toán phòng vang, chấm cổng định lượng và xuất sang Bộ 02:
+
+```bash
+# 1. Kiểm toán đồ thị nguồn gốc & phát hiện phòng vang (Echo-Chamber Check)
+python3 Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py audit-echo \
+  --input source-log.csv --min-origins 2 --json
+
+# 2. Chấm 4 điều kiện cổng định lượng trước khi xuất báo cáo cuối
+python3 Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py gate-check \
+  --independent-origins 2 --unresolved-conflicts 0 --citation-coverage 100 --expired-ttl 0 --json
+
+# 3. Xuất Fact Cards đạt chuẩn sang định dạng L1-stored-fact.yaml của Bộ 02
+python3 Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py export-bo02 \
+  --input fact-cards/F-2026-001.yaml --output l1-export.yaml --dry-run --json
+```
+
+Ngoài ra, có thể chạy đoạn mã kiểm chứng chi tiết dưới đây trên thư mục chu kỳ nghiên cứu để đối chiếu chéo toàn bộ mã trích dẫn trong `report-final.md`.
 
 ```python
 import glob, re, yaml

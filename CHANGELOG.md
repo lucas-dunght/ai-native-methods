@@ -2,6 +2,25 @@
 
 Mọi thay đổi quan trọng của kho lưu trữ `ai-native-methods` đều được ghi nhận tại đây.
 
+## [2026.10.28] - 2026-10-28 · Nâng Cấp Chuẩn Tier-1 Full-Stack 4 Lớp & Đồng Bộ Toàn Diện 3 Bộ Kỹ Năng
+
+### Added
+- **Lớp Công cụ CLI Thực thi Tất định (`scripts/*.py` · Chuẩn Deep Module + Zero-Dependency Python stdlib):**
+  - **Bộ 01 (`Bo-01-Tinh-Loc-Thong-Tin-Internet/scripts/bo01_refine_tool.py`):** Bổ sung 4 lệnh tất định `ptc-filter` (cắt cửa sổ ngữ cảnh ~1.200 ký tự, lọc >80% rác HTML, gắn cờ `untrusted_external_content`), `audit-echo` (kiểm toán độc lập nguồn gốc và phát hiện cụm phòng vang), `gate-check` (chấm 4 tiêu chí cổng định lượng) và `export-bo02` (xuất `Fact Card` sang `L1-stored-fact.yaml` kèm ánh xạ 4 nhãn Fable 5.1) cùng bộ tự kiểm thử `--self-test --json` (`< 25ms`).
+  - **Bộ 02 (`Bo-02-Kernel-Registry-SOT/scripts/bo02_registry_tool.py` & `scripts/eval_l2.py`):** Hiện thực hóa `fingerprint` (`ORIGINAL_TREE_FINGERPRINT` SHA-256 luồng 64KB), `audit-freshness` (kiểm toán `FRESH/STALE/EXPIRED` và lan truyền `STALE` qua `dependency-index.csv`), `eval-l2` (tính công thức `L2` bằng trình thông dịch **AST Safe Evaluator** chặn 100% thực thi mã tùy ý, kèm wrapper tương thích ngược `scripts/eval_l2.py`) và `sync-feature-map` cùng `--self-test --json`.
+  - **Bộ 03 (`Bo-03-Vibecode-Kit-v6/scripts/bo03_vibecode_tool.py`):** Hiện thực hóa `init-control-app` (sinh khung `./bin/control-app`), `wtree-fingerprint` (chụp và đối chiếu dấu vân tay cây làm việc), `maintain-features` (đồng bộ mã băm SHA-256 cho `Feature Map`) và `constraint-check` (kiểm toán tự động `0` dấu `em-dash`, `0` cụm `dấu phẩy trước chữ và` và `0` rò rỉ khóa bí mật) cùng `--self-test --json`.
+- **Tài liệu Thiết kế CEO (`docs/designs/optimize-3-skill-suites.md`):** Quảng bá bản kế hoạch tối ưu hóa toàn diện 3 Bộ kỹ năng (đã duyệt qua `/plan-ceo-review` ở chế độ `SELECTIVE EXPANSION` với điểm Spec Review `9.8/10`).
+
+### Changed
+- **Đồng bộ Phân tầng Co giãn `R0–R3` & `Indirect Prompting Restate` sang Bộ 01 và Bộ 02:**
+  - Tinh gọn `Bo-01/SKILL.md` (`170 -> 79` dòng) và `Bo-02/SKILL.md` (`128 -> 62` dòng) theo nguyên lý `Progressive Disclosure`.
+  - Nhúng khung `Indirect Prompting Restate`, bảng chọn nhanh `R0–R3 Fast-Track` và lệnh gọi CLI vào `Quick-Start.md` cùng `templates/` của Bộ 01 và Bộ 02.
+- **Hợp nhất Ma trận 4 Nhãn Nhận định Fable 5.1 xuyên 3 Bộ (`OBSERVED | DERIVED | PRIOR | ASSUMED`):**
+  - Chuẩn hóa bảng ánh xạ 1-1 giữa `OBSERVED / DERIVED / PRIOR / ASSUMED` (Bộ 01 & Bộ 03) với `EXTRACTED / INFERRED / AMBIGUOUS` (Bộ 02) trong `Bo-02/references/bo01-bo02-bo03-bridge.md` và `Bo-03/references/claim-and-evidence-protocol.md`.
+- **Nâng cấp `tools/install-all.sh` & Dọn dẹp Thư mục Gốc:**
+  - Chuyển 8 tệp `.docx`/`.skill` có hậu tố phiên bản trùng lặp ở thư mục gốc vào `_Archive/duplicate-deliverables-2026-10/`, chỉ giữ bộ tệp chuẩn duy nhất ở root.
+  - Nâng cấp `tools/install-all.sh` để chạy cổng kiểm thử sống `--self-test --json` trên cả 3 CLI và đồng bộ cả 3 Bộ kỹ năng vào `~/.gemini/config/skills/` lẫn `~/.claude/skills/`.
+
 ## [2026.10] - 2026-10-26
 
 ### Added

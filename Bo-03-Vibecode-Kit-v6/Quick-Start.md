@@ -20,11 +20,19 @@ unzip -o vibecode-kit-v6.skill -d ~/.gemini/config/skills/
 
 ---
 
-## 2. Khởi Tạo Đòn Bẩy `./bin/control-app` & `Feature Map` Cho Dự Án Mới (1 Phút)
+## 2. Khởi Tạo Đòn Bẩy `./bin/control-app` & `Feature Map` Bằng 1 Lệnh CLI (1 Phút)
 
-Để AI Agent không tốn hàng nghìn token mò đường trong codebase và tự viết script kiểm thử dùng một lần mỗi khi chạy, hãy khởi tạo ngay 2 hiện vật cốt lõi từ biểu mẫu [`templates/Control-App-and-Feature-Map.md`](./templates/Control-App-and-Feature-Map.md):
-1. **Công cụ CLI `./bin/control-app`:** Hỗ trợ `--dry-run`, `--json`, `--help`, thông báo lỗi chỉ dẫn trực tiếp lệnh tiếp theo (`next_command`) và các subcommands `seed`, `auth`, `flag`, `dom`, `screenshot`, `perf`.
-2. **Bản đồ tính năng `references/features/README.md` (`Feature Map`):** Danh mục mọi tính năng từ góc nhìn người dùng kèm lệnh `./bin/control-app` để chạm tới.
+Để AI Agent không tốn hàng nghìn token mò đường trong codebase và tự viết script kiểm thử dùng một lần mỗi khi chạy, hãy dùng trực tiếp công cụ CLI `scripts/bo03_vibecode_tool.py` đi kèm Bộ 03 để khởi tạo và kiểm toán 2 hiện vật cốt lõi (xem biểu mẫu [`templates/Control-App-and-Feature-Map.md`](./templates/Control-App-and-Feature-Map.md)):
+1. **Sinh tự động khung CLI `./bin/control-app`:**
+   ```bash
+   python3 Bo-03-Vibecode-Kit-v6/scripts/bo03_vibecode_tool.py init-control-app --output bin/control-app --json
+   ```
+2. **Đồng bộ mã băm SHA-256 cho `Feature Map` (`references/features/README.md`) & Kiểm toán `Constraint Loop`:**
+   ```bash
+   python3 Bo-03-Vibecode-Kit-v6/scripts/bo03_vibecode_tool.py maintain-features --features-dir references/features --update --json
+   python3 Bo-03-Vibecode-Kit-v6/scripts/bo03_vibecode_tool.py constraint-check --paths . --json
+   python3 Bo-03-Vibecode-Kit-v6/scripts/bo03_vibecode_tool.py --self-test --json
+   ```
 
 ---
 

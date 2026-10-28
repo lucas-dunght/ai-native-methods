@@ -1,6 +1,15 @@
-# Extraction and Synthesis Prompts · Bộ Prompt Trích xuất & Tổng hợp (v2.0)
+# Extraction and Synthesis Prompts · Bộ Prompt Trích xuất & Tổng hợp (`v2.1 · Full-Stack 4 Lớp`)
 
-Tài liệu này cung cấp hai khung lệnh (prompt templates) chuẩn hóa cho Giai đoạn 3 (Trích xuất sự thật nguyên tử có rào chắn chống Prompt Injection) và Giai đoạn 7 (Tổng hợp báo cáo 3 phần giữ nguyên văn số liệu).
+Tài liệu này cung cấp khung diễn giải `Indirect Prompting Restate` (Giai đoạn 1), khung lệnh trích xuất sự thật nguyên tử có rào chắn chống Prompt Injection (Giai đoạn 3) và khung tổng hợp báo cáo 3 phần sau khi vượt qua cổng CLI `bo01_refine_tool.py gate-check` (Giai đoạn 7).
+
+## 0. Khung Diễn giải lại Yêu cầu trước Cổng `D1` (`Indirect Prompting Restate`)
+
+```text
+Trước khi thực hiện bất kỳ truy vấn tìm kiếm nào, hãy tự diễn giải lại yêu cầu nghiên cứu bằng lời của bạn trong 3 đến 5 dòng:
+1. Quyết định thực tế nào của người dùng sẽ dựa trên kết quả nghiên cứu này?
+2. Những mảng dữ liệu, giai đoạn hoặc loại nguồn nào bị loại trừ hoàn toàn (Out-of-scope)?
+3. Bài toán này thuộc tầng quy mô nào (R0: <5 nguồn, R1: 5-12 nguồn, R2: 12-30 nguồn, R3: >30 nguồn trọng yếu) và cần tối thiểu bao nhiêu nguồn gốc độc lập?
+```
 
 ## 1. Prompt Trích xuất Sự thật Nguyên tử (Giai đoạn 3 · `Fact Extractor`)
 

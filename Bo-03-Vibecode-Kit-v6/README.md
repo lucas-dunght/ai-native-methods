@@ -22,8 +22,8 @@ Trong kỷ nguyên các mô hình AI tiên tiến (Frontier Models) viết code 
 ## 2. Mười Sáu Nâng Cấp Cốt Lõi của v6.2 (`10 Nền tảng v6.1 + 6 Đòn bẩy pstack`)
 
 ### A. Mười Nền Tảng Thực Chứng từ v6.1 (Giữ nguyên 100%)
-1. **Kỷ luật Khẳng định & Đạo đức Bằng chứng (`Claim Discipline`):** Phân tách `OBSERVED` (kèm `file:line`), `INFERRED` và `UNVERIFIED`. Cấm bịa kết quả test, đường dẫn file, mã commit hay thông số đo đạc.
-2. **Dấu vân tay Cây làm việc (`WTREE_FINGERPRINT`):** Mọi biên bản kiểm thử, review và bàn giao phải đóng dấu bộ tứ `HEAD` + `WTREE` + `TREE` + `DIRTY`. Thay đổi 1 dòng code làm vô hiệu hóa mọi dấu `CLEAR` trước đó.
+1. **Kỷ luật 4 Nhãn Khẳng định Fable 5.1 & Đạo đức Bằng chứng (`Unified 4-Label Claim Discipline`):** Phân tách `OBSERVED` (kèm `file:line`), `DERIVED` (`INFERRED`), `PRIOR` và `ASSUMED` (`UNVERIFIED`) đồng bộ 100% với Bộ 01 và Bộ 02. Cấm bịa kết quả test, đường dẫn file, mã commit hay thông số đo đạc.
+2. **Dấu vân tay Cây làm việc (`WTREE_FINGERPRINT`) & CLI `scripts/bo03_vibecode_tool.py`:** Mọi biên bản kiểm thử, review và bàn giao phải đóng dấu bộ tứ `HEAD` + `WTREE` + `TREE` + `DIRTY` (hoặc chạy `python3 scripts/bo03_vibecode_tool.py wtree-fingerprint --dir . --json`). Thay đổi 1 dòng code làm vô hiệu hóa mọi dấu `CLEAR` trước đó.
 3. **Bảng Quyết định Chuẩn hóa (`Decision Brief D<N>`):** Trình bày quyết định theo cấu trúc `ELI10`, điểm `Completeness X/10`, phân loại `Shortcut Debt` và nguyên tắc *"Boil the Lake"*.
 4. **Cổng Duyệt Kế hoạch 4 Góc nhìn (`4-Lens Plan Gate`):** Duyệt kế hoạch qua 4 lăng kính tuần tự: **CEO / Phạm vi** -> **Thiết kế / UX** -> **Kỹ thuật / Kiến trúc** -> **Trải nghiệm Lập trình viên (DX)**.
 5. **Điều phối Cô lập Nhánh & Tệp tin (`Disjoint Orchestration`):** Tách nhánh làm việc độc lập với danh sách `owned_files` không giao nhau và cổng chặn an toàn (`Safety Gates`).
@@ -51,6 +51,7 @@ Trong kỷ nguyên các mô hình AI tiên tiến (Frontier Models) viết code 
 | [`Methodology.md`](./Methodology.md) | Quy trình 8 bước tự co giãn theo cấp độ rủi ro (`R0 -> R3`) tích hợp `pstack` và ma trận kỹ năng. |
 | [`Architecture.md`](./Architecture.md) | Kiến trúc kỹ thuật: Sổ cái bằng chứng, Đòn bẩy `./bin/control-app`, `Feature Map`, `5-Phase /architect Arena` và `Cloud /swarm`. |
 | [`SKILL.md`](./SKILL.md) | Tệp chỉ dẫn gốc (System Prompt) nạp trực tiếp cho AI Agent khi kích hoạt kỹ năng `vibecode-kit-v6`. |
+| [`scripts/bo03_vibecode_tool.py`](./scripts/bo03_vibecode_tool.py) | Công cụ CLI chuẩn 4 lớp (`init-control-app`, `wtree-fingerprint`, `maintain-features`, `constraint-check`, `--self-test`). |
 | [`Quick-Start.md`](./Quick-Start.md) | Cẩm nang khởi động nhanh trong 5 phút kèm các câu lệnh mẫu. |
 | [`references/`](./references/) | 6 tài liệu giao thức chuyên sâu (Claim Discipline, X-Ray & `/teach`, Plan Gates & `/architect`, Orchestrate & `/swarm`, QA & `/control-app`, Ship & Gardener). |
 | [`templates/`](./templates/) | 9 biểu mẫu chuẩn hóa: `Risk-Tier`, `RRI`, `Blueprint`, `TIP`, `Control-App-and-Feature-Map`, `Handoff`, `Completion-Report`, `Audit-Trail`, `Calibration-Card`. |

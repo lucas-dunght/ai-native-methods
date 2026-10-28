@@ -1,219 +1,193 @@
-# Architecture · Kiến trúc kỹ thuật của Bộ 01 (v2.0 · 2026.10)
+# Architecture · Kiến trúc Hệ thống Tinh lọc Thông tin (`v2.1 · Full-Stack 4 Lớp`)
 
-## Tổng quan
+## Sơ đồ Luồng dữ liệu, Phân tầng `R0–R3` và 5 Cổng kiểm soát
 
-Kiến trúc kỹ thuật của Bộ 01 v2.0 gồm sáu module kết nối tuần tự qua các tệp dữ liệu văn bản chuẩn (`CSV`, `YAML`, `Markdown`) và một vùng đệm cô lập ngữ cảnh (`PTC Sandbox`). Các cổng kiểm duyệt của con người (`Human Checkpoints`) được đặt tại những điểm ra quyết định chiến lược thông qua thẻ **Decision Brief `D<N>`**.
-
-Toàn bộ đường ống có thể vận hành linh hoạt ở hai chế độ. Chế độ tương tác bán tự động (dành cho sinh viên và nhà nghiên cứu chạy các chu kỳ đầu) và chế độ điều phối bằng script kết hợp AI Agent (dành cho dự án quy mô lớn cần thu thập hàng trăm nguồn và chuyển giao tự động sang Bộ 02).
-
-## Sơ đồ luồng kiến trúc (v2.0)
-
-```
-Brief nghiên cứu (brief.md · Cổng D1)
-        │
-        ▼
-┌───────────────────────────────────────────────────────────────┐
-│ 1. Multi-Signal Source Collector & PTC Sandbox                │
-│    - unified-search (auto/academic/legal/news/company/deep)   │
-│    - tavily (search/map/extract/crawl/research)               │
-│    - gstack /scrape + /skillify (trang cần phiên đăng nhập)   │
-│    - Lọc nhiễu qua /tmp/ & bọc rào UNTRUSTED WEB CONTENT      │
-└───────────────────────────────┬───────────────────────────────┘
-                                │
-                                ▼
-             source-log.csv + raw-sources/ (kèm primary_origin_url)
-                                │
-                                ▼
-┌───────────────────────────────────────────────────────────────┐
-│ 2. Atomic Fact Extractor (Fable 5.1 Claim Discipline)         │
-│    - Tách sự thật nguyên tử + exact_quote + content_hash      │
-│    - Gắn nhãn OBSERVED | DERIVED | PRIOR | ASSUMED            │
-└───────────────────────────────┬───────────────────────────────┘
-                                │
-                                ▼
-                    fact-cards/F-YYYY-NNN.yaml (raw)
-                                │
-                                ▼
-┌───────────────────────────────────────────────────────────────┐
-│ 3. Echo-Chamber & Conflict Detector                           │
-│    - Gộp thẻ trùng + Tính independent_origin_count            │
-│    - Sinh thẻ Decision Brief D<N> vào conflict-queue.md       │
-└───────────────────────────────┬───────────────────────────────┘
-                                │
-         ◄── [Human Checkpoint: Phán xử Conflict Queue D<N>]
-                                │
-                                ▼
-┌───────────────────────────────────────────────────────────────┐
-│ 4. Gap Analyzer & Trust Classifier                            │
-│    - Sinh gap-checklist.md kèm query bù đắp                   │
-│    - Gán nhãn verified / probable / unverified cơ học         │
-└───────────────────────────────┬───────────────────────────────┘
-                                │
-                                ▼
-┌───────────────────────────────────────────────────────────────┐
-│ 5. 4D Enrichment Pass & Bộ 02 ETL Exporter                    │
-│    - Đối chiếu chéo, phân loại, độ tươi, đánh dấu xuất L1     │
-└───────────────────────────────┬───────────────────────────────┘
-                                │
-                                ▼
-┌───────────────────────────────────────────────────────────────┐
-│ 6. Constraint Loop Verifier & Synthesizer                     │
-│    - Kiểm tra 4 ngưỡng định lượng & khớp 100% mã [F-YYYY-NNN] │
-│    - Xuất report-final.md + gói Fact Cards chuẩn              │
-└───────────────────────────────────────────────────────────────┘
+```text
+               [YÊU CẦU NGHIÊN CỨU BAN ĐẦU CỦA NGƯỜI DÙNG]
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ GIAI ĐOẠN 1 · PHÂN TẦNG R0-R3, INDIRECT PROMPTING RESTATE & BRIEF       │
+│ - Phân loại bài toán vào R0 (<5 nguồn), R1 (5-12), R2 (12-30), R3 (>30) │
+│ - Indirect Prompting Restate: Agent tự diễn giải lại mục tiêu & loại trừ│
+│ - Khóa 4 phần trong brief.md (trình thẻ Decision Brief D1 nếu R2/R3)    │
+└───────────────────────────────────┬─────────────────────────────────────┘
+                                    │
+                     [CỔNG 1 · BRIEF & D1 LOCKED]
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ GIAI ĐOẠN 2 · THU THẬP ĐA TÍN HIỆU & CÔ LẬP NGỮ CẢNH PTC               │
+│ - unified-search / tavily-* / gstack /scrape (read-only)                │
+│ - Chạy CLI: python3 scripts/bo01_refine_tool.py ptc-filter              │
+│   (Cắt cửa sổ ~1.200 ký tự, lọc >80% rác HTML, gắn cờ UNTRUSTED)        │
+│ - Ghi nhật ký source-log.csv (lưu rõ primary_origin_url)                │
+└───────────────────────────────────┬─────────────────────────────────────┘
+                                    │
+                 [CỔNG 2 · PTC ISOLATION & ANTI-INJECTION]
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ GIAI ĐOẠN 3 · TRÍCH XUẤT SỰ THẬT NGUYÊN TỬ (4 NHÃN FABLE 5.1)           │
+│ - Tách từng khẳng định độc lập -> fact-cards/F-YYYY-NNN.yaml            │
+│ - Lưu exact_quote, content_hash và gắn nhãn OBSERVED/DERIVED/PRIOR/ASSUMED│
+└───────────────────────────────────┬─────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ GIAI ĐOẠN 4 · KHỬ TRÙNG LẶP, ĐỒ THỊ NGUỒN GỐC & HÀNG ĐỢI XUNG ĐỘT      │
+│ - Chạy CLI: python3 scripts/bo01_refine_tool.py audit-echo              │
+│   (Đếm independent_origin_count từ primary_origin_url, khử phòng vang)  │
+│ - Đưa mọi mâu thuẫn số liệu/nhận định vào conflict-queue.md (Thẻ D<N>)  │
+└───────────────────────────────────┬─────────────────────────────────────┘
+                                    │
+               [CỔNG 3 & 4 · ECHO-CHAMBER & CONFLICT GATE D<N>]
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ GIAI ĐOẠN 5 & 6 · PHÁT HIỆN LỖ HỔNG, PHÂN HẠNG & LÀM GIÀU 4 CHIỀU      │
+│ - Sinh gap-checklist.md kèm câu lệnh truy vấn bù đắp                    │
+│ - Phân hạng verified / probable / unverified + khối enrichment          │
+└───────────────────────────────────┬─────────────────────────────────────┘
+                                    │
+                 [CỔNG 5 · CONSTRAINT LOOP GATE (gate-check)]
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ GIAI ĐOẠN 7 · BÁO CÁO 3 PHẦN & CẦU NỐI LIÊN THÔNG SANG BỘ 02 / BỘ 03   │
+│ - Chạy CLI: python3 scripts/bo01_refine_tool.py gate-check --json       │
+│ - Xuất report-final.md (Verified / Probable / Open Gaps)                │
+│ - Chạy CLI: python3 scripts/bo01_refine_tool.py export-bo02 --json      │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Thành phần 1 · Multi-Signal Source Collector & PTC Sandbox
+## Cấu trúc Thư mục của một Chu kỳ Nghiên cứu (`Research Cycle Workspace`)
 
-Chịu trách nhiệm định tuyến truy vấn, thu thập dữ liệu từ web, lọc nhiễu ngoài ngữ cảnh và ghi nhật ký nguồn kèm dấu vết nguồn gốc đầu tiên.
+Mỗi bài toán nghiên cứu được tổ chức trong một thư mục độc lập để toàn bộ trạng thái nằm trên đĩa và có thể chạy qua nhiều vòng (`Cycle 1`, `Cycle 2`...) mà không phụ thuộc bộ nhớ tạm của khung chat.
 
-### Đầu vào
+```text
+research-cycle-YYYY-MM-topic/
+├── brief.md                        ← Giai đoạn 1: R0-R3, Indirect Prompting Restate & 4 phần cốt lõi
+├── source-log.csv                  ← Giai đoạn 2: Nhật ký nguồn thu thập có cột primary_origin_url
+├── raw-sources/                    ← Giai đoạn 2: Bản chụp văn bản đã lọc PTC từ từng nguồn
+│   ├── S001.md
+│   └── S002.md
+├── fact-cards/                     ← Giai đoạn 3 & 6: Kho thẻ sự thật nguyên tử (1 sự thật = 1 file YAML)
+│   ├── F-2026-001.yaml
+│   └── F-2026-002.yaml
+├── conflict-queue.md               ← Giai đoạn 4: Danh sách xung đột và các thẻ quyết định D<N>
+├── gap-checklist.md                ← Giai đoạn 5: Danh sách lỗ hổng kèm câu lệnh truy vấn bù đắp
+└── report-final.md                 ← Giai đoạn 7: Báo cáo xuất bản 3 phần kèm bảng đối chiếu nguồn
+```
 
-File `brief.md` chứa câu hỏi nghiên cứu, phạm vi thời gian và địa lý, danh sách tên miền ưu tiên hoặc loại trừ.
+## Định dạng Dữ liệu Chuẩn của từng Tạo phẩm (`Data Schemas`)
 
-### Cơ chế Định tuyến Đa Tín hiệu (`Multi-Signal Routing`)
+### 1. Tệp `brief.md` (Bốn phần bắt buộc + `Indirect Prompting Restate`)
 
-Thay vì dùng một công cụ tìm kiếm đơn lẻ, module này chọn công cụ theo tín hiệu truy vấn.
-- **Tin tức, tài chính, pháp lý, học thuật đa nguồn.** Gọi MCP `unified-search` (`web_search` với `mode` tương ứng gồm `news`, `legal`, `academic`, `company`, `code`, `deep`, `hybrid` và `web_extract`) để tận dụng bộ xoay vòng 18 khóa API qua ba công cụ `Tavily`, `Exa` và `Linkup`.
-- **Khám phá cấu trúc và cào toàn bộ chuyên mục tài liệu.** Dùng `tavily-map` để lấy danh sách URL và `tavily-crawl` / `tavily-extract` để bóc tách nội dung Markdown sạch.
-- **Báo cáo tổng quan đa góc nhìn.** Dùng `tavily-research` (`--model pro`) để lấy khung tham chiếu ban đầu, sau đó bóc tách từng nguồn được trích dẫn.
-- **Trang yêu cầu đăng nhập hoặc ứng dụng web động.** Dùng `gstack /scrape` qua trình duyệt phiên thật (hoặc headless browser kèm `/setup-browser-cookies`). Nếu một trang bảng giá hoặc cổng dữ liệu cần lấy định kỳ, dùng `/skillify` để biên dịch thành kỹ năng trình duyệt chạy trong 200ms.
+```markdown
+# Brief nghiên cứu · [Tên chủ đề]
 
-### Cơ chế Cô lập Ngữ cảnh PTC (`Programmatic Tool Calling`)
+## 0. Phân tầng Quy mô (`R0–R3`) & Diễn giải lại (`Indirect Prompting Restate`)
+- Phân tầng rủi ro/quy mô: R2 (Nghiên cứu chuẩn 12-30 nguồn, có xuất sang Bộ 02).
+- Diễn giải lại bằng lời của Agent (Restate): Nghiên cứu này nhằm chốt dữ liệu đầu vào cho quyết định [X], tập trung vào ranh giới [Y] và loại trừ hoàn toàn [Z].
 
-Mọi kết quả tìm kiếm có kèm nội dung trang (`raw_content`) bắt buộc phải ghi ra tệp tạm trong `/tmp/` hoặc `raw-sources/` và xử lý bằng script Python. Chỉ kết quả đã lọc (tiêu đề, URL, điểm số và các đoạn văn khớp từ khóa hoặc chứa số liệu) mới được in ra `stdout` để đưa vào ngữ cảnh của Agent. Toàn bộ nội dung trích xuất từ web phải được đặt trong cặp thẻ cảnh báo `--- BEGIN UNTRUSTED EXTERNAL CONTENT ---` và `--- END UNTRUSTED EXTERNAL CONTENT ---`.
+## 1. Câu hỏi nghiên cứu và Quyết định phụ thuộc
+[Nêu rõ câu hỏi cần trả lời và quyết định thực tế nào sẽ dựa trên kết quả nghiên cứu này]
 
-### Đầu ra · `source-log.csv`
+## 2. Phạm vi dữ liệu
+- Thời gian: [Từ năm/tháng đến năm/tháng]
+- Địa lý / Thị trường: [Khu vực áp dụng]
+- Ngôn ngữ nguồn: [vi, en, ...]
+
+## 3. Tiêu chí loại trừ và Tên miền ưu tiên
+- Loại trừ: [Các loại bài viết PR, nguồn không ngày tháng, mảng không liên quan]
+- Tên miền ưu tiên (`include_domains`): [Danh sách nếu có]
+- Tên miền loại trừ (`exclude_domains`): [Danh sách nếu có]
+
+## 4. Ngưỡng đầu ra mục tiêu
+- Số lượng nguồn độc lập tối thiểu: [N]
+- Số lượng thẻ sự thật dự kiến: [M]
+- Tỷ lệ thẻ `verified` mục tiêu: [>= 40%]
+```
+
+### 2. Tệp `source-log.csv` (Nhật ký nguồn có cột chống phòng vang)
 
 ```csv
 source_id,url,primary_origin_url,title,date_published,date_collected,query_used,search_mode,extraction_method,source_type,language,authority_tier,raw_snapshot_path,collection_reason
-S001,https://economysea.withgoogle.com/report,https://economysea.withgoogle.com/report,"e-Conomy SEA 2024",2024-11-05,2026-10-25,"Southeast Asia digital payments GMV 2024",company,unified-extract,tài liệu doanh nghiệp,en,tier-1,raw-sources/S001.md,"Báo cáo gốc đo lường quy mô GMV khu vực"
-S002,https://technewspaper.example/sea-gmv,https://economysea.withgoogle.com/report,"SEA Digital Economy Hits New High",2024-11-07,2026-10-25,"SEA fintech growth 2024",news,ptc-search,báo chí,en,tier-2,raw-sources/S002.md,"Bài báo phân tích lại báo cáo e-Conomy SEA"
+S001,https://gso.gov.vn/baocao-2025,https://gso.gov.vn/baocao-2025,"Báo cáo KT-XH 2025",2025-12-29,2026-10-25,"tăng trưởng thương mại điện tử Việt Nam 2025",legal,unified-extract,dữ liệu chính phủ,vi,tier-1,raw-sources/S001.md,"Số liệu chính thức từ Tổng cục Thống kê"
+S002,https://baodautu.vn/tmdt-2025,https://gso.gov.vn/baocao-2025,"TMĐT Việt Nam tăng trưởng mạnh",2026-01-05,2026-10-25,"thương mại điện tử Việt Nam 2025",news,ptc-filter,báo chí,vi,tier-2,raw-sources/S002.md,"Bài báo trích dẫn lại báo cáo của GSO"
 ```
 
-Trường `primary_origin_url` là chìa khóa để phát hiện hiện tượng phòng vang. Ở ví dụ trên, dù `S001` và `S002` là hai URL khác nhau nhưng cùng trỏ về một `primary_origin_url`, do đó hệ thống tự động nhận diện chúng chỉ là `1 datum`.
+*Lưu ý kỹ thuật:* Trong ví dụ trên, cả `S001` và `S002` đều trỏ về cùng một `primary_origin_url` là `https://gso.gov.vn/baocao-2025`. Khi chạy `python3 scripts/bo01_refine_tool.py audit-echo -i source-log.csv --json`, công cụ sẽ tự động tính `independent_origin_count = 1`.
 
-## Thành phần 2 · Atomic Fact Extractor (Kỷ luật Nhận định Fable 5.1)
-
-Đọc từng đoạn văn bản đã lọc từ `raw-sources/` và chuyển hóa thành các thẻ sự thật nguyên tử (`Fact Cards`).
-
-### Đầu ra · Schema `fact-cards/F-YYYY-NNN.yaml`
+### 3. Tệp `fact-cards/F-YYYY-NNN.yaml` (Thẻ sự thật nguyên tử v2.1)
 
 ```yaml
 fact_id: F-2026-001
-content: "Thị trường thanh toán số Đông Nam Á đạt tổng giá trị giao dịch 114 tỷ USD trong năm 2024"
-exact_quote: "Southeast Asia digital payments GMV reached US$114B in 2024"
+content: "Một khẳng định đơn lẻ, giữ nguyên con số và đơn vị đo"
+exact_quote: "Câu trích dẫn nguyên văn từ tài liệu nguồn làm bằng chứng trực tiếp"
 content_hash: "sha256:8f3c2a1b"
-claim_label: OBSERVED
+claim_label: OBSERVED  # OBSERVED | DERIVED | PRIOR | ASSUMED
+
 sources:
   - S001
   - S002
 primary_origins:
-  - "https://economysea.withgoogle.com/report"
+  - https://gso.gov.vn/baocao-2025
 independent_origin_count: 1
-fact_type: numerical-claim
-domain: digital-payments
-role: evidence-for-thesis-1
+
+fact_type: numerical-claim  # numerical-claim | qualitative-claim | event | definition | statement
+statement_attribution: null # Điền tên người/tổ chức phát biểu nếu fact_type là statement
+
+domain: ten-linh-vuc
+role: evidence-thesis-1     # background | evidence-thesis-N | counter-evidence | open-question
+
+date_of_fact: 2025-12
 date_extracted: 2026-10-25
-extracted_by: agent
-notes: "S002 trích dẫn lại S001 nên independent_origin_count = 1"
-```
+extracted_by: agent         # human | agent
 
-Các quy tắc bảo toàn dữ liệu.
-- `claim_label` nhận một trong bốn giá trị `OBSERVED`, `DERIVED`, `PRIOR`, `ASSUMED`.
-- `exact_quote` giữ nguyên văn câu gốc trong tài liệu nguồn để kiểm toán viên hoặc script có thể đối chiếu tức thì.
-- `content_hash` là 8 ký tự đầu của mã băm SHA-256 tính trên chuỗi `content + exact_quote`, giúp phát hiện nếu nội dung thẻ bị sửa đổi ngoài ý muốn ở các bước sau.
-
-## Thành phần 3 · Echo-Chamber & Conflict Detector
-
-Quét toàn bộ thư mục `fact-cards/` để gộp các thẻ trùng, tính số lượng nguồn gốc độc lập và lập hàng đợi xung đột.
-
-### Logic xử lý
-
-1. **Tính `independent_origin_count`.** Với mỗi thẻ, tập hợp toàn bộ `primary_origin_url` từ các nguồn trong danh sách `sources`. Số phần tử duy nhất (`unique set size`) của tập `primary_origin_url` chính là `independent_origin_count`.
-2. **Gộp trùng (`Merge`).** Hai thẻ cùng chỉ số, cùng kỳ thời gian và cùng giá trị thì gộp `sources` và tính lại `independent_origin_count`.
-3. **Đóng gói Xung đột theo chuẩn `Decision Brief D<N>`.** Khi hai thẻ cùng chỉ số và kỳ thời gian nhưng lệch giá trị, xuất vào `conflict-queue.md` theo cấu trúc thẻ quyết định `D<N>` để con người phê duyệt.
-
-## Thành phần 4 · Gap Analyzer & Trust Classifier
-
-### Bộ phân tích lỗ hổng (`Gap Analyzer`)
-
-Quét tìm các thẻ mang nhãn `ASSUMED` hoặc `PRIOR`, các chuỗi số liệu bị khuyết năm hoặc khuyết quốc gia trong phạm vi `brief.md`, sau đó xuất ra `gap-checklist.md` kèm cấu hình truy vấn bù đắp (`suggested_query`, `search_mode`, `target_tier`).
-
-### Bộ phân hạng tin cậy tất định (`Deterministic Trust Classifier`)
-
-Áp dụng hàm phân loại cơ học không phụ thuộc cảm tính của mô hình.
-
-```python
-def classify_trust_tier(card, source_map):
-    if card["claim_label"] in ("PRIOR", "ASSUMED"):
-        return "unverified"
-    tiers = [source_map[s]["authority_tier"] for s in card["sources"]]
-    indep_count = card.get("independent_origin_count", 0)
-    if indep_count >= 2 and any(t in ("tier-1", "tier-2") for t in tiers):
-        return "verified"
-    if indep_count == 1 and "tier-1" in tiers:
-        return "verified"
-    if indep_count >= 1 and any(t in ("tier-1", "tier-2") for t in tiers):
-        return "probable"
-    return "unverified"
-```
-
-Lưu ý. Trong trường hợp nguồn `tier-1` chỉ là một bài báo kinh tế điểm tin chứ không phải báo cáo nghiên cứu gốc hoặc số liệu thống kê chính thức, người dùng có thể cấu hình hạ mức `indep_count == 1` của báo chí xuống `probable` để ép buộc phải có nguồn độc lập thứ hai mới đạt `verified`.
-
-## Thành phần 5 · 4D Enrichment Pass & Bộ 02 ETL Exporter
-
-Bổ sung khối `enrichment` vào từng thẻ sự thật đã phân hạng và chuẩn bị gói dữ liệu xuất sang Bộ 02 (`Kernel Registry`).
-
-```yaml
-trust_tier: verified
+trust_tier: verified        # verified | probable | unverified
 enrichment:
-  cross_references: [F-2026-005, F-2026-012]
-  classification: [market-sizing, sea-fintech]
-  recency_status: current
-  importance_rank: high
-  gaps_implied: [G-002]
-  bo02_bridge:
-    export_ready: true
-    target_layer: L1
-    suggested_fact_id: L1-sea-digital-payments-gmv-2024
-    unit: USD
-    numeric_value: 114000000000
+  related_facts: [F-2026-004]
+  contradicts: []
+  recency_status: current   # current | historical | outdated
+  importance_rank: 1        # 1 (cao nhất) -> 5 (thấp nhất)
+  bo02_export_ready: true   # true nếu đủ điều kiện nạp vào kho L1 của Bộ 02
+notes: "Ghi chú ngắn gọn về ngữ cảnh hoặc phép tính nếu claim_label là DERIVED"
 ```
 
-## Thành phần 6 · Constraint Loop Verifier & Synthesizer
+### 4. Tệp `conflict-queue.md` (Hàng đợi xung đột kèm thẻ quyết định `D<N>`)
 
-Trước khi sinh báo cáo cuối (`report-final.md`), chạy script kiểm chứng `Constraint Loop`.
+Mỗi xung đột phải được trình bày theo đúng cấu trúc thẻ quyết định của Bộ 03 để người dùng giải quyết trong 30 giây.
 
-```python
-# Kiểm tra tự động 4 điều kiện hoàn thành của Bộ 01 v2.0
-assert verified_ratio >= 0.40, "Tỷ lệ thẻ verified chưa đạt 40%"
-assert unresolved_conflicts == 0, "Còn xung đột chưa được con người phán xử trong conflict-queue.md"
-assert high_priority_open_gaps < 10, "Còn từ 10 lỗ hổng mức cao trở lên chưa đóng"
-assert missing_citation_ids == set(), f"Báo cáo trích dẫn mã thẻ không tồn tại: {missing_citation_ids}"
+```markdown
+## Conflict C-001 · Chênh lệch số liệu quy mô thị trường năm 2025
+
+- **Các thẻ mâu thuẫn:** `F-2026-014` (ghi nhận `20.5 tỷ USD`) và `F-2026-019` (ghi nhận `25.0 tỷ USD`).
+- **Bối cảnh đời thường (`ELI10`):** Hai báo cáo lớn đang tính quy mô thị trường theo hai cách khác nhau. Một bên chỉ tính hàng hóa vật lý giao qua sàn, bên kia cộng thêm cả dịch vụ đặt đồ ăn và vé máy bay.
+- **Mức độ ảnh hưởng (`Stakes`):** Quyết định trực tiếp đến con số TAM đưa vào bản kế hoạch kinh doanh và mục `L1-market-size-2025` trong Bộ 02.
+
+### Các phương án lựa chọn (`Decision Brief D1`)
+- **[A] Chọn `F-2026-014` (`20.5 tỷ USD`) làm chuẩn chính thức (Khuyến nghị · Completeness 9/10):** Phù hợp hoàn toàn với phạm vi dự án chỉ kinh doanh hàng hóa vật lý; giữ `F-2026-019` làm chú thích mở rộng.
+- **[B] Chọn `F-2026-019` (`25.0 tỷ USD`) làm chuẩn chính thức (Completeness 6/10):** Phản ánh toàn bộ kinh tế số nhưng làm phình ảo quy mô phân khúc mục tiêu.
+- **[C] Báo cáo song song cả hai khoảng số liệu (Completeness 8/10):** Minh bạch phương pháp đo của cả hai bên trong báo cáo cuối.
+
+- **Trạng thái:** `resolved`
+- **Phán quyết của con người:** Chọn phương án `[A]` (duyệt ngày `2026-10-25`).
 ```
 
-Sau khi vượt qua cổng kiểm tra, `Synthesizer` xuất `report-final.md` gồm đúng 3 phần tách biệt và bảng danh mục tài liệu tham chiếu tự động kết xuất từ `source-log.csv`.
+### 5. Tệp `gap-checklist.md` (Danh sách lỗ hổng kèm truy vấn bù đắp)
 
-## Cấu trúc thư mục của một chu kỳ nghiên cứu
-
-```
-research-cycle-YYYY-MM-DD/
-├── brief.md                       (Giai đoạn 1 · Đã khóa qua cổng D1)
-├── source-log.csv                 (Giai đoạn 2 · Kèm primary_origin_url & search_mode)
-├── raw-sources/                   (Giai đoạn 2 · Bản lưu Markdown/JSON đã lọc PTC)
-│   ├── S001.md
-│   └── S002.md
-├── fact-cards/                    (Giai đoạn 3 đến 6 · Thẻ sự thật nguyên tử YAML)
-│   ├── F-2026-001.yaml
-│   └── F-2026-002.yaml
-├── conflict-queue.md              (Giai đoạn 4 · Các thẻ Decision Brief D<N> đã phán xử)
-├── gap-checklist.md               (Giai đoạn 5 · Danh sách lỗ hổng & query bù đắp)
-├── enrichment-log.md              (Giai đoạn 6 · Nhật ký làm giàu & cầu nối Bộ 02)
-└── report-final.md                (Giai đoạn 7 · Báo cáo 3 phần đã qua Constraint Loop)
+```markdown
+## Gap G-001
+- **Mô tả lỗ hổng:** Chưa có số liệu tỷ lệ hoàn hàng của nhóm ngành thời trang năm 2025.
+- **Phát sinh từ:** Thẻ `F-2026-008` và mục tiêu thứ 2 trong `brief.md`.
+- **Hành động thu bù đề xuất:** Chạy `unified-search` chế độ `company` kết hợp `tavily-extract` trên báo cáo ngành logistics.
+- **Câu lệnh truy vấn gợi ý:** `"tỷ lệ hoàn hàng" OR "return rate" thương mại điện tử thời trang Việt Nam 2025`
+- **Độ ưu tiên:** `high`
 ```
 
-## Tích hợp liên thông với Bộ 02 và Bộ 03
+## Liên kết Liên thông với Bộ 02 và Bộ 03
 
-- **Nối sang Bộ 02 (`Kernel Registry SOT`).** Mọi thẻ `Fact Card` có `trust_tier: verified` và `bo02_bridge.export_ready: true` được chuyển thẳng thành tệp `registry/stored-facts/L1-*.yaml` trong Bộ 02, giữ nguyên mã băm `content_hash` và đường dẫn nguồn.
-- **Nối sang Bộ 03 (`Vibecode Kit v6.1`).** Khi xây dựng sản phẩm phần mềm ở Bộ 03, Chủ thầu (`Contractor`) đính kèm các mã thẻ `[F-YYYY-NNN]` vào tài liệu `RRI`, `Blueprint` và gói giao việc `TIP` để Thợ (`Builder`) thi công dựa trên dữ liệu thị trường và quy định đã được kiểm chứng.
+1. **Từ Bộ 01 sang Bộ 02 (`Kernel Registry SOT`):** Các thẻ sự thật đạt hạng `verified` có cờ `bo02_export_ready: true` sẽ được chuyển đổi tự động qua lệnh `python3 scripts/bo01_refine_tool.py export-bo02 -i <fact-cards.json> -o <l1-facts.yaml> --json` thành mục sự thật `L1-stored-fact.yaml` trong Bộ 02 (xem `references/citation-graph-and-conflict-gate.md`).
+2. **Từ Bộ 01 sang Bộ 03 (`Vibecode Kit v6.2 × pstack`):** Khi thực hiện Giai đoạn 1 (`Context & Grounding`) hoặc Giai đoạn 2 (`Spec & Risk Plan`) của Bộ 03 mà cần khảo sát công nghệ, đối thủ cạnh tranh hoặc tài liệu API bên ngoài, Agent kích hoạt Bộ 01 ở chế độ `R1/R2` để thu thập dữ liệu sạch trước khi viết `Blueprint.md`.
